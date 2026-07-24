@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# .NET
+bin/
+obj/
+
+# models / data / outputs
+*.mp4
+*.mkv
+*.onnx
+*.pt
+*.weights
+/models/
+*.video-map.json
+!schema/**
+
+# secrets / env
+.env
+.env.*
+*.token
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store

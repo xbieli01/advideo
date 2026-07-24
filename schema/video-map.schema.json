@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/xbieli01/advideo/schema/video-map.schema.json",
+  "title": "advideo video content map",
+  "description": "Timestamped content map for a single video. Produced by the offline pipeline, consumed by the ad-serving matcher and the client snippet.",
+  "type": "object",
+  "required": ["schemaVersion", "videoId", "durationSec", "generatedAt", "segments"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^1\\.[0-9]+$" },
+    "videoId": { "type": "string", "minLength": 1 },
+    "durationSec": { "type": "number", "exclusiveMinimum": 0 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "modelSet": { "type": "string" },
+        "fps": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/segment" }
+    }
+  },
+  "$defs": {
+    "scoredTerm": {
+      "type": "object",
+      "required": ["term", "score"],
+      "additionalProperties": false,
+      "properties": {
+        "term": { "type": "string", "minLength": 1 },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "required": ["type", "label", "score"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["brand", "product", "person", "place", "org"] },
+        "label": { "type": "string", "minLength": 1 },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "required": ["startSec", "endSec", "keywords", "entities", "categories"],
+      "additionalProperties": false,
+      "properties": {
+        "startSec": { "type": "number", "minimum": 0 },
+        "endSec": { "type": "number", "exclusiveMinimum": 0 },
+        "keywords": { "type": "array", "items": { "$ref": "#/$defs/scoredTerm" } },
+        "entities": { "type": "array", "items": { "$ref": "#/$defs/entity" } },
+        "categories": { "type": "array", "items": { "type": "string" } },
+        "signals": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "objects": { "type": "array", "items": { "type": "string" } },
+            "actions": { "type": "array", "items": { "type": "string" } },
+            "scene": { "type": "string" },
+            "text": { "type": "array", "items": { "type": "string" } },
+            "audioKeywords": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "advideo-pipeline"
+version = "0.1.0"
+description = "advideo offline video analysis pipeline: video -> JSON content map"
+requires-python = ">=3.10"
+dependencies = [
+    "jsonschema>=4.0",
+]
+
+[project.optional-dependencies]
+# Real model backends (not needed for the mock pipeline / tests).
+ml = [
+    "opencv-python-headless>=4.9",
+    "numpy>=1.24",
+]
+dev = [
+    "pytest>=7.0",
+]
+
+[project.scripts]
+advideo-analyze = "advideo_pipeline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
