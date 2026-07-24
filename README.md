@@ -69,10 +69,24 @@ advideo-analyze --video real.mp4 --analyzer yolo+clip --fps 1 --out map.json
   worker scaling), falls back to CPU. Heavy deps are imported lazily, so the
   mock path and tests never load torch.
 
-Brand/logo (OCR) and spoken-keyword (Whisper) backends plug in the same way.
+### Brand (OCR) and audio (Whisper) backends
+
+```bash
+# on-screen text -> brand entities + audio track -> spoken brands/keywords
+advideo-analyze --video real.mp4 --analyzer "yolo+clip,ocr" --track whisper --out map.json
+```
+
+- **OCR** (`ocr`, frame-level, EasyOCR): reads on-screen text; a "TESLA"
+  wordmark becomes a brand entity — the exact-brand-match use case.
+- **Whisper** (`whisper`, track-level, faster-whisper): transcribes the audio
+  once and maps spoken brands/keywords onto the segments they fall in.
+- Two analyzer seams: **frame-level** (`Analyzer`, per sampled frame — mock,
+  yolo+clip, ocr) and **track-level** (`TrackAnalyzer`, whole video — whisper).
+  Brand/keyword extraction from recognized/transcribed text lives in the pure,
+  model-free `textmatch.py`, so that logic is fully unit-tested.
 
 ## Status
 
-M1: schema, mock pipeline, CLI, tests, and a real **YOLO+CLIP** analyzer behind
-the `[ml]` extra. Next: brand/OCR + audio backends, then the .NET orchestrator
-and queue.
+M1: schema, mock pipeline, CLI, tests, and real backends behind the `[ml]`
+extra — **YOLO+CLIP** (objects/scenes), **OCR** (on-screen brands), **Whisper**
+(spoken brands/keywords). Next: the .NET orchestrator + queue + object store.

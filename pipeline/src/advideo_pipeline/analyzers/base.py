@@ -27,3 +27,23 @@ class Analyzer(ABC):
     def close(self) -> None:
         """Release models / GPU memory. Optional."""
         return None
+
+
+class TrackAnalyzer(ABC):
+    """Whole-video (track-level) analyzer — e.g. audio/Whisper.
+
+    Unlike `Analyzer` it does not work per sampled frame; it processes the video
+    once and returns time-ranged detections `(start_sec, end_sec, Detection)`
+    that the pipeline distributes across the segments they overlap.
+    """
+
+    name: str = "track"
+
+    @abstractmethod
+    def analyze_track(
+        self, video_path: str, duration_sec: float
+    ) -> list[tuple[float, float, Detection]]:
+        raise NotImplementedError
+
+    def close(self) -> None:
+        return None

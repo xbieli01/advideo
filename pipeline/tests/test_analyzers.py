@@ -22,14 +22,24 @@ def test_factory_unknown_raises():
         get_analyzer("does-not-exist")
 
 
-def test_factory_real_alias_is_registered():
-    """The real backend must be wired even if its deps aren't installed here.
-    Without torch we expect an ImportError (deps missing), NOT a ValueError
+@pytest.mark.parametrize("name", ["yolo+clip", "ocr"])
+def test_frame_backends_registered(name):
+    """Real frame backends must be wired even if deps aren't installed here.
+    Without their deps we expect an ImportError (deps missing), NOT a ValueError
     (unknown backend) — that proves the name is registered."""
     if _HAS_TORCH:
-        pytest.skip("torch installed; real backend would actually load")
+        pytest.skip("ml deps installed; backend would actually load")
     with pytest.raises((ImportError, ModuleNotFoundError)):
-        get_analyzer("yolo+clip")
+        get_analyzer(name)
+
+
+def test_track_backend_registered():
+    from advideo_pipeline.analyzers import get_track_analyzer
+
+    if importlib.util.find_spec("faster_whisper") is not None:
+        pytest.skip("faster-whisper installed; backend would actually load")
+    with pytest.raises((ImportError, ModuleNotFoundError)):
+        get_track_analyzer("whisper")
 
 
 def test_taxonomy_categories():

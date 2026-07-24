@@ -20,6 +20,8 @@ ml = [
     "torch>=2.2",
     "ultralytics>=8.2",       # YOLOv8 object detection
     "open-clip-torch>=2.24",  # CLIP zero-shot labels
+    "easyocr>=1.7",           # on-screen text -> brands
+    "faster-whisper>=1.0",    # audio transcription -> spoken keywords/brands
 ]
 dev = [
     "pytest>=7.0",

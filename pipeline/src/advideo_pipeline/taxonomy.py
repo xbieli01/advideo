@@ -69,3 +69,30 @@ CLIP_SCENE_LABELS: list[tuple[str, str]] = [
 
 def categories_for(term: str) -> list[str]:
     return list(TERM_CATEGORIES.get(term.lower(), []))
+
+
+# --- brand lexicon -----------------------------------------------------------
+# alias (lowercase, may be multi-word) -> (canonical brand label, categories).
+# Used by OCR (on-screen text) and Whisper (spoken) backends to turn recognized
+# text into brand *entities* — the core of the product's brand-match use case
+# (a Tesla shot -> Tesla ad if Tesla is a customer).
+BRAND_LEXICON: dict[str, tuple[str, list[str]]] = {
+    "tesla": ("Tesla", ["automotive"]),
+    "volkswagen": ("VW", ["automotive"]),
+    "vw": ("VW", ["automotive"]),
+    "audi": ("Audi", ["automotive"]),
+    "bmw": ("BMW", ["automotive"]),
+    "mercedes": ("Mercedes-Benz", ["automotive"]),
+    "toyota": ("Toyota", ["automotive"]),
+    "nike": ("Nike", ["sport", "footwear"]),
+    "adidas": ("Adidas", ["sport", "footwear"]),
+    "puma": ("Puma", ["sport", "footwear"]),
+    "coca cola": ("Coca-Cola", ["beverage"]),
+    "coca-cola": ("Coca-Cola", ["beverage"]),
+    "pepsi": ("Pepsi", ["beverage"]),
+    "red bull": ("Red Bull", ["beverage"]),
+    "apple": ("Apple", ["tech"]),
+    "samsung": ("Samsung", ["tech", "electronics"]),
+    "google": ("Google", ["tech"]),
+    "microsoft": ("Microsoft", ["tech"]),
+}

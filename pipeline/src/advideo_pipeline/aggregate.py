@@ -1,8 +1,11 @@
-"""Aggregate per-frame detections into contiguous, non-overlapping segments.
+"""Aggregate timed detections into contiguous, non-overlapping segments.
 
-Strategy (v1): fixed-width windows of `window_sec`. Within each window we merge
-detections across frames, keep the max score per term, and split them into the
-keywords / entities / categories / signals shape of the JSON map.
+Strategy (v1): fixed-width windows of `window_sec`. Every detection carries a
+time range [start, end]; frame-level detections are points (start == end),
+track-level detections (e.g. audio/Whisper) span a range. A detection is added
+to every window its range overlaps. Within a window we merge detections, keep
+the max score per term, and split them into the keywords / entities /
+categories / signals shape of the JSON map.
 
 A later version can replace fixed windows with scene-cut boundaries without
 changing the output contract.
@@ -12,27 +15,32 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from .models import Detection, Frame, Segment
+from .models import Detection, Segment
+
+TimedDetection = tuple[float, float, Detection]
 
 _SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text",
                  "audio": "audioKeywords"}
 
 
 def aggregate_segments(
-    frame_dets: list[tuple[Frame, list[Detection]]],
+    timed_dets: list[TimedDetection],
     duration_sec: float,
     window_sec: float = 6.0,
 ) -> list[Segment]:
     if window_sec <= 0:
         raise ValueError("window_sec must be > 0")
 
-    # bucket frames into windows
-    buckets: dict[int, list[Detection]] = defaultdict(list)
-    for frame, dets in frame_dets:
-        idx = int(frame.time_sec // window_sec)
-        buckets[idx].extend(dets)
-
     n_windows = max(1, -(-int(duration_sec) // int(window_sec)))  # ceil
+
+    # assign each detection to every window its [start, end] overlaps
+    buckets: dict[int, list[Detection]] = defaultdict(list)
+    for start, end, det in timed_dets:
+        first = int(start // window_sec)
+        last = int(max(start, end - 1e-9) // window_sec)  # inclusive
+        for idx in range(max(0, first), min(last, n_windows - 1) + 1):
+            buckets[idx].append(det)
+
     segments: list[Segment] = []
     for idx in range(n_windows):
         start = idx * window_sec
