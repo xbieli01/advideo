@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from .aggregate import aggregate_segments
 from .analyzers import Analyzer, get_analyzer
-from .frames import probe_duration, sample_frames
+from .frames import duration_via_cv2, probe_duration, sample_frames
 from .models import VideoMap
 
 
@@ -25,16 +25,21 @@ def analyze_video(
     isn't decodable in this environment); otherwise we probe via ffprobe and
     fall back to a default so the scaffold always produces output.
     """
-    if duration_sec is None:
-        duration_sec = probe_duration(video_path) or 12.0
-
     backend: Analyzer = (
         analyzer if isinstance(analyzer, Analyzer) else get_analyzer(analyzer)
     )
 
+    if duration_sec is None:
+        duration_sec = probe_duration(video_path)
+        if duration_sec is None and backend.needs_frames:
+            duration_sec = duration_via_cv2(video_path)
+        duration_sec = duration_sec or 12.0
+
     frame_dets = [
         (frame, backend.analyze(frame))
-        for frame in sample_frames(video_path, duration_sec, fps=fps)
+        for frame in sample_frames(
+            video_path, duration_sec, fps=fps, decode=backend.needs_frames
+        )
     ]
     segments = aggregate_segments(frame_dets, duration_sec, window_sec=window_sec)
     backend.close()

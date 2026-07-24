@@ -16,6 +16,10 @@ dependencies = [
 ml = [
     "opencv-python-headless>=4.9",
     "numpy>=1.24",
+    "pillow>=10.0",
+    "torch>=2.2",
+    "ultralytics>=8.2",       # YOLOv8 object detection
+    "open-clip-torch>=2.24",  # CLIP zero-shot labels
 ]
 dev = [
     "pytest>=7.0",

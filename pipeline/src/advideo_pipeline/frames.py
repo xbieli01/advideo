@@ -1,8 +1,10 @@
 """Frame sampling.
 
-Real backend uses ffmpeg/OpenCV to decode and sample keyframes. To keep the
-mock pipeline dependency-free and testable, we expose a `sample_frames` that
-falls back to synthetic timestamps when no decoder/real video is available.
+Two modes behind one function:
+- decode=False (default, used by the mock backend): yields timestamp-only frames
+  so the pipeline runs with zero heavy dependencies.
+- decode=True (used by the YOLO+CLIP backend): decodes real pixels via OpenCV
+  and attaches them to each Frame.
 """
 
 from __future__ import annotations
@@ -36,16 +38,57 @@ def sample_frames(
     video_path: str,
     duration_sec: float,
     fps: float = 1.0,
+    decode: bool = False,
 ) -> Iterator[Frame]:
     """Yield frames at `fps` samples per second across the video.
 
-    In this v1 scaffold we yield timestamp-only frames (image=None). A real
-    backend swaps in decoded pixel data here without changing the interface.
+    When decode=True, real pixel data (BGR numpy array, as OpenCV returns it) is
+    attached to each Frame; otherwise Frame.image stays None.
     """
     if fps <= 0:
         raise ValueError("fps must be > 0")
+    if decode:
+        yield from _sample_decoded(video_path, duration_sec, fps)
+        return
     step = 1.0 / fps
     t = 0.0
     while t < duration_sec:
         yield Frame(time_sec=round(t, 3), image=None)
         t += step
+
+
+def _sample_decoded(video_path: str, duration_sec: float, fps: float) -> Iterator[Frame]:
+    import cv2  # lazy: only needed for the real backend
+
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        raise RuntimeError(f"cannot open video: {video_path}")
+    try:
+        step = 1.0 / fps
+        t = 0.0
+        while t < duration_sec:
+            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000.0)
+            ok, frame = cap.read()
+            if not ok:
+                break
+            yield Frame(time_sec=round(t, 3), image=frame)
+            t += step
+    finally:
+        cap.release()
+
+
+def duration_via_cv2(video_path: str) -> float | None:
+    """Fallback duration from OpenCV (frame count / fps)."""
+    try:
+        import cv2
+    except ImportError:
+        return None
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        return None
+    try:
+        fps = cap.get(cv2.CAP_PROP_FPS) or 0
+        frames = cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0
+        return frames / fps if fps > 0 and frames > 0 else None
+    finally:
+        cap.release()

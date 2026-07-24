@@ -53,8 +53,26 @@ The default analyzer is a deterministic **mock**, so the whole pipeline runs and
 is testable with no models. Real backends implement the `Analyzer` interface in
 `pipeline/src/advideo_pipeline/analyzers/` and are selected via `--analyzer`.
 
+### Real analyzer (YOLO + CLIP)
+
+```bash
+cd pipeline
+pip install -e .[ml]          # torch, ultralytics (YOLOv8), open-clip, opencv
+advideo-analyze --video real.mp4 --analyzer yolo+clip --fps 1 --out map.json
+```
+
+- **YOLOv8** detects on-screen objects (COCO classes) → keywords/objects.
+- **CLIP** scores each frame zero-shot against a scene/action label set
+  (`taxonomy.CLIP_SCENE_LABELS`) → actions/scenes, no training needed.
+- Both map through `taxonomy.py` so categories match the mock's vocabulary.
+- Auto-uses CUDA when available (throughput comes from the GPU + horizontal
+  worker scaling), falls back to CPU. Heavy deps are imported lazily, so the
+  mock path and tests never load torch.
+
+Brand/logo (OCR) and spoken-keyword (Whisper) backends plug in the same way.
+
 ## Status
 
-M1 scaffold: schema, runnable mock pipeline, CLI, tests. Next: plug a real
-analyzer (YOLO objects + CLIP zero-shot labels), then wire the .NET orchestrator
+M1: schema, mock pipeline, CLI, tests, and a real **YOLO+CLIP** analyzer behind
+the `[ml]` extra. Next: brand/OCR + audio backends, then the .NET orchestrator
 and queue.

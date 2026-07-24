@@ -14,6 +14,10 @@ from ..models import Detection, Frame
 
 class Analyzer(ABC):
     name: str = "analyzer"
+    # Whether the backend needs decoded pixel data. The pipeline reads this to
+    # decide if frames must be decoded (real backends) or can be timestamp-only
+    # (mock). Keeps torch/opencv out of the default path.
+    needs_frames: bool = False
 
     @abstractmethod
     def analyze(self, frame: Frame) -> list[Detection]:
