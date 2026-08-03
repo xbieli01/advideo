@@ -34,3 +34,6 @@ obj/
 .vscode/
 .idea/
 .DS_Store
+
+# orchestrator local map store
+orchestrator/**/data/

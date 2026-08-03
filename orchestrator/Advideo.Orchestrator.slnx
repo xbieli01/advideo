@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Advideo.Orchestrator.Api/Advideo.Orchestrator.Api.csproj" />
+    <Project Path="src/Advideo.Orchestrator.Core/Advideo.Orchestrator.Core.csproj" />
+    <Project Path="src/Advideo.Orchestrator.Infrastructure/Advideo.Orchestrator.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Advideo.Orchestrator.Tests/Advideo.Orchestrator.Tests.csproj" />
+  </Folder>
+</Solution>
