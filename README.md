@@ -12,7 +12,7 @@ matches Nike, and so on.
 ## Milestones
 
 - **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
-- **M2 (in progress):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher library done (T-005a).
+- **M2 (in progress):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher library (T-005a) + ad-serving API with map cache (T-005b) done.
 - M3: JS client SDK / snippet.
 
 ## Architecture (short)

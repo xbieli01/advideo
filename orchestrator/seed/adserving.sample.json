@@ -1,0 +1,75 @@
+{
+  "platforms": [
+    {
+      "id": "demo-portal",
+      "name": "Demo video portal",
+      "kind": "portal",
+      "pricing": { "enabledModels": ["cpm", "cpc"], "defaultCtr": 0.002, "currency": "EUR" },
+      "slots": [
+        { "id": "below-player", "position": "below", "width": 728, "height": 90 },
+        { "id": "right-of-player", "position": "right", "width": 300, "height": 250 }
+      ],
+      "frequency": { "minIntervalSec": 60, "maxPerVideo": 3 },
+      "brandSafety": { "excludeCategories": [], "excludeKeywords": [] },
+      "matching": { "relevanceThreshold": 0.3 }
+    },
+    {
+      "id": "browser-extension",
+      "name": "advideo browser extension (universal)",
+      "kind": "browserExtension",
+      "pricing": { "enabledModels": ["cpm"], "currency": "EUR" },
+      "slots": [ { "id": "side-panel", "position": "right", "width": 300, "height": 250 } ],
+      "frequency": { "minIntervalSec": 120, "maxPerVideo": 2, "maxPerViewerPerDay": 20 },
+      "brandSafety": { "excludeCategories": [], "excludeKeywords": [] },
+      "matching": { "relevanceThreshold": 0.4 }
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "tesla-model-y",
+      "advertiserId": "tesla",
+      "name": "Tesla Model Y — brand moments",
+      "status": "active",
+      "priority": 6,
+      "bids": [ { "model": "cpm", "amount": 8.0 } ],
+      "budget": { "daily": 200 },
+      "exclusivityKey": "automotive",
+      "targeting": { "brands": ["Tesla"], "keywords": ["electric car"], "minScore": 0.5 },
+      "creatives": [
+        { "id": "tesla-728x90", "url": "https://cdn.example/tesla-728x90.png", "clickUrl": "https://www.tesla.com/modely", "width": 728, "height": 90, "altText": "Tesla Model Y" },
+        { "id": "tesla-300x250", "url": "https://cdn.example/tesla-300x250.png", "clickUrl": "https://www.tesla.com/modely", "width": 300, "height": 250, "altText": "Tesla Model Y" }
+      ]
+    },
+    {
+      "id": "vw-cars",
+      "advertiserId": "vw",
+      "name": "VW — car scenes",
+      "status": "active",
+      "priority": 5,
+      "bids": [ { "model": "cpm", "amount": 5.0 } ],
+      "exclusivityKey": "automotive",
+      "targeting": { "brands": ["VW"], "categories": ["automotive"] },
+      "creatives": [ { "id": "vw-300x250", "url": "https://cdn.example/vw-300x250.png", "clickUrl": "https://www.vw.com", "width": 300, "height": 250 } ]
+    },
+    {
+      "id": "nike-running",
+      "advertiserId": "nike",
+      "name": "Nike — running",
+      "status": "active",
+      "priority": 5,
+      "bids": [ { "model": "cpm", "amount": 6.0 } ],
+      "targeting": { "brands": ["Nike"], "keywords": ["running", "sneakers"], "categories": ["sport", "footwear"] },
+      "creatives": [ { "id": "nike-728x90", "url": "https://cdn.example/nike-728x90.png", "clickUrl": "https://www.nike.com", "width": 728, "height": 90 } ]
+    },
+    {
+      "id": "coca-cola-cpc",
+      "advertiserId": "coca-cola",
+      "name": "Coca-Cola — beverage moments (CPC)",
+      "status": "active",
+      "priority": 5,
+      "bids": [ { "model": "cpc", "amount": 1.5 } ],
+      "targeting": { "brands": ["Coca-Cola"], "categories": ["beverage"], "platforms": ["demo-portal"] },
+      "creatives": [ { "id": "coke-300x250", "url": "https://cdn.example/coke-300x250.png", "clickUrl": "https://www.coca-cola.com", "width": 300, "height": 250 } ]
+    }
+  ]
+}

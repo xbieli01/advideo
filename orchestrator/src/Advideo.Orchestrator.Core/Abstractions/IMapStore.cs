@@ -14,4 +14,7 @@ public interface IMapStore
     Task<Stream?> OpenAsync(string mapKey, CancellationToken ct = default);
 
     Task<bool> ExistsAsync(string mapKey, CancellationToken ct = default);
+
+    /// <summary>Storage key under which the map of <paramref name="videoId"/> is (or will be) stored.</summary>
+    string KeyOf(string videoId);
 }

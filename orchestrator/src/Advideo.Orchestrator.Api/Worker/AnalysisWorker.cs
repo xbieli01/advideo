@@ -17,12 +17,15 @@ public sealed class AnalysisWorker : BackgroundService
     private readonly IJobRepository _repo;
     private readonly ILogger<AnalysisWorker> _log;
     private readonly SemaphoreSlim _gate;
+    private readonly IContentMapProvider? _maps;
 
     public AnalysisWorker(
         IJobQueue queue, IPipelineRunner runner, IMapStore store,
         IJobRepository repo, ILogger<AnalysisWorker> log,
-        WorkerOptions? options = null)
+        WorkerOptions? options = null,
+        IContentMapProvider? maps = null)
     {
+        _maps = maps;
         _queue = queue;
         _runner = runner;
         _store = store;
@@ -52,6 +55,7 @@ public sealed class AnalysisWorker : BackgroundService
             await using var map = await _runner.RunAsync(job, ct);
             var key = await _store.SaveAsync(job.VideoId, map, ct);
             await _repo.UpsertAsync(job with { Status = JobStatus.Completed, MapKey = key }, ct);
+            _maps?.Invalidate(job.VideoId); // re-analysis -> ad decisions use the new map
             _log.LogInformation("Completed {VideoId} -> {Key}", job.VideoId, key);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)

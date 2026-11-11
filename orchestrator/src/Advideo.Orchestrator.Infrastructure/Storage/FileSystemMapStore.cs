@@ -22,6 +22,8 @@ public sealed class FileSystemMapStore : IMapStore
 
     public static string KeyFor(string videoId) => $"{videoId}.video-map.json";
 
+    public string KeyOf(string videoId) => KeyFor(videoId);
+
     public async Task<string> SaveAsync(string videoId, Stream mapJson, CancellationToken ct = default)
     {
         var key = KeyFor(videoId);

@@ -1,6 +1,6 @@
 # advideo — M2: ad-serving + matching engine (návrh)
 
-Stav: schválené 2026-11-11 (rozhodnutia v §9) · T-005a implementované · nadväzuje na M1 (`2497f09`)
+Stav: schválené 2026-11-11 (rozhodnutia v §9) · T-005a + T-005b implementované · nadväzuje na M1 (`2497f09`)
 
 ## 1. Cieľ M2
 
@@ -175,5 +175,8 @@ Každý krok = samostatný commit, testy zelené, záznam do memory.
 - **T-005a (hotové):** `schema/taxonomy.json` (pipeline aj matcher čítajú ten istý súbor),
   knižnica `Advideo.AdServing.Matching` (modely kampaní, platforiem, content mapy; `AdMatcher`, `Pricing`,
   `Taxonomy` s validáciou kampaní), 31 unit testov.
-- T-005b: API (platformy + kampane CRUD, `/ads/decision`, `/ads/explain`, cache máp).
+- **T-005b (hotové):** API platformy a kampane (CRUD, validácia, pause/resume, seed JSON),
+  `GET /ads/decision?platform&videoId&t` (200 reklama / 204 + `X-Advideo-NoAd-Reason`, 404 neznáma platforma),
+  `GET /ads/explain`, LRU+TTL cache máp nad `IMapStore` (zdieľané načítanie, invalidácia po novej analýze),
+  počítadlá diváka zatiaľ posiela snippet (`lastAdAt`, `adsInVideo`, `prevCampaign`); 21 testov orchestrátora.
 - T-005c: udalosti, rozpočet, pacing z reálnych počítadiel, golden a výkonové testy.

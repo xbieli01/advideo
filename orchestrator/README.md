@@ -45,6 +45,21 @@ curl localhost:5000/videos/v1/map        # the JSON content map
 
 For the mock pipeline (no models) use `"analyzer":"mock"`.
 
+## Ad serving (M2)
+
+Design: `../docs/m2-ad-serving.md`. Platforms (customer portal or browser extension) and campaigns are
+seeded from `seed/adserving.sample.json` (`AdServing:SeedFile`) into in-memory stores.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET/POST /platforms`, `GET/PUT/DELETE /platforms/{id}` | platform config: pricing models, banner slots, frequency, brand safety, matching |
+| `GET/POST /campaigns`, `GET/PUT/DELETE /campaigns/{id}`, `POST /campaigns/{id}/pause\|resume` | campaigns (validated against `schema/taxonomy.json`) |
+| `GET /ads/decision?platform&videoId&t[&geo&lastAdAt&adsInVideo&prevCampaign]` | ad for the current segment — `200` ad, `204` none (`X-Advideo-NoAd-Reason`) |
+| `GET /ads/explain?…` | all candidates with relevance, eCPM, rank and rejection reason |
+
+Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.
+Admin endpoints have no auth yet (planned: API key per platform).
+
 ## Object store
 
 Default is the filesystem (`Storage:Provider=filesystem`, maps under

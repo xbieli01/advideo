@@ -1,7 +1,12 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Advideo.AdServing.Matching;
+using Advideo.Orchestrator.Api.AdServing;
 using Advideo.Orchestrator.Api.Contracts;
 using Advideo.Orchestrator.Api.Worker;
 using Advideo.Orchestrator.Core.Abstractions;
 using Advideo.Orchestrator.Core.Model;
+using Advideo.Orchestrator.Infrastructure.AdServing;
 using Advideo.Orchestrator.Infrastructure.Pipeline;
 using Advideo.Orchestrator.Infrastructure.Queue;
 using Advideo.Orchestrator.Infrastructure.Repository;
@@ -48,6 +53,24 @@ else
     builder.Services.AddSingleton<IMapStore>(_ => new FileSystemMapStore(fsOpt));
 }
 
+// --- ad serving (M2) ----------------------------------------------------------
+builder.Services.ConfigureHttpJsonOptions(o =>
+    o.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton(_ =>
+{
+    var path = builder.Configuration.GetValue<string>("AdServing:TaxonomyPath");
+    return string.IsNullOrWhiteSpace(path) ? Taxonomy.LoadDefault() : Taxonomy.Load(path);
+});
+builder.Services.AddSingleton<AdMatcher>();
+builder.Services.AddSingleton<IPlatformRepository, InMemoryPlatformRepository>();
+builder.Services.AddSingleton<ICampaignRepository, InMemoryCampaignRepository>();
+var mapCacheOpt = new ContentMapCacheOptions();
+builder.Configuration.GetSection("AdServing:MapCache").Bind(mapCacheOpt);
+builder.Services.AddSingleton(mapCacheOpt);
+builder.Services.AddSingleton<IContentMapProvider, CachedContentMapProvider>();
+builder.Services.AddSingleton<AdDecisionService>();
+
 // --- worker ------------------------------------------------------------------
 builder.Services.AddSingleton(new WorkerOptions
 {
@@ -56,6 +79,20 @@ builder.Services.AddSingleton(new WorkerOptions
 builder.Services.AddHostedService<AnalysisWorker>();
 
 var app = builder.Build();
+
+// --- seed platforms + campaigns (dev/demo) -------------------------------------
+var seedPath = app.Configuration.GetValue<string>("AdServing:SeedFile");
+if (!string.IsNullOrWhiteSpace(seedPath)) seedPath = Path.GetFullPath(seedPath, app.Environment.ContentRootPath);
+if (!string.IsNullOrWhiteSpace(seedPath) && File.Exists(seedPath))
+{
+    var seed = await AdServingSeed.LoadAsync(seedPath);
+    var tax = app.Services.GetRequiredService<Taxonomy>();
+    foreach (var c in seed.Campaigns)
+        foreach (var e in tax.Validate(c))
+            app.Logger.LogWarning("Seed campaign {Id}: {Error}", c.Id, e);
+    await seed.ApplyAsync(app.Services.GetRequiredService<IPlatformRepository>(), app.Services.GetRequiredService<ICampaignRepository>());
+    app.Logger.LogInformation("Seeded {P} platforms and {C} campaigns from {Path}", seed.Platforms.Count, seed.Campaigns.Count, seedPath);
+}
 
 // --- endpoints ---------------------------------------------------------------
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
@@ -94,6 +131,8 @@ app.MapGet("/videos/{videoId}/map", async (string videoId, IJobRepository repo, 
     var stream = await store.OpenAsync(job.MapKey);
     return stream is null ? Results.NotFound() : Results.Stream(stream, "application/json");
 });
+
+app.MapAdServing();
 
 app.Run();
 

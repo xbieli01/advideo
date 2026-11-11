@@ -1,6 +1,28 @@
-@Advideo.Orchestrator.Api_HostAddress = http://localhost:5219
+@host = http://localhost:5219
 
-GET {{Advideo.Orchestrator.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### health
+GET {{host}}/healthz
 
-###
+### --- M1: register a video for analysis
+POST {{host}}/videos
+Content-Type: application/json
+
+{ "videoId": "demo-1", "videoUri": "/tmp/demo-1.mp4", "analyzer": "mock" }
+
+### job status / map
+GET {{host}}/videos/demo-1
+GET {{host}}/videos/demo-1/map
+
+### --- M2: platforms + campaigns (seeded from seed/adserving.sample.json)
+GET {{host}}/platforms
+GET {{host}}/campaigns
+
+### ad decision for the player snippet (200 = ad, 204 = no ad + X-Advideo-NoAd-Reason)
+GET {{host}}/ads/decision?platform=demo-portal&videoId=demo-1&t=2.5&geo=SK
+
+### why this ad / why not (all candidates with scores and rejection reasons)
+GET {{host}}/ads/explain?platform=demo-portal&videoId=demo-1&t=2.5
+
+### pause / resume a campaign
+POST {{host}}/campaigns/tesla-model-y/pause
+POST {{host}}/campaigns/tesla-model-y/resume

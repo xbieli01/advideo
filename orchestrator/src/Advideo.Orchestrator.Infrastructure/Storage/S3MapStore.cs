@@ -32,6 +32,8 @@ public sealed class S3MapStore : IMapStore
     public static string KeyFor(string prefix, string videoId)
         => $"{prefix}{videoId}.video-map.json";
 
+    public string KeyOf(string videoId) => KeyFor(_opt.Prefix, videoId);
+
     public async Task<string> SaveAsync(string videoId, Stream mapJson, CancellationToken ct = default)
     {
         var key = KeyFor(_opt.Prefix, videoId);
