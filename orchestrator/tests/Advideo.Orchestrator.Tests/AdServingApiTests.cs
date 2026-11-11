@@ -64,7 +64,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal("tesla-300x250", ad.GetProperty("creative").GetProperty("id").GetString());
         Assert.Equal("right", ad.GetProperty("slot").GetProperty("position").GetString());
         Assert.Equal("cpm", ad.GetProperty("pricingModel").GetString());
-        Assert.Equal(0, ad.GetProperty("showFromSec").GetDouble());
+        Assert.Equal(2.5, ad.GetProperty("showFromSec").GetDouble()); // shown from current playback time to segment end
         Assert.Equal(5, ad.GetProperty("showToSec").GetDouble());
         Assert.Equal("brand", d.GetProperty("matchedOn")[0].GetProperty("kind").GetString());
         Assert.StartsWith("dcs_", d.GetProperty("decisionId").GetString());

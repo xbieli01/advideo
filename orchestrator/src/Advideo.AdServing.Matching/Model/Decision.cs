@@ -5,6 +5,8 @@ public sealed record DeliveryContext
 {
     public DateTimeOffset Now { get; init; } = DateTimeOffset.UtcNow;
     public string? Geo { get; init; }
+    /// <summary>Current playback position; minimum-interval rule is measured from here (segment start if unknown).</summary>
+    public double? PlaybackTimeSec { get; init; }
     /// <summary>Playback time of the last ad shown to this viewer in this video, if any.</summary>
     public double? LastAdAtSec { get; init; }
     public int AdsShownInVideo { get; init; }
@@ -52,3 +54,6 @@ public sealed record AdDecision(
 {
     public bool HasAd => Winner is not null;
 }
+
+/// <summary>Delivery events reported by the player snippet.</summary>
+public enum AdEventType { Impression, Viewable, Click, Close }

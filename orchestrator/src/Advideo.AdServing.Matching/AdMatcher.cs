@@ -22,7 +22,8 @@ public sealed class AdMatcher(Taxonomy taxonomy)
             return new AdDecision(null, [], $"Platform limit {freq.MaxPerVideo} ads per video reached.");
         if (freq.MaxPerViewerPerDay is { } perDay && ctx.AdsShownToViewerToday >= perDay)
             return new AdDecision(null, [], $"Platform limit {perDay} ads per viewer per day reached.");
-        if (ctx.LastAdAtSec is { } last && segment.StartSec - last < freq.MinIntervalSec && segment.EndSec - last < freq.MinIntervalSec)
+        var now = ctx.PlaybackTimeSec ?? segment.StartSec;
+        if (ctx.LastAdAtSec is { } last && now >= last && now - last < freq.MinIntervalSec)
             return new AdDecision(null, [], $"Minimum interval {freq.MinIntervalSec}s between ads not reached.");
 
         if (Violates(segment, platform.BrandSafety.ExcludeCategories, platform.BrandSafety.ExcludeKeywords) is { } unsafeReason)

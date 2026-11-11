@@ -18,7 +18,7 @@ GET {{host}}/platforms
 GET {{host}}/campaigns
 
 ### ad decision for the player snippet (200 = ad, 204 = no ad + X-Advideo-NoAd-Reason)
-GET {{host}}/ads/decision?platform=demo-portal&videoId=demo-1&t=2.5&geo=SK
+GET {{host}}/ads/decision?platform=demo-portal&videoId=demo-1&t=2.5&geo=SK&viewer=anon-123
 
 ### why this ad / why not (all candidates with scores and rejection reasons)
 GET {{host}}/ads/explain?platform=demo-portal&videoId=demo-1&t=2.5
@@ -26,3 +26,12 @@ GET {{host}}/ads/explain?platform=demo-portal&videoId=demo-1&t=2.5
 ### pause / resume a campaign
 POST {{host}}/campaigns/tesla-model-y/pause
 POST {{host}}/campaigns/tesla-model-y/resume
+
+### report delivery events for a decision (use decisionId from /ads/decision)
+POST {{host}}/ads/events
+Content-Type: application/json
+
+{ "decisionId": "dcs_...", "type": "impression", "t": 2.5 }
+
+### campaign stats
+GET {{host}}/campaigns/tesla-model-y/stats

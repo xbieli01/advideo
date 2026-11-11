@@ -31,6 +31,15 @@ public static class Pricing
     private static double ObservedCtr(PricingSettings p, CampaignDeliveryState s) =>
         s.Impressions >= 1_000 ? Math.Max((double)s.Clicks / s.Impressions, 0.0001) : p.DefaultCtr;
 
-    /// <summary>Cost of one impression in platform currency (used for budget accounting on impression events).</summary>
-    public static decimal CostPerImpression(Bid bid) => bid.Model == PricingModel.Cpm ? bid.Amount / 1000m : 0m;
+    /// <summary>
+    /// What a delivery event costs the advertiser: CPM charges per impression (amount / 1000),
+    /// CPV per viewable impression, CPC per click. Flat-fee sponsorships are prepaid (0 per event).
+    /// </summary>
+    public static decimal CostOf(PricingModel model, decimal amount, AdEventType type) => (model, type) switch
+    {
+        (PricingModel.Cpm, AdEventType.Impression) => amount / 1000m,
+        (PricingModel.Cpv, AdEventType.Viewable) => amount,
+        (PricingModel.Cpc, AdEventType.Click) => amount,
+        _ => 0m,
+    };
 }

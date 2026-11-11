@@ -12,8 +12,8 @@ matches Nike, and so on.
 ## Milestones
 
 - **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
-- **M2 (in progress):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher library (T-005a) + ad-serving API with map cache (T-005b) done.
-- M3: JS client SDK / snippet.
+- **M2 (done):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher (T-005a), ad-serving API + map cache (T-005b), events/ledger/stats + golden & perf tests (T-005c).
+- **M3 (next):** JS client SDK / snippet.
 
 ## Architecture (short)
 

@@ -9,7 +9,15 @@ public sealed record AdDecisionResponse(
     double T,
     SegmentRef Segment,
     AdPayload Ad,
-    IReadOnlyList<MatchHit> MatchedOn);
+    IReadOnlyList<MatchHit> MatchedOn,
+    TrackingInfo Tracking);
+
+/// <summary>The snippet POSTs {decisionId, type, t} to <see cref="EventsUrl"/> for impression / viewable / click / close.</summary>
+public sealed record TrackingInfo(string EventsUrl, IReadOnlyList<AdEventType> Events);
+
+public sealed record AdEventRequest(string DecisionId, AdEventType Type, double? T = null);
+
+public sealed record AdEventResponse(bool Accepted, bool Duplicate, decimal Cost);
 
 public sealed record SegmentRef(double StartSec, double EndSec);
 

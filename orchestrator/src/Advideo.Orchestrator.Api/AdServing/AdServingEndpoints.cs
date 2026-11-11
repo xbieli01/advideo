@@ -13,7 +13,9 @@ public static class AdServingEndpoints
     {
         MapPlatforms(app.MapGroup("/platforms").WithTags("Platforms"));
         MapCampaigns(app.MapGroup("/campaigns").WithTags("Campaigns"));
-        MapAds(app.MapGroup("/ads").WithTags("Ads"));
+        var ads = app.MapGroup("/ads").WithTags("Ads");
+        MapAds(ads);
+        MapEvents(ads);
         return app;
     }
 
@@ -69,6 +71,9 @@ public static class AdServingEndpoints
             return Results.Ok(c);
         });
 
+        g.MapGet("/{id}/stats", async (string id, ICampaignRepository repo, IDeliveryLedger ledger, TimeProvider time) =>
+            await repo.GetAsync(id) is null ? Results.NotFound() : Results.Ok(ledger.Stats(id, time.GetUtcNow())));
+
         g.MapPost("/{id}/pause", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Paused, repo));
         g.MapPost("/{id}/resume", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Active, repo));
 
@@ -89,7 +94,7 @@ public static class AdServingEndpoints
     {
         g.MapGet("/decision", async ([AsParameters] AdQuery q, AdDecisionService svc, HttpResponse res, CancellationToken ct) =>
         {
-            var r = await svc.DecideAsync(q, ct);
+            var r = await svc.DecideAsync(q, issue: true, ct);
             if (r.PlatformMissing) return Results.NotFound(new ValidationErrorResponse([$"Unknown platform '{q.Platform}'."]));
             if (r.Decision.Winner is not { } w)
             {
@@ -98,18 +103,19 @@ public static class AdServingEndpoints
             }
             var seg = r.Segment!;
             return Results.Ok(new AdDecisionResponse(
-                DecisionId: "dcs_" + Guid.NewGuid().ToString("N"),
+                DecisionId: r.DecisionId!,
                 PlatformId: q.Platform,
                 VideoId: q.VideoId,
                 T: q.T,
                 Segment: new SegmentRef(seg.StartSec, seg.EndSec),
-                Ad: new AdPayload(w.Campaign.Id, w.Campaign.AdvertiserId, w.Creative!, w.Slot!, seg.StartSec, seg.EndSec, r.WinningModel!.Value),
-                MatchedOn: w.MatchedOn));
+                Ad: new AdPayload(w.Campaign.Id, w.Campaign.AdvertiserId, w.Creative!, w.Slot!, Math.Max(seg.StartSec, q.T), seg.EndSec, r.WinningBid!.Model),
+                MatchedOn: w.MatchedOn,
+                Tracking: new TrackingInfo("/ads/events", [AdEventType.Impression, AdEventType.Viewable, AdEventType.Click, AdEventType.Close])));
         });
 
         g.MapGet("/explain", async ([AsParameters] AdQuery q, AdDecisionService svc, CancellationToken ct) =>
         {
-            var r = await svc.DecideAsync(q, ct);
+            var r = await svc.DecideAsync(q, issue: false, ct);
             if (r.PlatformMissing) return Results.NotFound(new ValidationErrorResponse([$"Unknown platform '{q.Platform}'."]));
             var d = r.Decision;
             return Results.Ok(new ExplainResponse(
@@ -120,6 +126,17 @@ public static class AdServingEndpoints
                 d.Candidates.Select(c => new ExplainCandidate(
                     c.Campaign.Id, Math.Round(c.Relevance, 4), c.Ecpm, Math.Round(c.Rank, 4), c.MatchedOn,
                     c.Creative?.Id, c.Slot?.Id, c.RejectedBecause)).ToList()));
+        });
+    }
+
+    private static void MapEvents(RouteGroupBuilder g)
+    {
+        g.MapPost("/events", (AdEventRequest e, IDecisionLog log, IDeliveryLedger ledger, TimeProvider time) =>
+        {
+            if (log.Get(e.DecisionId) is not { } d)
+                return Results.NotFound(new ValidationErrorResponse([$"Unknown or expired decision '{e.DecisionId}'."]));
+            var o = ledger.Record(d, e.Type, e.T, time.GetUtcNow());
+            return Results.Accepted(value: new AdEventResponse(o.Accepted, o.Duplicate, o.Cost));
         });
     }
 

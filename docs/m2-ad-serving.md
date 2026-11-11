@@ -1,6 +1,6 @@
 # advideo — M2: ad-serving + matching engine (návrh)
 
-Stav: schválené 2026-11-11 (rozhodnutia v §9) · T-005a + T-005b implementované · nadväzuje na M1 (`2497f09`)
+Stav: schválené 2026-11-11 (rozhodnutia v §9) · M2 (T-005a, b, c) implementované · nadväzuje na M1 (`2497f09`)
 
 ## 1. Cieľ M2
 
@@ -179,4 +179,13 @@ Každý krok = samostatný commit, testy zelené, záznam do memory.
   `GET /ads/decision?platform&videoId&t` (200 reklama / 204 + `X-Advideo-NoAd-Reason`, 404 neznáma platforma),
   `GET /ads/explain`, LRU+TTL cache máp nad `IMapStore` (zdieľané načítanie, invalidácia po novej analýze),
   počítadlá diváka zatiaľ posiela snippet (`lastAdAt`, `adsInVideo`, `prevCampaign`); 21 testov orchestrátora.
-- T-005c: udalosti, rozpočet, pacing z reálnych počítadiel, golden a výkonové testy.
+- **T-005c (hotové):** `POST /ads/events` (impression/viewable/click/close, deduplikácia per rozhodnutie),
+  ledger: čerpanie podľa modelu (CPM za zobrazenie, CPV za viditeľné, CPC za klik, flat 0), štatistiky
+  `GET /campaigns/{id}/stats`, počítadlá diváka cez HMAC hash `viewer` id (frekvencia v platforme aj v kampani,
+  posledná reklama, exkluzivita), pacing a pozorované CTR z reálnych čísel; min. interval sa meria od aktuálneho
+  času prehrávania `t`. Golden test (mapa z M1 pipeline + seed) a výkonový test: 1 000 kampaní, 10 000 rozhodnutí,
+  p50 ≈ 1,8 ms, p95 ≈ 3,5 ms (bez inverzného indexu). Spolu 71 .NET testov.
+
+### Ďalej (mimo M2)
+- autentifikácia admin API (API kľúč per platforma), Redis/Postgres pre ledger a repozitáre,
+- inverzný index kampaní (pri desaťtisícoch kampaní), M3 JS snippet.

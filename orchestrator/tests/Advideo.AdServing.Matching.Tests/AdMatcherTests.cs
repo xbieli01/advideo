@@ -179,6 +179,16 @@ public class AdMatcherTests
     }
 
     [Fact]
+    public void Min_interval_is_measured_from_playback_time_not_segment_bounds()
+    {
+        var p = Platform() with { Frequency = new() { MinIntervalSec = 60 } };
+        var longSeg = Segment(entities: [new ContentEntity("brand", "Tesla", 0.9)], start: 0, end: 300);
+        var c = new[] { Campaign("t", new Targeting { Brands = ["Tesla"] }) };
+        Assert.False(Matcher.Decide("v", longSeg, c, p, Ctx(x => x with { LastAdAtSec = 10, PlaybackTimeSec = 40 })).HasAd);
+        Assert.True(Matcher.Decide("v", longSeg, c, p, Ctx(x => x with { LastAdAtSec = 10, PlaybackTimeSec = 80 })).HasAd);
+    }
+
+    [Fact]
     public void Campaign_caps_and_budgets_are_respected()
     {
         var t = new Targeting { Brands = ["Tesla"] };

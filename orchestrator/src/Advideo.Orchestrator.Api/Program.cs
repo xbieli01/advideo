@@ -69,6 +69,11 @@ var mapCacheOpt = new ContentMapCacheOptions();
 builder.Configuration.GetSection("AdServing:MapCache").Bind(mapCacheOpt);
 builder.Services.AddSingleton(mapCacheOpt);
 builder.Services.AddSingleton<IContentMapProvider, CachedContentMapProvider>();
+builder.Services.AddSingleton<IDecisionLog>(sp => new InMemoryDecisionLog(time: sp.GetRequiredService<TimeProvider>()));
+builder.Services.AddSingleton<IDeliveryLedger, InMemoryDeliveryLedger>();
+var viewerSecret = builder.Configuration.GetValue<string>("AdServing:ViewerIdSecret");
+if (string.IsNullOrWhiteSpace(viewerSecret)) viewerSecret = "advideo-dev-only-secret"; // override in every real deployment
+builder.Services.AddSingleton(new ViewerIdHasher(viewerSecret));
 builder.Services.AddSingleton<AdDecisionService>();
 
 // --- worker ------------------------------------------------------------------

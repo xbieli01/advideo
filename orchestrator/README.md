@@ -54,8 +54,15 @@ seeded from `seed/adserving.sample.json` (`AdServing:SeedFile`) into in-memory s
 |---|---|
 | `GET/POST /platforms`, `GET/PUT/DELETE /platforms/{id}` | platform config: pricing models, banner slots, frequency, brand safety, matching |
 | `GET/POST /campaigns`, `GET/PUT/DELETE /campaigns/{id}`, `POST /campaigns/{id}/pause\|resume` | campaigns (validated against `schema/taxonomy.json`) |
-| `GET /ads/decision?platform&videoId&t[&geo&lastAdAt&adsInVideo&prevCampaign]` | ad for the current segment — `200` ad, `204` none (`X-Advideo-NoAd-Reason`) |
+| `GET /ads/decision?platform&videoId&t[&viewer&geo&lastAdAt&adsInVideo&prevCampaign]` | ad for the current segment — `200` ad + `decisionId`, `204` none (`X-Advideo-NoAd-Reason`) |
+| `POST /ads/events` `{decisionId, type: impression\|viewable\|click\|close, t}` | delivery events → spend (CPM per impression, CPV per viewable, CPC per click), stats, viewer frequency |
+| `GET /campaigns/{id}/stats` | impressions, viewables, clicks, CTR, spend total / today |
 | `GET /ads/explain?…` | all candidates with relevance, eCPM, rank and rejection reason |
+
+`viewer` is an anonymous first-party id from the snippet; it is HMAC-hashed with `AdServing:ViewerIdSecret`
+(set it per deployment) and only the hash is kept. Server counters (budget, caps, frequency, last ad) are
+combined with optional client counters — the stricter value wins. Ledger and decision log are in-memory
+(single instance); production target is Redis (counters) + Postgres (billing).
 
 Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.
 Admin endpoints have no auth yet (planned: API key per platform).
