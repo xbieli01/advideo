@@ -1,7 +1,70 @@
-# Local S3-compatible object store for the orchestrator (Storage:Provider=s3).
-# Start: docker compose up -d ; console at http://localhost:9001 (minioadmin/minioadmin)
-# Then set Storage__Provider=s3 and Storage__S3__ServiceUrl=http://localhost:9000
+# Full local stack: API (+ in-process worker, Python pipeline) + PostgreSQL + Redis + MinIO (S3).
+#
+#   cp .env.example .env    # set ADVIDEO_ADMIN_KEY_SHA256 and ADVIDEO_VIEWER_SECRET
+#   docker compose up -d --build
+#   curl localhost:8080/readyz
+#
+# MinIO console: http://localhost:9001 (minioadmin / minioadmin). Only "minio + createbucket"
+# are needed if you run the API from your IDE with Storage__Provider=s3.
 services:
+  api:
+    build:
+      context: ..
+      dockerfile: orchestrator/Dockerfile
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      createbucket: { condition: service_completed_successfully }
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Persistence__Provider: postgres
+      ConnectionStrings__Postgres: Host=postgres;Database=advideo;Username=advideo;Password=advideo
+      Delivery__Provider: redis
+      ConnectionStrings__Redis: redis:6379
+      Storage__Provider: s3
+      Storage__S3__ServiceUrl: http://minio:9000
+      Storage__S3__Bucket: advideo-maps
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_REGION: us-east-1
+      AdServing__SeedFile: /app/seed/adserving.sample.json
+      AdServing__ViewerIdSecret: ${ADVIDEO_VIEWER_SECRET:?set ADVIDEO_VIEWER_SECRET in .env}
+      AdServing__Cors__AllowedOrigins__0: ${ADVIDEO_CORS_ORIGIN:-http://localhost:3000}
+      Security__ApiKeys__0__Name: local-admin
+      Security__ApiKeys__0__Sha256: ${ADVIDEO_ADMIN_KEY_SHA256:?set ADVIDEO_ADMIN_KEY_SHA256 in .env}
+      Security__ApiKeys__0__Roles__0: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./videos:/videos:ro   # local source videos for POST /videos {videoUri: "/videos/x.mp4"}
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: advideo
+      POSTGRES_USER: advideo
+      POSTGRES_PASSWORD: advideo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U advideo -d advideo"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+
   minio:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
@@ -27,4 +90,6 @@ services:
       "
 
 volumes:
+  pg-data:
+  redis-data:
   minio-data:

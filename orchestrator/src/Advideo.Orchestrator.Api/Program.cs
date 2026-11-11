@@ -113,7 +113,12 @@ else
     builder.Services.AddSingleton<IDeliveryLedger, InMemoryDeliveryLedger>();
 }
 var viewerSecret = builder.Configuration.GetValue<string>("AdServing:ViewerIdSecret");
-if (string.IsNullOrWhiteSpace(viewerSecret)) viewerSecret = "advideo-dev-only-secret"; // override in every real deployment
+if (string.IsNullOrWhiteSpace(viewerSecret))
+{
+    if (!builder.Environment.IsDevelopment())
+        throw new InvalidOperationException("AdServing:ViewerIdSecret must be set outside Development (pseudonymization key).");
+    viewerSecret = "advideo-dev-only-secret";
+}
 builder.Services.AddSingleton(new ViewerIdHasher(viewerSecret));
 builder.Services.AddSingleton<AdDecisionService>();
 

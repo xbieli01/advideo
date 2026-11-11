@@ -29,6 +29,7 @@ obj/
 # secrets / env
 .env
 .env.*
+!.env.example
 *.token
 
 # editors / OS

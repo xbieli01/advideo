@@ -67,6 +67,19 @@ combined with optional client counters — the stricter value wins.
 (single instance); production target is Redis (counters) + Postgres (billing).
 
 Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.
+### Docker
+
+```bash
+cd orchestrator
+cp .env.example .env            # admin key hash, viewer-id secret, CORS origin
+docker compose up -d --build    # api :8080 + postgres + redis + minio (bucket created)
+curl localhost:8080/readyz      # {"status":"ready","checks":{"postgres":"ok","redis":"ok","mapStore":"ok"}}
+```
+
+Image: `orchestrator/Dockerfile` (build context = repo root) — ASP.NET 10 runtime, Python venv with the pipeline
+(`advideo-analyze`, mock analyzers; `--build-arg PIPELINE_EXTRAS=ml` adds YOLO/CLIP/OCR/Whisper), ffmpeg,
+non-root user. Outside Development the API refuses to start without `AdServing:ViewerIdSecret`.
+
 ### Persistence & scaling
 
 | Setting | Values | Notes |
