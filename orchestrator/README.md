@@ -67,6 +67,20 @@ combined with optional client counters — the stricter value wins.
 (single instance); production target is Redis (counters) + Postgres (billing).
 
 Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.
+### Persistence & scaling
+
+| Setting | Values | Notes |
+|---|---|---|
+| `Persistence:Provider` | `memory` (default) \| `postgres` | platforms, campaigns, jobs as JSONB documents (`advideo_*` tables, created at startup); `ConnectionStrings:Postgres` |
+| `Delivery:Provider` | `memory` (default) \| `redis` | delivery ledger + decision log shared across API instances; money in integer micro-units; `ConnectionStrings:Redis`, `Delivery:Redis:*` TTLs |
+
+The seed file only inserts missing ids, so changes made through the API survive restarts with Postgres.
+Run more than one API instance only with `Delivery:Provider=redis` (in-memory counters are per process).
+
+Tests: the ledger contract runs against in-memory and over the Redis protocol (in-process Microsoft Garnet,
+or a real Redis via `ADVIDEO_TEST_REDIS=host:port`); Postgres repository tests run when
+`ADVIDEO_TEST_PG` holds a connection string.
+
 ### Security
 
 | Area | Access |

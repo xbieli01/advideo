@@ -13,6 +13,10 @@ using Advideo.Orchestrator.Core.Abstractions;
 using Advideo.Orchestrator.Core.Model;
 using Advideo.Orchestrator.Infrastructure.AdServing;
 using Advideo.Orchestrator.Infrastructure.Pipeline;
+using Advideo.Orchestrator.Infrastructure.Postgres;
+using Advideo.Orchestrator.Infrastructure.Redis;
+using Npgsql;
+using StackExchange.Redis;
 using Advideo.Orchestrator.Infrastructure.Queue;
 using Advideo.Orchestrator.Infrastructure.Repository;
 using Advideo.Orchestrator.Infrastructure.Storage;
@@ -21,7 +25,6 @@ using Amazon.S3;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- core singletons ---------------------------------------------------------
-builder.Services.AddSingleton<IJobRepository, InMemoryJobRepository>();
 builder.Services.AddSingleton<IJobQueue>(_ => new ChannelJobQueue(
     builder.Configuration.GetValue("Queue:Capacity", 1000)));
 
@@ -68,14 +71,47 @@ builder.Services.AddSingleton(_ =>
     return string.IsNullOrWhiteSpace(path) ? Taxonomy.LoadDefault() : Taxonomy.Load(path);
 });
 builder.Services.AddSingleton<AdMatcher>();
-builder.Services.AddSingleton<IPlatformRepository, InMemoryPlatformRepository>();
-builder.Services.AddSingleton<ICampaignRepository, InMemoryCampaignRepository>();
+// --- persistence: in-memory (dev/tests) or PostgreSQL --------------------------
+var persistence = builder.Configuration.GetValue("Persistence:Provider", "memory")!;
+if (persistence.Equals("postgres", StringComparison.OrdinalIgnoreCase))
+{
+    var cs = builder.Configuration.GetConnectionString("Postgres")
+             ?? throw new InvalidOperationException("ConnectionStrings:Postgres is required for Persistence:Provider=postgres");
+    builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(cs));
+    builder.Services.AddSingleton<IJobRepository, PostgresJobRepository>();
+    builder.Services.AddSingleton<IPlatformRepository, PostgresPlatformRepository>();
+    builder.Services.AddSingleton<ICampaignRepository, PostgresCampaignRepository>();
+    builder.Services.AddSingleton<IReadinessProbe, PostgresReadinessProbe>();
+}
+else
+{
+    builder.Services.AddSingleton<IJobRepository, InMemoryJobRepository>();
+    builder.Services.AddSingleton<IPlatformRepository, InMemoryPlatformRepository>();
+    builder.Services.AddSingleton<ICampaignRepository, InMemoryCampaignRepository>();
+}
 var mapCacheOpt = new ContentMapCacheOptions();
 builder.Configuration.GetSection("AdServing:MapCache").Bind(mapCacheOpt);
 builder.Services.AddSingleton(mapCacheOpt);
 builder.Services.AddSingleton<IContentMapProvider, CachedContentMapProvider>();
-builder.Services.AddSingleton<IDecisionLog>(sp => new InMemoryDecisionLog(time: sp.GetRequiredService<TimeProvider>()));
-builder.Services.AddSingleton<IDeliveryLedger, InMemoryDeliveryLedger>();
+// --- delivery counters + decision log: in-memory (single instance) or Redis (shared) ----
+var delivery = builder.Configuration.GetValue("Delivery:Provider", "memory")!;
+if (delivery.Equals("redis", StringComparison.OrdinalIgnoreCase))
+{
+    var cs = builder.Configuration.GetConnectionString("Redis")
+             ?? throw new InvalidOperationException("ConnectionStrings:Redis is required for Delivery:Provider=redis");
+    var redisOpt = new RedisDeliveryOptions();
+    builder.Configuration.GetSection("Delivery:Redis").Bind(redisOpt);
+    builder.Services.AddSingleton(redisOpt);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(cs));
+    builder.Services.AddSingleton<IDecisionLog, RedisDecisionLog>();
+    builder.Services.AddSingleton<IDeliveryLedger, RedisDeliveryLedger>();
+    builder.Services.AddSingleton<IReadinessProbe, RedisReadinessProbe>();
+}
+else
+{
+    builder.Services.AddSingleton<IDecisionLog>(sp => new InMemoryDecisionLog(time: sp.GetRequiredService<TimeProvider>()));
+    builder.Services.AddSingleton<IDeliveryLedger, InMemoryDeliveryLedger>();
+}
 var viewerSecret = builder.Configuration.GetValue<string>("AdServing:ViewerIdSecret");
 if (string.IsNullOrWhiteSpace(viewerSecret)) viewerSecret = "advideo-dev-only-secret"; // override in every real deployment
 builder.Services.AddSingleton(new ViewerIdHasher(viewerSecret));
@@ -129,7 +165,9 @@ app.UseRateLimiter();
 if (app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApiKeyOptions>>().Value.ApiKeys.Count == 0)
     app.Logger.LogWarning("No API keys configured (Security:ApiKeys) — management endpoints are unreachable.");
 
-// --- seed platforms + campaigns (dev/demo) -------------------------------------
+if (app.Services.GetService<NpgsqlDataSource>() is { } pg) await PostgresSchema.EnsureAsync(pg);
+
+// --- seed platforms + campaigns (dev/demo; inserts only missing ids) -----------
 var seedPath = app.Configuration.GetValue<string>("AdServing:SeedFile");
 if (!string.IsNullOrWhiteSpace(seedPath)) seedPath = Path.GetFullPath(seedPath, app.Environment.ContentRootPath);
 if (!string.IsNullOrWhiteSpace(seedPath) && File.Exists(seedPath))
@@ -139,8 +177,8 @@ if (!string.IsNullOrWhiteSpace(seedPath) && File.Exists(seedPath))
     foreach (var c in seed.Campaigns)
         foreach (var e in tax.Validate(c))
             app.Logger.LogWarning("Seed campaign {Id}: {Error}", c.Id, e);
-    await seed.ApplyAsync(app.Services.GetRequiredService<IPlatformRepository>(), app.Services.GetRequiredService<ICampaignRepository>());
-    app.Logger.LogInformation("Seeded {P} platforms and {C} campaigns from {Path}", seed.Platforms.Count, seed.Campaigns.Count, seedPath);
+    var (np, nc) = await seed.ApplyAsync(app.Services.GetRequiredService<IPlatformRepository>(), app.Services.GetRequiredService<ICampaignRepository>());
+    app.Logger.LogInformation("Seed {Path}: inserted {P} platforms and {C} campaigns (existing kept)", seedPath, np, nc);
 }
 
 // --- endpoints ---------------------------------------------------------------

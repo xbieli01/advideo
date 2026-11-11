@@ -49,9 +49,11 @@ public sealed class AdDecisionService(
         var segment = map?.FindSegment(q.T);
         var servable = await campaigns.ListServableAsync(platform.Id, ct);
 
-        var viewer = ledger.Viewer(viewerHash, q.VideoId, now);
+        var viewer = await ledger.ViewerAsync(viewerHash, q.VideoId, now, ct);
         var prevCampaign = q.PrevCampaign ?? viewer.LastCampaignId;
         string? prevKey = prevCampaign is null ? null : (await campaigns.GetAsync(prevCampaign, ct))?.ExclusivityKey;
+
+        var states = await ledger.CampaignStatesAsync(servable.Select(c => c.Id).ToList(), viewerHash, q.VideoId, now, ct);
 
         var ctx = new DeliveryContext
         {
@@ -63,7 +65,7 @@ public sealed class AdDecisionService(
             AdsShownToViewerToday = viewer.AdsToday,
             PreviousCampaignId = prevCampaign,
             PreviousExclusivityKey = prevKey,
-            Campaigns = servable.ToDictionary(c => c.Id, c => ledger.CampaignState(c.Id, viewerHash, q.VideoId, now)),
+            Campaigns = states,
         };
 
         var decision = map is null
@@ -77,8 +79,8 @@ public sealed class AdDecisionService(
         if (issue)
         {
             decisionId = "dcs_" + Guid.NewGuid().ToString("N");
-            decisions.Record(new IssuedDecision(decisionId, platform.Id, q.VideoId, w.Campaign.Id, viewerHash,
-                bid.Model, bid.Amount, Math.Max(segment!.StartSec, q.T), now));
+            await decisions.RecordAsync(new IssuedDecision(decisionId, platform.Id, q.VideoId, w.Campaign.Id, viewerHash,
+                bid.Model, bid.Amount, Math.Max(segment!.StartSec, q.T), now), ct);
         }
         return new(false, segment, decision, bid, decisionId);
     }

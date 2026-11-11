@@ -13,14 +13,15 @@ public sealed class InMemoryDecisionLog(TimeSpan? ttl = null, TimeProvider? time
     private readonly TimeProvider _time = time ?? TimeProvider.System;
     private int _writes;
 
-    public void Record(IssuedDecision decision)
+    public Task RecordAsync(IssuedDecision decision, CancellationToken ct = default)
     {
         _items[decision.DecisionId] = decision;
         if (Interlocked.Increment(ref _writes) % 1000 == 0) Purge();
+        return Task.CompletedTask;
     }
 
-    public IssuedDecision? Get(string decisionId) =>
-        _items.TryGetValue(decisionId, out var d) && _time.GetUtcNow() - d.IssuedAt <= _ttl ? d : null;
+    public Task<IssuedDecision?> GetAsync(string decisionId, CancellationToken ct = default) =>
+        Task.FromResult(_items.TryGetValue(decisionId, out var d) && _time.GetUtcNow() - d.IssuedAt <= _ttl ? d : null);
 
     private void Purge()
     {
@@ -60,7 +61,10 @@ public sealed class InMemoryDeliveryLedger : IDeliveryLedger
 
     private static DateOnly Day(DateTimeOffset t) => DateOnly.FromDateTime(t.UtcDateTime);
 
-    public EventOutcome Record(IssuedDecision d, AdEventType type, double? atSec, DateTimeOffset now)
+    public Task<EventOutcome> RecordAsync(IssuedDecision d, AdEventType type, double? atSec, DateTimeOffset now, CancellationToken ct = default) =>
+        Task.FromResult(Record(d, type, atSec, now));
+
+    private EventOutcome Record(IssuedDecision d, AdEventType type, double? atSec, DateTimeOffset now)
     {
         lock (_lock)
         {
@@ -95,7 +99,12 @@ public sealed class InMemoryDeliveryLedger : IDeliveryLedger
         }
     }
 
-    public CampaignDeliveryState CampaignState(string campaignId, string? viewerHash, string videoId, DateTimeOffset now)
+    public Task<IReadOnlyDictionary<string, CampaignDeliveryState>> CampaignStatesAsync(
+        IReadOnlyCollection<string> campaignIds, string? viewerHash, string videoId, DateTimeOffset now, CancellationToken ct = default) =>
+        Task.FromResult<IReadOnlyDictionary<string, CampaignDeliveryState>>(
+            campaignIds.Distinct().ToDictionary(id => id, id => CampaignState(id, viewerHash, videoId, now)));
+
+    private CampaignDeliveryState CampaignState(string campaignId, string? viewerHash, string videoId, DateTimeOffset now)
     {
         lock (_lock)
         {
@@ -111,7 +120,10 @@ public sealed class InMemoryDeliveryLedger : IDeliveryLedger
         }
     }
 
-    public ViewerState Viewer(string? viewerHash, string videoId, DateTimeOffset now)
+    public Task<ViewerState> ViewerAsync(string? viewerHash, string videoId, DateTimeOffset now, CancellationToken ct = default) =>
+        Task.FromResult(Viewer(viewerHash, videoId, now));
+
+    private ViewerState Viewer(string? viewerHash, string videoId, DateTimeOffset now)
     {
         if (viewerHash is null) return ViewerState.Empty;
         lock (_lock)
@@ -123,7 +135,10 @@ public sealed class InMemoryDeliveryLedger : IDeliveryLedger
         }
     }
 
-    public CampaignStats Stats(string campaignId, DateTimeOffset now)
+    public Task<CampaignStats> StatsAsync(string campaignId, DateTimeOffset now, CancellationToken ct = default) =>
+        Task.FromResult(Stats(campaignId, now));
+
+    private CampaignStats Stats(string campaignId, DateTimeOffset now)
     {
         lock (_lock)
         {

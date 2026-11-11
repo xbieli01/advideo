@@ -76,7 +76,7 @@ public static class AdServingEndpoints
         }).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapGet("/{id}/stats", async (string id, ICampaignRepository repo, IDeliveryLedger ledger, TimeProvider time) =>
-            await repo.GetAsync(id) is null ? Results.NotFound() : Results.Ok(ledger.Stats(id, time.GetUtcNow())));
+            await repo.GetAsync(id) is null ? Results.NotFound() : Results.Ok(await ledger.StatsAsync(id, time.GetUtcNow())));
 
         g.MapPost("/{id}/pause", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Paused, repo))
             .RequireAuthorization(ApiKeyDefaults.AdminPolicy);
@@ -153,9 +153,9 @@ public static class AdServingEndpoints
             }
             if (e is null || string.IsNullOrWhiteSpace(e.DecisionId))
                 return Results.BadRequest(new ValidationErrorResponse(["Body must be JSON {decisionId, type, t}."]));
-            if (log.Get(e.DecisionId) is not { } d)
+            if (await log.GetAsync(e.DecisionId) is not { } d)
                 return Results.NotFound(new ValidationErrorResponse([$"Unknown or expired decision '{e.DecisionId}'."]));
-            var o = ledger.Record(d, e.Type, e.T, time.GetUtcNow());
+            var o = await ledger.RecordAsync(d, e.Type, e.T, time.GetUtcNow());
             return Results.Accepted(value: new AdEventResponse(o.Accepted, o.Duplicate, o.Cost));
         });
     }

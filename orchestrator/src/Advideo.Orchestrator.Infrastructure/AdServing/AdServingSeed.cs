@@ -20,9 +20,14 @@ public sealed record AdServingSeed(IReadOnlyList<PlatformConfig> Platforms, IRea
                ?? new AdServingSeed([], []);
     }
 
-    public async Task ApplyAsync(IPlatformRepository platforms, ICampaignRepository campaigns, CancellationToken ct = default)
+    /// <summary>Inserts only missing items, so a persistent store keeps changes made through the API.</summary>
+    public async Task<(int Platforms, int Campaigns)> ApplyAsync(IPlatformRepository platforms, ICampaignRepository campaigns, CancellationToken ct = default)
     {
-        foreach (var p in Platforms) await platforms.UpsertAsync(p, ct);
-        foreach (var c in Campaigns) await campaigns.UpsertAsync(c, ct);
+        int np = 0, nc = 0;
+        foreach (var p in Platforms)
+            if (await platforms.GetAsync(p.Id, ct) is null) { await platforms.UpsertAsync(p, ct); np++; }
+        foreach (var c in Campaigns)
+            if (await campaigns.GetAsync(c.Id, ct) is null) { await campaigns.UpsertAsync(c, ct); nc++; }
+        return (np, nc);
     }
 }

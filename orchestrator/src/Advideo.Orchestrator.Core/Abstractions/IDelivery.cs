@@ -17,8 +17,8 @@ public sealed record IssuedDecision(
 /// <summary>Short-lived log of issued decisions (events arrive seconds to minutes later).</summary>
 public interface IDecisionLog
 {
-    void Record(IssuedDecision decision);
-    IssuedDecision? Get(string decisionId);
+    Task RecordAsync(IssuedDecision decision, CancellationToken ct = default);
+    Task<IssuedDecision?> GetAsync(string decisionId, CancellationToken ct = default);
 }
 
 public sealed record EventOutcome(bool Accepted, bool Duplicate, decimal Cost);
@@ -45,8 +45,12 @@ public sealed record CampaignStats(
 /// </summary>
 public interface IDeliveryLedger
 {
-    EventOutcome Record(IssuedDecision decision, AdEventType type, double? atSec, DateTimeOffset now);
-    CampaignDeliveryState CampaignState(string campaignId, string? viewerHash, string videoId, DateTimeOffset now);
-    ViewerState Viewer(string? viewerHash, string videoId, DateTimeOffset now);
-    CampaignStats Stats(string campaignId, DateTimeOffset now);
+    Task<EventOutcome> RecordAsync(IssuedDecision decision, AdEventType type, double? atSec, DateTimeOffset now, CancellationToken ct = default);
+
+    /// <summary>States of many campaigns in one call (one round trip for remote stores).</summary>
+    Task<IReadOnlyDictionary<string, CampaignDeliveryState>> CampaignStatesAsync(
+        IReadOnlyCollection<string> campaignIds, string? viewerHash, string videoId, DateTimeOffset now, CancellationToken ct = default);
+
+    Task<ViewerState> ViewerAsync(string? viewerHash, string videoId, DateTimeOffset now, CancellationToken ct = default);
+    Task<CampaignStats> StatsAsync(string campaignId, DateTimeOffset now, CancellationToken ct = default);
 }
