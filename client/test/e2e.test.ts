@@ -10,6 +10,7 @@ import { FakeVideo, memoryStorage } from "./helpers";
 
 const api = process.env.ADVIDEO_E2E_API;
 const videoId = process.env.ADVIDEO_E2E_VIDEO ?? "golden-mock";
+const adminKey = process.env.ADVIDEO_E2E_KEY ?? "dev-admin-key"; // Development appsettings key
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 describe.skipIf(!api)("e2e against real ad server", () => {
@@ -36,7 +37,7 @@ describe.skipIf(!api)("e2e against real ad server", () => {
     banner!.querySelector("img")!.dispatchEvent(new Event("load"));
     await wait(500);
 
-    const stats = await (await fetch(`${api}/campaigns/tesla-model-y/stats`)).json();
+    const stats = await (await fetch(`${api}/campaigns/tesla-model-y/stats`, { headers: { "X-Api-Key": adminKey } })).json();
     expect(stats.impressions).toBeGreaterThanOrEqual(1);
 
     // Tesla segment ends at 6 s. Nike matches 6–12 s, but the platform's 60 s minimum interval

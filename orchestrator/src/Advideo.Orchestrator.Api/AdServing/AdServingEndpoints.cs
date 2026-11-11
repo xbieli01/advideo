@@ -1,5 +1,6 @@
 using Advideo.AdServing.Matching;
 using Advideo.AdServing.Matching.Model;
+using Advideo.Orchestrator.Api.Security;
 using Advideo.Orchestrator.Core.Abstractions;
 
 namespace Advideo.Orchestrator.Api.AdServing;
@@ -11,9 +12,12 @@ public static class AdServingEndpoints
 
     public static IEndpointRouteBuilder MapAdServing(this IEndpointRouteBuilder app)
     {
-        MapPlatforms(app.MapGroup("/platforms").WithTags("Platforms"));
-        MapCampaigns(app.MapGroup("/campaigns").WithTags("Campaigns"));
-        var ads = app.MapGroup("/ads").WithTags("Ads").RequireCors("snippet");
+        // management: reads need "reporting" (or admin), writes need "admin"
+        MapPlatforms(app.MapGroup("/platforms").WithTags("Platforms").RequireAuthorization(ApiKeyDefaults.ReportingPolicy));
+        MapCampaigns(app.MapGroup("/campaigns").WithTags("Campaigns").RequireAuthorization(ApiKeyDefaults.ReportingPolicy));
+
+        // public snippet endpoints: anonymous, CORS-restricted, rate-limited per client
+        var ads = app.MapGroup("/ads").WithTags("Ads").RequireCors("snippet").RequireRateLimiting("ads");
         MapAds(ads);
         MapEvents(ads);
         return app;
@@ -33,7 +37,7 @@ public static class AdServingEndpoints
             if (await repo.GetAsync(p.Id) is not null) return Results.Conflict(new ValidationErrorResponse([$"Platform '{p.Id}' already exists."]));
             await repo.UpsertAsync(p);
             return Results.Created($"/platforms/{p.Id}", p);
-        });
+        }).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapPut("/{id}", async (string id, PlatformConfig p, IPlatformRepository repo) =>
         {
@@ -41,10 +45,10 @@ public static class AdServingEndpoints
             if (ValidatePlatform(p) is { Count: > 0 } errors) return Results.BadRequest(new ValidationErrorResponse(errors));
             await repo.UpsertAsync(p);
             return Results.Ok(p);
-        });
+        }).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapDelete("/{id}", async (string id, IPlatformRepository repo) =>
-            await repo.DeleteAsync(id) ? Results.NoContent() : Results.NotFound());
+            await repo.DeleteAsync(id) ? Results.NoContent() : Results.NotFound()).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
     }
 
     // ---------------------------------------------------------------- campaigns
@@ -61,7 +65,7 @@ public static class AdServingEndpoints
             if (await repo.GetAsync(c.Id) is not null) return Results.Conflict(new ValidationErrorResponse([$"Campaign '{c.Id}' already exists."]));
             await repo.UpsertAsync(c);
             return Results.Created($"/campaigns/{c.Id}", c);
-        });
+        }).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapPut("/{id}", async (string id, Campaign c, ICampaignRepository repo, Taxonomy tax) =>
         {
@@ -69,16 +73,18 @@ public static class AdServingEndpoints
             if (tax.Validate(c) is { Count: > 0 } errors) return Results.BadRequest(new ValidationErrorResponse(errors));
             await repo.UpsertAsync(c);
             return Results.Ok(c);
-        });
+        }).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapGet("/{id}/stats", async (string id, ICampaignRepository repo, IDeliveryLedger ledger, TimeProvider time) =>
             await repo.GetAsync(id) is null ? Results.NotFound() : Results.Ok(ledger.Stats(id, time.GetUtcNow())));
 
-        g.MapPost("/{id}/pause", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Paused, repo));
-        g.MapPost("/{id}/resume", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Active, repo));
+        g.MapPost("/{id}/pause", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Paused, repo))
+            .RequireAuthorization(ApiKeyDefaults.AdminPolicy);
+        g.MapPost("/{id}/resume", (string id, ICampaignRepository repo) => SetStatus(id, CampaignStatus.Active, repo))
+            .RequireAuthorization(ApiKeyDefaults.AdminPolicy);
 
         g.MapDelete("/{id}", async (string id, ICampaignRepository repo) =>
-            await repo.DeleteAsync(id) ? Results.NoContent() : Results.NotFound());
+            await repo.DeleteAsync(id) ? Results.NoContent() : Results.NotFound()).RequireAuthorization(ApiKeyDefaults.AdminPolicy);
     }
 
     private static async Task<IResult> SetStatus(string id, CampaignStatus status, ICampaignRepository repo)
@@ -126,7 +132,7 @@ public static class AdServingEndpoints
                 d.Candidates.Select(c => new ExplainCandidate(
                     c.Campaign.Id, Math.Round(c.Relevance, 4), c.Ecpm, Math.Round(c.Rank, 4), c.MatchedOn,
                     c.Creative?.Id, c.Slot?.Id, c.RejectedBecause)).ToList()));
-        });
+        }).RequireAuthorization(ApiKeyDefaults.AdminPolicy); // reveals bids and targeting
     }
 
     private static void MapEvents(RouteGroupBuilder g)

@@ -33,6 +33,7 @@ public class OrchestratorApiTests : IClassFixture<WebApplicationFactory<Program>
     {
         _factory = factory.WithWebHostBuilder(b =>
         {
+            b.WithTestKeys();
             b.UseSetting("Storage:FileSystem:RootPath", _dataDir);
             b.ConfigureServices(services =>
             {
@@ -45,7 +46,7 @@ public class OrchestratorApiTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task Healthz_ok()
     {
-        var client = _factory.CreateClient();
+        var client = _factory.AdminClient();
         var resp = await client.GetAsync("/healthz");
         resp.EnsureSuccessStatusCode();
     }
@@ -53,7 +54,7 @@ public class OrchestratorApiTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task Register_processes_and_serves_map()
     {
-        var client = _factory.CreateClient();
+        var client = _factory.AdminClient();
 
         var reg = await client.PostAsJsonAsync("/videos", new
         {
@@ -83,7 +84,7 @@ public class OrchestratorApiTests : IClassFixture<WebApplicationFactory<Program>
     [Fact]
     public async Task Unknown_video_is_404()
     {
-        var client = _factory.CreateClient();
+        var client = _factory.AdminClient();
         var resp = await client.GetAsync("/videos/does-not-exist");
         Assert.Equal(HttpStatusCode.NotFound, resp.StatusCode);
     }

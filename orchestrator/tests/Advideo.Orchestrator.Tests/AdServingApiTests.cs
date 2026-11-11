@@ -35,6 +35,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
         var seed = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../seed/adserving.sample.json"));
         _factory = factory.WithWebHostBuilder(b =>
         {
+            b.WithTestKeys();
             b.UseSetting("Storage:FileSystem:RootPath", dataDir);
             b.UseSetting("AdServing:SeedFile", seed);
         });
@@ -45,7 +46,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Seeded_platforms_and_campaigns_are_listed()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var platforms = await c.GetFromJsonAsync<List<JsonElement>>("/platforms", Json);
         Assert.Contains(platforms!, p => p.GetProperty("id").GetString() == "browser-extension");
         Assert.Equal("browserExtension", platforms!.Single(p => p.GetProperty("id").GetString() == "browser-extension").GetProperty("kind").GetString());
@@ -56,7 +57,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Decision_returns_brand_matched_ad_with_creative_for_platform_slot()
     {
-        var resp = await _factory.CreateClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=2.5&geo=SK");
+        var resp = await _factory.AdminClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=2.5&geo=SK");
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         var d = await resp.Content.ReadFromJsonAsync<JsonElement>(Json);
         var ad = d.GetProperty("ad");
@@ -73,7 +74,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Segment_without_matching_content_returns_204_with_reason()
     {
-        var resp = await _factory.CreateClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=7");
+        var resp = await _factory.AdminClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=7");
         Assert.Equal(HttpStatusCode.NoContent, resp.StatusCode);
         Assert.True(resp.Headers.Contains("X-Advideo-NoAd-Reason"));
     }
@@ -81,7 +82,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Cpc_campaign_only_serves_on_platform_with_cpc_enabled_and_targeted()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var portal = await c.GetFromJsonAsync<JsonElement>("/ads/decision?platform=demo-portal&videoId=vid-1&t=12", Json);
         Assert.Equal("coca-cola-cpc", portal.GetProperty("ad").GetProperty("campaignId").GetString());
         Assert.Equal("cpc", portal.GetProperty("ad").GetProperty("pricingModel").GetString());
@@ -93,7 +94,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Unknown_platform_is_404_and_unknown_video_is_204()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         Assert.Equal(HttpStatusCode.NotFound, (await c.GetAsync("/ads/decision?platform=nope&videoId=vid-1&t=1")).StatusCode);
         var noMap = await c.GetAsync("/ads/decision?platform=demo-portal&videoId=missing&t=1");
         Assert.Equal(HttpStatusCode.NoContent, noMap.StatusCode);
@@ -103,14 +104,14 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Viewer_frequency_from_snippet_is_applied()
     {
-        var resp = await _factory.CreateClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=2&lastAdAt=0");
+        var resp = await _factory.AdminClient().GetAsync("/ads/decision?platform=demo-portal&videoId=vid-1&t=2&lastAdAt=0");
         Assert.Equal(HttpStatusCode.NoContent, resp.StatusCode);
     }
 
     [Fact]
     public async Task Competitor_exclusivity_uses_previous_campaign()
     {
-        var d = await _factory.CreateClient().GetFromJsonAsync<JsonElement>(
+        var d = await _factory.AdminClient().GetFromJsonAsync<JsonElement>(
             "/ads/decision?platform=demo-portal&videoId=vid-1&t=2&prevCampaign=vw-cars", Json);
         Assert.Equal("vw-cars", d.GetProperty("ad").GetProperty("campaignId").GetString());
     }
@@ -118,7 +119,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Explain_lists_all_candidates_with_reasons()
     {
-        var e = await _factory.CreateClient().GetFromJsonAsync<JsonElement>("/ads/explain?platform=demo-portal&videoId=vid-1&t=2", Json);
+        var e = await _factory.AdminClient().GetFromJsonAsync<JsonElement>("/ads/explain?platform=demo-portal&videoId=vid-1&t=2", Json);
         Assert.Equal("tesla-model-y", e.GetProperty("winnerCampaignId").GetString());
         var cands = e.GetProperty("candidates").EnumerateArray().ToList();
         Assert.Equal("tesla-model-y", cands[0].GetProperty("campaignId").GetString());
@@ -129,7 +130,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Campaign_crud_validates_and_pause_affects_decisions()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var bad = await c.PostAsJsonAsync("/campaigns", new
         {
             id = "bad", advertiserId = "x", name = "bad", status = "active",
@@ -160,7 +161,7 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Platform_validation_rejects_missing_slots()
     {
-        var resp = await _factory.CreateClient().PostAsJsonAsync("/platforms", new { id = "p2", name = "P2", slots = Array.Empty<object>() }, Json);
+        var resp = await _factory.AdminClient().PostAsJsonAsync("/platforms", new { id = "p2", name = "P2", slots = Array.Empty<object>() }, Json);
         Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
     }
 }

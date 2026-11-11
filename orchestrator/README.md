@@ -67,7 +67,19 @@ combined with optional client counters — the stricter value wins.
 (single instance); production target is Redis (counters) + Postgres (billing).
 
 Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.
-Admin endpoints have no auth yet (planned: API key per platform).
+### Security
+
+| Area | Access |
+|---|---|
+| `/healthz`, `/readyz` | public (readiness checks map store and, when enabled, Postgres / Redis) |
+| `/ads/decision`, `/ads/events` | public (called from browsers), CORS-restricted, rate-limited per client IP (`RateLimit:AdsPerMinutePerClient`, 429) |
+| `GET /platforms*`, `GET /campaigns*`, `/campaigns/{id}/stats` | API key with role `reporting` or `admin` |
+| writes on platforms / campaigns, pause/resume, `/videos*`, `/ads/explain` | API key with role `admin` |
+
+API keys go in header `X-Api-Key`; only their SHA-256 hashes are configured (`Security:ApiKeys[]: {name, sha256, roles}`),
+generate with `openssl rand -hex 32` and hash with `printf %s "$KEY" | sha256sum`. Development appsettings contain a
+local-only key `dev-admin-key`. Behind a reverse proxy set `Network:TrustForwardedHeaders=true` so rate limiting
+sees the real client IP.
 
 ## Object store
 

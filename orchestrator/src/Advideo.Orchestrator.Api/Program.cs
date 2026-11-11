@@ -3,6 +3,11 @@ using System.Text.Json.Serialization;
 using Advideo.AdServing.Matching;
 using Advideo.Orchestrator.Api.AdServing;
 using Advideo.Orchestrator.Api.Contracts;
+using Advideo.Orchestrator.Api.Security;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Advideo.Orchestrator.Api.Worker;
 using Advideo.Orchestrator.Core.Abstractions;
 using Advideo.Orchestrator.Core.Model;
@@ -84,6 +89,30 @@ builder.Services.AddCors(o => o.AddPolicy("snippet", p =>
     p.WithMethods("GET", "POST").WithHeaders("Content-Type").WithExposedHeaders(AdServingEndpoints.NoAdReasonHeader);
 }));
 
+// --- security: API keys (management), rate limiting (public snippet endpoints) ------
+builder.Services.Configure<ApiKeyOptions>(builder.Configuration.GetSection("Security"));
+builder.Services.AddAuthentication(ApiKeyDefaults.Scheme)
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyDefaults.Scheme, _ => { });
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(ApiKeyDefaults.AdminPolicy, p => p.RequireRole("admin"))
+    .AddPolicy(ApiKeyDefaults.ReportingPolicy, p => p.RequireRole("admin", "reporting"));
+
+var adsPerMinute = builder.Configuration.GetValue("RateLimit:AdsPerMinutePerClient", 600);
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("ads", ctx => RateLimitPartition.GetFixedWindowLimiter(
+        ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = adsPerMinute, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+});
+builder.Services.Configure<ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownIPNetworks.Clear(); // trust is decided by Network:TrustForwardedHeaders (behind a known ingress only)
+    o.KnownProxies.Clear();
+});
+builder.Services.AddSingleton<IReadinessProbe, MapStoreReadinessProbe>();
+
 // --- worker ------------------------------------------------------------------
 builder.Services.AddSingleton(new WorkerOptions
 {
@@ -92,6 +121,13 @@ builder.Services.AddSingleton(new WorkerOptions
 builder.Services.AddHostedService<AnalysisWorker>();
 
 var app = builder.Build();
+
+if (app.Configuration.GetValue("Network:TrustForwardedHeaders", false)) app.UseForwardedHeaders();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
+if (app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApiKeyOptions>>().Value.ApiKeys.Count == 0)
+    app.Logger.LogWarning("No API keys configured (Security:ApiKeys) — management endpoints are unreachable.");
 
 // --- seed platforms + campaigns (dev/demo) -------------------------------------
 var seedPath = app.Configuration.GetValue<string>("AdServing:SeedFile");
@@ -110,7 +146,22 @@ if (!string.IsNullOrWhiteSpace(seedPath) && File.Exists(seedPath))
 // --- endpoints ---------------------------------------------------------------
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
 
-app.MapPost("/videos", async (RegisterVideoRequest req, IJobRepository repo, IJobQueue queue) =>
+app.MapGet("/readyz", async (IEnumerable<IReadinessProbe> probes, CancellationToken ct) =>
+{
+    var results = new Dictionary<string, string>();
+    var ok = true;
+    foreach (var p in probes)
+    {
+        try { await p.CheckAsync(ct); results[p.Name] = "ok"; }
+        catch (Exception ex) { ok = false; results[p.Name] = ex.GetType().Name; }
+    }
+    return Results.Json(new { status = ok ? "ready" : "not-ready", checks = results },
+        statusCode: ok ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable);
+});
+
+var videos = app.MapGroup("/videos").RequireAuthorization(ApiKeyDefaults.AdminPolicy);
+
+videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQueue queue) =>
 {
     if (string.IsNullOrWhiteSpace(req.VideoId) || string.IsNullOrWhiteSpace(req.VideoUri))
         return Results.BadRequest(new { error = "videoId and videoUri are required" });
@@ -128,16 +179,16 @@ app.MapPost("/videos", async (RegisterVideoRequest req, IJobRepository repo, IJo
     return Results.Accepted($"/videos/{job.VideoId}", JobResponse.From(job));
 });
 
-app.MapGet("/videos", async (IJobRepository repo) =>
+videos.MapGet("", async (IJobRepository repo) =>
     Results.Ok((await repo.ListAsync()).Select(JobResponse.From)));
 
-app.MapGet("/videos/{videoId}", async (string videoId, IJobRepository repo) =>
+videos.MapGet("/{videoId}", async (string videoId, IJobRepository repo) =>
 {
     var job = await repo.GetAsync(videoId);
     return job is null ? Results.NotFound() : Results.Ok(JobResponse.From(job));
 });
 
-app.MapGet("/videos/{videoId}/map", async (string videoId, IJobRepository repo, IMapStore store) =>
+videos.MapGet("/{videoId}/map", async (string videoId, IJobRepository repo, IMapStore store) =>
 {
     var job = await repo.GetAsync(videoId);
     if (job?.MapKey is null) return Results.NotFound();

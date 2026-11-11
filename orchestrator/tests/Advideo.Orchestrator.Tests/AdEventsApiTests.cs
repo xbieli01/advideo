@@ -35,6 +35,7 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
         var seed = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../seed/adserving.sample.json"));
         _factory = factory.WithWebHostBuilder(b =>
         {
+            b.WithTestKeys();
             b.UseSetting("Storage:FileSystem:RootPath", dataDir);
             b.UseSetting("AdServing:SeedFile", seed);
         });
@@ -54,7 +55,7 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Impression_and_click_update_stats_and_spend()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var d = (await Decide(c, "platform=demo-portal&videoId=evt-vid&t=10&viewer=u-stats"))!.Value;
         var id = d.GetProperty("decisionId").GetString()!;
         Assert.Equal("/ads/events", d.GetProperty("tracking").GetProperty("eventsUrl").GetString());
@@ -75,7 +76,7 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Beacon_text_plain_body_is_accepted_and_cors_headers_returned()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var d = (await Decide(c, "platform=demo-portal&videoId=evt-vid&t=10&viewer=u-beacon"))!.Value;
         var body = new StringContent($$"""{"decisionId":"{{d.GetProperty("decisionId").GetString()}}","type":"impression","t":10}""",
             System.Text.Encoding.UTF8, "text/plain");
@@ -92,14 +93,14 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Unknown_decision_is_404()
     {
-        var r = await Event(_factory.CreateClient(), "dcs_nope", "impression");
+        var r = await Event(_factory.AdminClient(), "dcs_nope", "impression");
         Assert.Equal(HttpStatusCode.NotFound, r.StatusCode);
     }
 
     [Fact]
     public async Task Server_side_min_interval_blocks_next_ad_for_same_viewer_only()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var d = (await Decide(c, "platform=demo-portal&videoId=evt-vid&t=10&viewer=u-int"))!.Value;
         await Event(c, d.GetProperty("decisionId").GetString()!, "impression", 10);
 
@@ -111,7 +112,7 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Server_side_max_ads_per_video()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         foreach (var t in new[] { 10, 100, 200 })
         {
             var d = (await Decide(c, $"platform=demo-portal&videoId=evt-vid&t={t}&viewer=u-max"))!.Value;
@@ -125,7 +126,7 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Campaign_frequency_cap_and_daily_budget_use_real_counters()
     {
-        var c = _factory.CreateClient();
+        var c = _factory.AdminClient();
         var created = await c.PostAsJsonAsync("/campaigns", new
         {
             id = "capped-auto", advertiserId = "x", name = "capped", status = "active", priority = 10,
