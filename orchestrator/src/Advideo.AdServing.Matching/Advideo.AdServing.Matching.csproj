@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Advideo.AdServing.Matching.Tests" />
+  </ItemGroup>
+
+  <!-- Shared taxonomy (single source of truth with the Python pipeline). -->
+  <ItemGroup>
+    <None Include="..\..\..\schema\taxonomy.json" Link="taxonomy.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,324 @@
+{
+  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only.",
+  "version": "1.0",
+  "categories": [
+    "automotive",
+    "beverage",
+    "electronics",
+    "fashion",
+    "fitness",
+    "food",
+    "footwear",
+    "outdoor",
+    "sport",
+    "tech",
+    "transport",
+    "travel"
+  ],
+  "termCategories": {
+    "car": [
+      "automotive"
+    ],
+    "truck": [
+      "automotive"
+    ],
+    "bus": [
+      "automotive",
+      "transport"
+    ],
+    "motorcycle": [
+      "automotive"
+    ],
+    "road": [
+      "automotive"
+    ],
+    "driving": [
+      "automotive"
+    ],
+    "traffic": [
+      "automotive",
+      "transport"
+    ],
+    "running": [
+      "sport"
+    ],
+    "sneakers": [
+      "footwear",
+      "sport"
+    ],
+    "sports ball": [
+      "sport"
+    ],
+    "skateboard": [
+      "sport"
+    ],
+    "surfboard": [
+      "sport"
+    ],
+    "tennis racket": [
+      "sport"
+    ],
+    "bicycle": [
+      "sport",
+      "transport"
+    ],
+    "gym": [
+      "sport",
+      "fitness"
+    ],
+    "laptop": [
+      "tech"
+    ],
+    "cell phone": [
+      "tech"
+    ],
+    "keyboard": [
+      "tech"
+    ],
+    "tv": [
+      "tech",
+      "electronics"
+    ],
+    "pizza": [
+      "food"
+    ],
+    "cup": [
+      "food",
+      "beverage"
+    ],
+    "wine glass": [
+      "beverage"
+    ],
+    "bottle": [
+      "beverage"
+    ],
+    "airplane": [
+      "travel",
+      "transport"
+    ],
+    "boat": [
+      "travel"
+    ],
+    "beach": [
+      "travel",
+      "outdoor"
+    ],
+    "mountain": [
+      "outdoor",
+      "travel"
+    ],
+    "handbag": [
+      "fashion"
+    ],
+    "tie": [
+      "fashion"
+    ],
+    "person": []
+  },
+  "clipSceneLabels": [
+    {
+      "label": "driving",
+      "kind": "action"
+    },
+    {
+      "label": "running",
+      "kind": "action"
+    },
+    {
+      "label": "cooking",
+      "kind": "action"
+    },
+    {
+      "label": "dancing",
+      "kind": "action"
+    },
+    {
+      "label": "shopping",
+      "kind": "action"
+    },
+    {
+      "label": "gaming",
+      "kind": "action"
+    },
+    {
+      "label": "outdoor",
+      "kind": "scene"
+    },
+    {
+      "label": "indoor",
+      "kind": "scene"
+    },
+    {
+      "label": "beach",
+      "kind": "scene"
+    },
+    {
+      "label": "city street",
+      "kind": "scene"
+    },
+    {
+      "label": "mountain",
+      "kind": "scene"
+    },
+    {
+      "label": "office",
+      "kind": "scene"
+    },
+    {
+      "label": "gym",
+      "kind": "scene"
+    }
+  ],
+  "brands": [
+    {
+      "label": "Tesla",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "tesla"
+      ]
+    },
+    {
+      "label": "VW",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "volkswagen",
+        "vw"
+      ]
+    },
+    {
+      "label": "Audi",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "audi"
+      ]
+    },
+    {
+      "label": "BMW",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "bmw"
+      ]
+    },
+    {
+      "label": "Mercedes-Benz",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "mercedes"
+      ]
+    },
+    {
+      "label": "Toyota",
+      "categories": [
+        "automotive"
+      ],
+      "aliases": [
+        "toyota"
+      ]
+    },
+    {
+      "label": "Nike",
+      "categories": [
+        "sport",
+        "footwear"
+      ],
+      "aliases": [
+        "nike"
+      ]
+    },
+    {
+      "label": "Adidas",
+      "categories": [
+        "sport",
+        "footwear"
+      ],
+      "aliases": [
+        "adidas"
+      ]
+    },
+    {
+      "label": "Puma",
+      "categories": [
+        "sport",
+        "footwear"
+      ],
+      "aliases": [
+        "puma"
+      ]
+    },
+    {
+      "label": "Coca-Cola",
+      "categories": [
+        "beverage"
+      ],
+      "aliases": [
+        "coca cola",
+        "coca-cola"
+      ]
+    },
+    {
+      "label": "Pepsi",
+      "categories": [
+        "beverage"
+      ],
+      "aliases": [
+        "pepsi"
+      ]
+    },
+    {
+      "label": "Red Bull",
+      "categories": [
+        "beverage"
+      ],
+      "aliases": [
+        "red bull"
+      ]
+    },
+    {
+      "label": "Apple",
+      "categories": [
+        "tech"
+      ],
+      "aliases": [
+        "apple"
+      ]
+    },
+    {
+      "label": "Samsung",
+      "categories": [
+        "tech",
+        "electronics"
+      ],
+      "aliases": [
+        "samsung"
+      ]
+    },
+    {
+      "label": "Google",
+      "categories": [
+        "tech"
+      ],
+      "aliases": [
+        "google"
+      ]
+    },
+    {
+      "label": "Microsoft",
+      "categories": [
+        "tech"
+      ],
+      "aliases": [
+        "microsoft"
+      ]
+    }
+  ]
+}

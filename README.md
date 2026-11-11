@@ -11,8 +11,8 @@ matches Nike, and so on.
 
 ## Milestones
 
-- **M1 (this repo, in progress):** offline pipeline `video → JSON content map`.
-- M2: ad-serving API + keyword↔campaign matching engine.
+- **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
+- **M2 (in progress):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher library done (T-005a).
 - M3: JS client SDK / snippet.
 
 ## Architecture (short)
@@ -34,10 +34,13 @@ browser snippet reads map at time t → ad-serving API matches keywords↔campai
 
 ```
 schema/video-map.schema.json     canonical content-map contract
+schema/taxonomy.json             shared categories / brands (pipeline + ad matcher)
+docs/m2-ad-serving.md            M2 design (platforms, pricing, matching, API)
 pipeline/                        Python analysis worker (M1)
   src/advideo_pipeline/          package (frames, analyzers, aggregate, pipeline, cli)
   tests/                         end-to-end + schema-validation tests
-orchestrator/                    .NET orchestration (stub in M1)
+orchestrator/                    .NET orchestration + ad serving
+  src/Advideo.AdServing.Matching/ pure ad decision engine (no I/O)
 ```
 
 ## Quickstart (pipeline, no GPU needed)
