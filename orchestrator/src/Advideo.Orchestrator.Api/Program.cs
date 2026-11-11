@@ -76,6 +76,14 @@ if (string.IsNullOrWhiteSpace(viewerSecret)) viewerSecret = "advideo-dev-only-se
 builder.Services.AddSingleton(new ViewerIdHasher(viewerSecret));
 builder.Services.AddSingleton<AdDecisionService>();
 
+// CORS for the player snippet: origins of customer portals (and the extension) that may call /ads/*.
+var corsOrigins = builder.Configuration.GetSection("AdServing:Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(o => o.AddPolicy("snippet", p =>
+{
+    if (corsOrigins.Contains("*")) p.AllowAnyOrigin(); else p.WithOrigins(corsOrigins);
+    p.WithMethods("GET", "POST").WithHeaders("Content-Type").WithExposedHeaders(AdServingEndpoints.NoAdReasonHeader);
+}));
+
 // --- worker ------------------------------------------------------------------
 builder.Services.AddSingleton(new WorkerOptions
 {
@@ -137,6 +145,7 @@ app.MapGet("/videos/{videoId}/map", async (string videoId, IJobRepository repo, 
     return stream is null ? Results.NotFound() : Results.Stream(stream, "application/json");
 });
 
+app.UseCors();
 app.MapAdServing();
 
 app.Run();

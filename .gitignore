@@ -24,6 +24,7 @@ obj/
 /models/
 *.video-map.json
 !schema/**
+!orchestrator/tests/fixtures/**
 
 # secrets / env
 .env

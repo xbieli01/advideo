@@ -13,7 +13,7 @@ matches Nike, and so on.
 
 - **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
 - **M2 (done):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher (T-005a), ad-serving API + map cache (T-005b), events/ledger/stats + golden & perf tests (T-005c).
-- **M3 (next):** JS client SDK / snippet.
+- **M3 (in progress):** JS snippet for customer portals done (M3a, `client/`); browser extension next (M3b).
 
 ## Architecture (short)
 
@@ -36,6 +36,7 @@ browser snippet reads map at time t → ad-serving API matches keywords↔campai
 schema/video-map.schema.json     canonical content-map contract
 schema/taxonomy.json             shared categories / brands (pipeline + ad matcher)
 docs/m2-ad-serving.md            M2 design (platforms, pricing, matching, API)
+client/                          player snippet (TypeScript, M3)
 pipeline/                        Python analysis worker (M1)
   src/advideo_pipeline/          package (frames, analyzers, aggregate, pipeline, cli)
   tests/                         end-to-end + schema-validation tests

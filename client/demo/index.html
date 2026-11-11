@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>advideo — demo integrácie</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; background: #f5f6f8; color: #1d2330; }
+    .stage { display: grid; grid-template-columns: minmax(0, 728px) 300px; gap: 16px; align-items: start; }
+    video { width: 100%; background: #000; border-radius: 8px; }
+    #ad-below { margin-top: 12px; min-height: 90px; }
+    #ad-right { min-height: 250px; }
+    #log { margin-top: 16px; font: 12px/1.5 ui-monospace, monospace; background: #fff; padding: 12px; border-radius: 8px; max-height: 240px; overflow: auto; }
+    label { margin-left: 12px; }
+  </style>
+</head>
+<body>
+  <h1>advideo — demo</h1>
+  <p>
+    Spusti orchestrator (<code>dotnet run</code> v <code>orchestrator/src/Advideo.Orchestrator.Api</code>, Development = CORS *),
+    ulož mapu pre <code>videoId</code> (napr. <code>data/maps/golden-mock.video-map.json</code>), zostav snippet
+    (<code>npm run build</code>) a otvor túto stránku cez lokálny server (<code>npx serve client</code>).
+    <label><input type="checkbox" id="consent"> súhlas s ukladaním ID diváka</label>
+  </p>
+
+  <div class="stage">
+    <div>
+      <video id="player" controls muted src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+      <div id="ad-below"></div>
+    </div>
+    <div id="ad-right"></div>
+  </div>
+  <pre id="log"></pre>
+
+  <script src="../dist/advideo.min.js"></script>
+  <script>
+    const log = (m) => { document.getElementById("log").textContent += m + "\n"; };
+    const player = Advideo.init({
+      apiBase: "http://localhost:5219",
+      platform: "demo-portal",
+      videoId: "golden-mock",
+      video: "#player",
+      slots: { "below-player": "#ad-below", "right-of-player": "#ad-right" },
+      consent: { mode: "manual", granted: false },
+      geo: "SK",
+      onEvent: (e) => log(new Date().toLocaleTimeString() + "  " + e.type + "  " +
+        (e.decision ? e.decision.ad.campaignId : e.event || e.reason || e.why || "")),
+    });
+    document.getElementById("consent").addEventListener("change", (ev) => player.setConsent(ev.target.checked));
+  </script>
+</body>
+</html>

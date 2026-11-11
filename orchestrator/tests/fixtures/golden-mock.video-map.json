@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "videoId": "golden-mock",
+  "durationSec": 24.0,
+  "generatedAt": "2026-11-11T12:37:42Z",
+  "pipeline": {
+    "modelSet": "mock-0",
+    "fps": 1.0
+  },
+  "segments": [
+    {
+      "startSec": 0.0,
+      "endSec": 6.0,
+      "keywords": [
+        {
+          "term": "car",
+          "score": 0.94
+        },
+        {
+          "term": "road",
+          "score": 0.88
+        },
+        {
+          "term": "Tesla",
+          "score": 0.81
+        },
+        {
+          "term": "driving",
+          "score": 0.72
+        }
+      ],
+      "entities": [
+        {
+          "type": "brand",
+          "label": "Tesla",
+          "score": 0.81
+        }
+      ],
+      "categories": [
+        "automotive"
+      ],
+      "signals": {
+        "objects": [
+          "car",
+          "road"
+        ],
+        "actions": [
+          "driving"
+        ],
+        "text": [
+          "Tesla"
+        ]
+      }
+    },
+    {
+      "startSec": 6.0,
+      "endSec": 12.0,
+      "keywords": [
+        {
+          "term": "running",
+          "score": 0.9
+        },
+        {
+          "term": "person",
+          "score": 0.85
+        },
+        {
+          "term": "sneakers",
+          "score": 0.68
+        },
+        {
+          "term": "outdoor",
+          "score": 0.6
+        }
+      ],
+      "entities": [],
+      "categories": [
+        "footwear",
+        "sport"
+      ],
+      "signals": {
+        "actions": [
+          "running"
+        ],
+        "objects": [
+          "person",
+          "sneakers"
+        ],
+        "scene": "outdoor"
+      }
+    },
+    {
+      "startSec": 12.0,
+      "endSec": 18.0,
+      "keywords": [
+        {
+          "term": "unknown",
+          "score": 0.3
+        }
+      ],
+      "entities": [],
+      "categories": [],
+      "signals": {
+        "scene": "unknown"
+      }
+    },
+    {
+      "startSec": 18.0,
+      "endSec": 24.0,
+      "keywords": [
+        {
+          "term": "unknown",
+          "score": 0.3
+        }
+      ],
+      "entities": [],
+      "categories": [],
+      "signals": {
+        "scene": "unknown"
+      }
+    }
+  ]
+}

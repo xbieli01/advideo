@@ -1,0 +1,23 @@
+{
+  "name": "@advideo/snippet",
+  "version": "0.1.0",
+  "description": "advideo player snippet: contextual banner ads around the video player, driven by the video content map",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "main": "dist/advideo.esm.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "npm run build:iife && npm run build:esm && tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:iife": "esbuild src/global.ts --bundle --format=iife --minify --sourcemap --target=es2019 --outfile=dist/advideo.min.js",
+    "build:esm": "esbuild src/index.ts --bundle --format=esm --sourcemap --target=es2019 --outfile=dist/advideo.esm.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "jsdom": "^31.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

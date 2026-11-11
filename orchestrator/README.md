@@ -61,7 +61,9 @@ seeded from `seed/adserving.sample.json` (`AdServing:SeedFile`) into in-memory s
 
 `viewer` is an anonymous first-party id from the snippet; it is HMAC-hashed with `AdServing:ViewerIdSecret`
 (set it per deployment) and only the hash is kept. Server counters (budget, caps, frequency, last ad) are
-combined with optional client counters — the stricter value wins. Ledger and decision log are in-memory
+combined with optional client counters — the stricter value wins.
+`/ads/*` sends CORS headers for `AdServing:Cors:AllowedOrigins` (Development: `*`); `/ads/events` also accepts
+`text/plain` JSON bodies so `navigator.sendBeacon` works cross-origin without a preflight. Ledger and decision log are in-memory
 (single instance); production target is Redis (counters) + Postgres (billing).
 
 Content maps are cached (LRU + TTL, `AdServing:MapCache`) and invalidated when the worker stores a new map.

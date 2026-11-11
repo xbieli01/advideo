@@ -73,6 +73,23 @@ public class AdEventsApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Beacon_text_plain_body_is_accepted_and_cors_headers_returned()
+    {
+        var c = _factory.CreateClient();
+        var d = (await Decide(c, "platform=demo-portal&videoId=evt-vid&t=10&viewer=u-beacon"))!.Value;
+        var body = new StringContent($$"""{"decisionId":"{{d.GetProperty("decisionId").GetString()}}","type":"impression","t":10}""",
+            System.Text.Encoding.UTF8, "text/plain");
+        var req = new HttpRequestMessage(HttpMethod.Post, "/ads/events") { Content = body };
+        req.Headers.Add("Origin", "https://portal.example");
+        var r = await c.SendAsync(req);
+        Assert.Equal(HttpStatusCode.Accepted, r.StatusCode);
+        Assert.True(r.Headers.Contains("Access-Control-Allow-Origin"));
+
+        Assert.Equal(HttpStatusCode.BadRequest,
+            (await c.PostAsync("/ads/events", new StringContent("not json", System.Text.Encoding.UTF8, "text/plain"))).StatusCode);
+    }
+
+    [Fact]
     public async Task Unknown_decision_is_404()
     {
         var r = await Event(_factory.CreateClient(), "dcs_nope", "impression");

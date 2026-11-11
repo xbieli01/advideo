@@ -13,7 +13,7 @@ public static class AdServingEndpoints
     {
         MapPlatforms(app.MapGroup("/platforms").WithTags("Platforms"));
         MapCampaigns(app.MapGroup("/campaigns").WithTags("Campaigns"));
-        var ads = app.MapGroup("/ads").WithTags("Ads");
+        var ads = app.MapGroup("/ads").WithTags("Ads").RequireCors("snippet");
         MapAds(ads);
         MapEvents(ads);
         return app;
@@ -131,8 +131,22 @@ public static class AdServingEndpoints
 
     private static void MapEvents(RouteGroupBuilder g)
     {
-        g.MapPost("/events", (AdEventRequest e, IDecisionLog log, IDeliveryLedger ledger, TimeProvider time) =>
+        // Accepts application/json and text/plain: browsers send beacons (navigator.sendBeacon) as
+        // text/plain so the cross-origin request stays CORS-simple (no preflight).
+        g.MapPost("/events", async (HttpRequest req, IDecisionLog log, IDeliveryLedger ledger, TimeProvider time,
+            Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> json) =>
         {
+            AdEventRequest? e;
+            try
+            {
+                e = await System.Text.Json.JsonSerializer.DeserializeAsync<AdEventRequest>(req.Body, json.Value.SerializerOptions);
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                e = null;
+            }
+            if (e is null || string.IsNullOrWhiteSpace(e.DecisionId))
+                return Results.BadRequest(new ValidationErrorResponse(["Body must be JSON {decisionId, type, t}."]));
             if (log.Get(e.DecisionId) is not { } d)
                 return Results.NotFound(new ValidationErrorResponse([$"Unknown or expired decision '{e.DecisionId}'."]));
             var o = ledger.Record(d, e.Type, e.T, time.GetUtcNow());
