@@ -44,3 +44,9 @@ orchestrator/**/data/
 orchestrator/src/Advideo.Orchestrator.Api/wwwroot/
 admin/node_modules/
 admin/.angular/
+
+# analyzer eval: downloaded clips, results, venv, model weights
+pipeline/eval/videos/
+pipeline/eval/results/
+pipeline/.venv-ml/
+yolov8n.pt

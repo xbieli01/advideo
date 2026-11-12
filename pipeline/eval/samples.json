@@ -1,0 +1,209 @@
+{
+  "note": "Eval clips from Wikimedia Commons (free licences). groundTruth ranges: categories = expected (recall + precision), allowed = neutral (not counted as false positive), terms = keywords that should appear (termsAny: any of these counts), brands = expected brand entities.",
+  "samples": [
+    {
+      "id": "traffic-city",
+      "commonsTitle": "File:Traffic on Slovenska street 2.webm",
+      "license": "CC BY 3.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 18.7,
+          "categories": [
+            "automotive",
+            "transport"
+          ],
+          "terms": [
+            "bus",
+            "person"
+          ],
+          "allowed": [
+            "sport"
+          ],
+          "note": "city bus stop, buses, pedestrians, cyclist at 12s+"
+        }
+      ]
+    },
+    {
+      "id": "van-driving",
+      "commonsTitle": "File:FSR Tarpan 239 D van (driving).webm",
+      "license": "CC BY 3.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 28.3,
+          "categories": [
+            "automotive"
+          ],
+          "terms": [
+            "truck",
+            "driving"
+          ],
+          "allowed": [
+            "transport"
+          ],
+          "note": "green pickup truck driving around a yard"
+        }
+      ]
+    },
+    {
+      "id": "jogging-river",
+      "commonsTitle": "File:Jogging - near arakawa river - tokyo japan - 2022 may 3.webm",
+      "license": "CC BY 4.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 11.5,
+          "categories": [
+            "sport"
+          ],
+          "terms": [
+            "running",
+            "person"
+          ],
+          "allowed": [
+            "fitness",
+            "outdoor"
+          ],
+          "note": "small joggers on a riverside path, far away"
+        }
+      ]
+    },
+    {
+      "id": "running-form",
+      "commonsTitle": "File:Running form.ogv",
+      "license": "CC BY-SA 2.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 61.6,
+          "categories": [
+            "sport",
+            "footwear"
+          ],
+          "terms": [
+            "running"
+          ],
+          "allowed": [
+            "fitness"
+          ],
+          "note": "close-up of running legs and shoes, some empty frames"
+        }
+      ]
+    },
+    {
+      "id": "soft-drink",
+      "commonsTitle": "File:Carbonated soft drink - japan - 2022 oct 20.webm",
+      "license": "CC BY 4.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 17.3,
+          "categories": [
+            "beverage"
+          ],
+          "terms": [
+            "cup"
+          ],
+          "termsAny": [
+            "cup",
+            "wine glass",
+            "bottle"
+          ],
+          "allowed": [
+            "food",
+            "outdoor"
+          ],
+          "note": "glass of iced soft drink on a bench"
+        }
+      ]
+    },
+    {
+      "id": "coca-cola-expo",
+      "commonsTitle": "File:Flickr - Tokuriki - Coca-cola Shanghai Expo2010 Video.ogv",
+      "license": "CC BY 2.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 12,
+          "categories": [],
+          "terms": [
+            "person"
+          ],
+          "allowed": [
+            "fashion"
+          ],
+          "note": "crowd at Coca-Cola pavilion, small logos on red jackets"
+        },
+        {
+          "start": 12,
+          "end": 20,
+          "categories": [],
+          "terms": [
+            "tv"
+          ],
+          "brands": [
+            "Coca-Cola"
+          ],
+          "allowed": [
+            "tech",
+            "electronics"
+          ],
+          "note": "screen with Coca-Cola logo in corner"
+        },
+        {
+          "start": 20,
+          "end": 28.7,
+          "categories": [],
+          "terms": [
+            "person"
+          ],
+          "allowed": [
+            "fashion"
+          ],
+          "note": "blurry close-ups"
+        }
+      ]
+    },
+    {
+      "id": "cooking-turkey",
+      "commonsTitle": "File:One-Pot Turkey Breast with Gravy, by America's Test Kitchen 2020.webm",
+      "license": "CC BY 3.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 20,
+          "categories": [
+            "food"
+          ],
+          "terms": [
+            "cooking"
+          ],
+          "allowed": [
+            "indoor"
+          ],
+          "note": "recipe video with text overlays, Le Creuset pot (brand not in lexicon)"
+        }
+      ]
+    },
+    {
+      "id": "cooking-porkbelly",
+      "commonsTitle": "File:Test Kitchen- Pork Belly Sandwich.webm",
+      "license": "CC BY 3.0",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 42.1,
+          "categories": [
+            "food"
+          ],
+          "terms": [
+            "cooking"
+          ],
+          "allowed": [],
+          "note": "recipe close-ups: pork belly, pot, eggs, sandwich"
+        }
+      ]
+    }
+  ]
+}
