@@ -26,6 +26,8 @@ class Detection:
     category: str | None = None
     entity_type: str | None = None  # brand | product | person | place | org
     entity_label: str | None = None
+    # all ad categories of the term (``category`` is the first one, kept for compatibility)
+    categories: list[str] = field(default_factory=list)
 
 
 @dataclass

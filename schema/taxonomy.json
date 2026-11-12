@@ -1,5 +1,5 @@
 {
-  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only.",
+  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only. clipSceneLabels (scored with a separate softmax per kind: action / scene / object): Labels with neutral=true are distractors (never emitted): CLIP zero-shot always distributes probability over this closed set, so ordinary scenes need somewhere to go (otherwise a crowd becomes 'dancing', a screen 'gaming').",
   "version": "1.0",
   "categories": [
     "automotive",
@@ -40,7 +40,8 @@
       "transport"
     ],
     "running": [
-      "sport"
+      "sport",
+      "fitness"
     ],
     "sneakers": [
       "footwear",
@@ -59,8 +60,8 @@
       "sport"
     ],
     "bicycle": [
-      "sport",
-      "transport"
+      "transport",
+      "sport"
     ],
     "gym": [
       "sport",
@@ -83,8 +84,8 @@
       "food"
     ],
     "cup": [
-      "food",
-      "beverage"
+      "beverage",
+      "food"
     ],
     "wine glass": [
       "beverage"
@@ -113,7 +114,67 @@
     "tie": [
       "fashion"
     ],
-    "person": []
+    "person": [],
+    "cooking": [
+      "food"
+    ],
+    "sandwich": [
+      "food"
+    ],
+    "cake": [
+      "food"
+    ],
+    "donut": [
+      "food"
+    ],
+    "hot dog": [
+      "food"
+    ],
+    "carrot": [
+      "food"
+    ],
+    "broccoli": [
+      "food"
+    ],
+    "banana": [
+      "food"
+    ],
+    "apple": [
+      "food"
+    ],
+    "orange": [
+      "food"
+    ],
+    "bowl": [
+      "food"
+    ],
+    "fork": [
+      "food"
+    ],
+    "knife": [
+      "food"
+    ],
+    "spoon": [
+      "food"
+    ],
+    "oven": [
+      "food"
+    ],
+    "microwave": [
+      "food"
+    ],
+    "refrigerator": [
+      "food"
+    ],
+    "toaster": [
+      "food"
+    ],
+    "city street": [
+      "transport"
+    ],
+    "food on a plate": [
+      "food"
+    ]
   },
   "clipSceneLabels": [
     {
@@ -167,6 +228,79 @@
     {
       "label": "gym",
       "kind": "scene"
+    },
+    {
+      "label": "sneakers",
+      "kind": "object"
+    },
+    {
+      "label": "a crowd of people",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "people talking",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "a screen or display",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "a close-up of a person",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "a landscape",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "a room",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "text on screen",
+      "kind": "scene",
+      "neutral": true
+    },
+    {
+      "label": "standing",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "walking",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "clothing",
+      "kind": "object",
+      "neutral": true
+    },
+    {
+      "label": "a building",
+      "kind": "object",
+      "neutral": true
+    },
+    {
+      "label": "a plant",
+      "kind": "object",
+      "neutral": true
+    },
+    {
+      "label": "a vehicle",
+      "kind": "object",
+      "neutral": true
+    },
+    {
+      "label": "food on a plate",
+      "kind": "object"
     }
   ],
   "brands": [

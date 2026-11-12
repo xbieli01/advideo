@@ -34,6 +34,22 @@ def probe_duration(video_path: str) -> float | None:
         return None
 
 
+def has_audio_stream(video_path: str) -> bool | None:
+    """True/False via ffprobe; None when ffprobe is unavailable or fails (caller decides)."""
+    if not shutil.which("ffprobe"):
+        return None
+    try:
+        out = subprocess.check_output(
+            ["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index",
+             "-of", "csv=p=0", video_path],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return bool(out.strip())
+    except subprocess.CalledProcessError:
+        return None
+
+
 def sample_frames(
     video_path: str,
     duration_sec: float,

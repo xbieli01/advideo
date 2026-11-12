@@ -27,6 +27,8 @@ def analyze_video(
     fps: float = 1.0,
     window_sec: float = 6.0,
     duration_sec: float | None = None,
+    min_support: int = 2,
+    strong_score: float = 0.8,
 ) -> VideoMap:
     """Analyze a video and return its content map.
 
@@ -34,6 +36,7 @@ def analyze_video(
     `track`    : track backend(s) — name, instance, list, or None (e.g. whisper).
     `duration_sec` may be passed explicitly (tests / undecodable files);
     otherwise probed via ffprobe, then OpenCV, with a safe fallback.
+    `min_support` / `strong_score`: temporal support filter, see aggregate.aggregate_segments.
     """
     frame_analyzers = [
         a if isinstance(a, Analyzer) else get_analyzer(a)
@@ -63,9 +66,14 @@ def analyze_video(
     for ta in track_analyzers:
         timed.extend(ta.analyze_track(video_path, duration_sec))
 
-    segments = aggregate_segments(timed, duration_sec, window_sec=window_sec)
+    segments = aggregate_segments(timed, duration_sec, window_sec=window_sec,
+                                  min_support=min_support, strong_score=strong_score)
 
-    for backend in (*frame_analyzers, *track_analyzers):
+    # close only backends created here from a name; instances passed in belong to the caller
+    # (e.g. a worker that keeps models loaded across videos)
+    owned = [b for b, spec in zip((*frame_analyzers, *track_analyzers), (*_as_list(analyzer), *_as_list(track)))
+             if isinstance(spec, str)]
+    for backend in owned:
         backend.close()
 
     model_set = "+".join(b.name for b in (*frame_analyzers, *track_analyzers)) or "none"

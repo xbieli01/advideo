@@ -9,8 +9,7 @@ Design:
 - CLIP scores each frame against a fixed candidate label set (scenes/actions
   from taxonomy.CLIP_SCENE_LABELS) — zero-shot, no training.
 - Both are mapped through `taxonomy` so categories are consistent with the mock.
-- Device auto-selects CUDA when available (that's where throughput comes from);
-  falls back to CPU.
+- Device: ADVIDEO_DEVICE env, else CUDA, else Apple MPS, else CPU (see device.py).
 
 Brands/logos and audio keywords (OCR + Whisper) are separate future backends
 that plug in the same way; this one covers objects + scene/action labels.
@@ -18,8 +17,9 @@ that plug in the same way; this one covers objects + scene/action labels.
 
 from __future__ import annotations
 
+from ..device import pick_device
 from ..models import Detection, Frame
-from ..taxonomy import CLIP_SCENE_LABELS, categories_for
+from ..taxonomy import CLIP_NEUTRAL_LABELS, CLIP_SCENE_LABELS, categories_for
 from .base import Analyzer
 
 
@@ -34,14 +34,14 @@ class YoloClipAnalyzer(Analyzer):
         clip_pretrained: str = "laion2b_s34b_b79k",
         device: str | None = None,
         yolo_conf: float = 0.35,
-        clip_threshold: float = 0.20,
+        clip_threshold: float = 0.50,
         clip_topk: int = 3,
     ) -> None:
         import torch  # lazy
         from ultralytics import YOLO  # lazy
         import open_clip  # lazy
 
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = pick_device(device)
         self._torch = torch
         self.yolo_conf = yolo_conf
         self.clip_threshold = clip_threshold
@@ -55,10 +55,16 @@ class YoloClipAnalyzer(Analyzer):
             clip_model, pretrained=clip_pretrained, device=self.device
         )
         self._clip.eval()
+        self._logit_scale = float(self._clip.logit_scale.exp().item())
         self._tokenizer = open_clip.get_tokenizer(clip_model)
 
         self._labels = [lbl for lbl, _ in CLIP_SCENE_LABELS]
         self._label_kind = dict(CLIP_SCENE_LABELS)
+        # CLIP was trained with a learned temperature (logit_scale ~ 100); softmax over raw cosine
+        # similarities (~0.2-0.3) is almost uniform and never passes the threshold.
+        self._groups: dict[str, list[int]] = {}
+        for i, lbl in enumerate(self._labels):
+            self._groups.setdefault(self._label_kind[lbl], []).append(i)
         prompts = [f"a photo of {lbl}" for lbl in self._labels]
         with torch.no_grad():
             tok = self._tokenizer(prompts).to(self.device)
@@ -91,6 +97,7 @@ class YoloClipAnalyzer(Analyzer):
                     score=round(score, 3),
                     kind="object",
                     category=cats[0] if cats else None,
+                    categories=cats,
                 )
             )
         return dets
@@ -108,24 +115,30 @@ class YoloClipAnalyzer(Analyzer):
             feats = self._clip.encode_image(img)
             feats = feats / feats.norm(dim=-1, keepdim=True)
             sims = (feats @ self._text_feats.T).squeeze(0)
-            probs = sims.softmax(dim=-1)
 
-        topk = min(self.clip_topk, len(self._labels))
-        vals, idxs = probs.topk(topk)
+        # softmax per label kind (action / scene / object): otherwise a dominant action ("running")
+        # takes all probability mass and objects ("sneakers") never surface.
         dets: list[Detection] = []
-        for score, idx in zip(vals.tolist(), idxs.tolist()):
-            if score < self.clip_threshold:
-                continue
-            label = self._labels[idx]
-            cats = categories_for(label)
-            dets.append(
-                Detection(
-                    term=label,
-                    score=round(float(score), 3),
-                    kind=self._label_kind[label],
-                    category=cats[0] if cats else None,
+        for idxs in self._groups.values():
+            group = (self._logit_scale * sims[idxs]).softmax(dim=-1)
+            k = min(self.clip_topk, len(idxs))
+            vals, pos = group.topk(k)
+            for score, p in zip(vals.tolist(), pos.tolist()):
+                if score < self.clip_threshold:
+                    continue
+                label = self._labels[idxs[p]]
+                if label in CLIP_NEUTRAL_LABELS:
+                    continue
+                cats = categories_for(label)
+                dets.append(
+                    Detection(
+                        term=label,
+                        score=round(float(score), 3),
+                        kind=self._label_kind[label],
+                        category=cats[0] if cats else None,
+                        categories=cats,
+                    )
                 )
-            )
         return dets
 
     def close(self) -> None:

@@ -50,8 +50,26 @@ def test_taxonomy_categories():
 
 
 def test_clip_labels_have_valid_kinds():
-    valid = {"action", "scene"}
+    valid = {"action", "scene", "object"}
     assert all(kind in valid for _, kind in CLIP_SCENE_LABELS)
+
+
+def test_every_clip_group_has_neutral_distractors():
+    # CLIP is scored with a softmax per kind; without neutral labels any frame is forced into a real label
+    from advideo_pipeline.taxonomy import CLIP_NEUTRAL_LABELS
+
+    kinds = {kind for _, kind in CLIP_SCENE_LABELS}
+    for kind in kinds:
+        labels = [lbl for lbl, k in CLIP_SCENE_LABELS if k == kind]
+        assert any(lbl in CLIP_NEUTRAL_LABELS for lbl in labels), kind
+        assert all(categories_for(lbl) == [] for lbl in labels if lbl in CLIP_NEUTRAL_LABELS), kind
+
+
+def test_taxonomy_maps_cooking_and_coco_food():
+    assert categories_for("cooking") == ["food"]
+    for t in ("sandwich", "cake", "bowl", "carrot"):
+        assert "food" in categories_for(t)
+    assert set(categories_for("running")) == {"sport", "fitness"}
 
 
 def test_mock_is_analyzer_and_deterministic():

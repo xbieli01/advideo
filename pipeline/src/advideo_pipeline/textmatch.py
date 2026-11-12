@@ -57,6 +57,7 @@ def brand_detections(text: str, kind: str, score: float) -> list[Detection]:
                 score=score,
                 kind=kind,
                 category=cats[0] if cats else None,
+                categories=list(cats),
                 entity_type="brand",
                 entity_label=label,
             )
@@ -74,6 +75,7 @@ def keyword_detections(text: str, kind: str, score: float) -> list[Detection]:
                 score=score,
                 kind=kind,
                 category=cats[0] if cats else None,
+                categories=list(cats),
             )
         )
     return out

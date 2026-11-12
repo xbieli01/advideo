@@ -10,9 +10,14 @@ Install with `pip install -e .[ml]`. faster-whisper decodes the audio via ffmpeg
 
 from __future__ import annotations
 
+import logging
+
 from ..models import Detection
 from ..textmatch import brand_detections, keyword_detections
 from .base import TrackAnalyzer
+
+
+log = logging.getLogger(__name__)
 
 
 class WhisperAudioAnalyzer(TrackAnalyzer):
@@ -41,8 +46,19 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
     def analyze_track(
         self, video_path: str, duration_sec: float
     ) -> list[tuple[float, float, Detection]]:
-        segments, _info = self._model.transcribe(video_path, language=self.language)
+        from ..frames import has_audio_stream
+
+        if has_audio_stream(video_path) is False:
+            log.info("whisper: %s has no audio track, skipped", video_path)
+            return []
         out: list[tuple[float, float, Detection]] = []
+        try:
+            segments, _info = self._model.transcribe(video_path, language=self.language)
+            segments = list(segments)  # decoding is lazy; surface errors here
+        except (IndexError, ValueError, RuntimeError, OSError) as exc:
+            # unreadable/odd audio must not fail the whole video analysis; visual backends still count
+            log.warning("whisper: audio of %s could not be decoded (%s), skipped", video_path, exc)
+            return []
         for seg in segments:
             text = seg.text or ""
             start = float(seg.start)

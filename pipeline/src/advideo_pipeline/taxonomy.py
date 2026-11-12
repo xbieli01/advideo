@@ -49,6 +49,10 @@ TERM_CATEGORIES: dict[str, list[str]] = {
 CLIP_SCENE_LABELS: list[tuple[str, str]] = [
     (e["label"], e["kind"]) for e in _DOC["clipSceneLabels"]
 ]
+# distractor labels: scored (they absorb probability mass) but never emitted
+CLIP_NEUTRAL_LABELS: frozenset[str] = frozenset(
+    e["label"] for e in _DOC["clipSceneLabels"] if e.get("neutral")
+)
 
 # --- brand lexicon -----------------------------------------------------------
 # alias (lowercase, may be multi-word) -> (canonical brand label, categories).
