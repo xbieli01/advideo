@@ -39,3 +39,8 @@ obj/
 
 # orchestrator local map store
 orchestrator/**/data/
+
+# Admin UI build output copied into the API (Docker / local preview)
+orchestrator/src/Advideo.Orchestrator.Api/wwwroot/
+admin/node_modules/
+admin/.angular/

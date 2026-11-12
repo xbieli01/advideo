@@ -2,6 +2,16 @@
 # Build from the repo root:  docker build -f orchestrator/Dockerfile -t advideo-api .
 # ML backends (YOLO/CLIP/OCR/Whisper, large):  --build-arg PIPELINE_EXTRAS=ml   (default: mock analyzers only)
 
+# Admin UI (Angular SPA) -> served by the API under /admin. Built as the non-root "node" user.
+FROM node:22-bookworm-slim AS admin
+WORKDIR /admin
+RUN chown node:node /admin
+USER node
+COPY --chown=node:node admin/package.json admin/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY --chown=node:node admin/ ./
+RUN npx ng build --configuration production
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY schema/ schema/
@@ -27,6 +37,7 @@ ENV PATH="/opt/advideo/venv/bin:${PATH}" \
 
 WORKDIR /app
 COPY --from=build /out .
+COPY --from=admin /admin/dist/admin/ /app/wwwroot/admin/
 COPY orchestrator/seed/ /app/seed/
 RUN mkdir -p /app/data/maps && chown -R $APP_UID /app/data
 USER $APP_UID

@@ -14,6 +14,7 @@ matches Nike, and so on.
 - **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
 - **M2 (done):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher (T-005a), ad-serving API + map cache (T-005b), events/ledger/stats + golden & perf tests (T-005c).
 - **M3 (in progress):** JS snippet for customer portals done (M3a, `client/`); browser extension next (M3b).
+- **Admin UI (done):** Angular SPA for campaigns, platforms, video analysis and decision explain, served by the API under `/admin` (`admin/`).
 
 ## Architecture (short)
 
@@ -37,6 +38,7 @@ schema/video-map.schema.json     canonical content-map contract
 schema/taxonomy.json             shared categories / brands (pipeline + ad matcher)
 docs/m2-ad-serving.md            M2 design (platforms, pricing, matching, API)
 client/                          player snippet (TypeScript, M3)
+admin/                           Admin UI (Angular 22 + Material), served by the API at /admin
 pipeline/                        Python analysis worker (M1)
   src/advideo_pipeline/          package (frames, analyzers, aggregate, pipeline, cli)
   tests/                         end-to-end + schema-validation tests
@@ -88,6 +90,29 @@ advideo-analyze --video real.mp4 --analyzer "yolo+clip,ocr" --track whisper --ou
   yolo+clip, ocr) and **track-level** (`TrackAnalyzer`, whole video — whisper).
   Brand/keyword extraction from recognized/transcribed text lives in the pure,
   model-free `textmatch.py`, so that logic is fully unit-tested.
+
+## Admin UI
+
+Angular 22 + Angular Material SPA in `admin/`. In the Docker image it is built in a
+non-root Node stage and copied to `wwwroot/admin`; the API serves it at **`/admin`**
+on the same origin (no CORS), with a strict CSP (`script-src 'self'`), `X-Frame-Options: DENY`,
+`no-store` for `index.html` and immutable caching for hashed bundles.
+
+- Sign-in is the API key (`X-Api-Key`), validated via `GET /auth/me`; kept in sessionStorage only.
+- `admin` keys: full CRUD on campaigns/platforms, pause/resume, video analysis jobs, decision explain.
+- `reporting` keys: read-only views (Overview, Campaigns, Platforms) with stats.
+
+Local development (API on :5000 with the Development seed keys `dev-admin-key` / `dev-reporting-key`):
+
+```bash
+cd orchestrator/src/Advideo.Orchestrator.Api && ASPNETCORE_ENVIRONMENT=Development \
+  ASPNETCORE_URLS=http://localhost:5000 dotnet run --no-launch-profile
+cd admin && npm ci && npx ng serve        # http://localhost:4200/admin/  (proxy.conf.json -> :5000)
+npx ng test --watch=false                 # Vitest unit tests
+```
+
+Preview the production build through the API: `npx ng build` and copy `admin/dist/admin/` to
+`orchestrator/src/Advideo.Orchestrator.Api/wwwroot/admin/` (gitignored); then open `http://localhost:5000/admin/`.
 
 ## Status
 
