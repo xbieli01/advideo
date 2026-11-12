@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Advideo.AdServing.Matching;
+using Advideo.Orchestrator.Api.Admin;
 using Advideo.Orchestrator.Api.AdServing;
 using Advideo.Orchestrator.Api.Contracts;
 using Advideo.Orchestrator.Api.Security;
@@ -164,6 +165,8 @@ builder.Services.AddHostedService<AnalysisWorker>();
 var app = builder.Build();
 
 if (app.Configuration.GetValue("Network:TrustForwardedHeaders", false)) app.UseForwardedHeaders();
+// Admin UI (Angular SPA in wwwroot/admin, built by the Docker image) — before auth: static files are public, data needs the API key
+if (app.UseAdminUi()) app.Logger.LogInformation("Admin UI served at {Path}", AdminUiHosting.BasePath);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -188,6 +191,7 @@ if (!string.IsNullOrWhiteSpace(seedPath) && File.Exists(seedPath))
 
 // --- endpoints ---------------------------------------------------------------
 app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
+app.MapAuthMe();
 
 app.MapGet("/readyz", async (IEnumerable<IReadinessProbe> probes, CancellationToken ct) =>
 {
