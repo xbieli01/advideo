@@ -1,0 +1,7 @@
+{
+  "/platforms": { "target": "http://localhost:5000", "secure": false },
+  "/campaigns": { "target": "http://localhost:5000", "secure": false },
+  "/videos": { "target": "http://localhost:5000", "secure": false },
+  "/ads": { "target": "http://localhost:5000", "secure": false },
+  "/auth": { "target": "http://localhost:5000", "secure": false }
+}
