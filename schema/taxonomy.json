@@ -174,6 +174,50 @@
     ],
     "food on a plate": [
       "food"
+    ],
+    "playing football": [
+      "sport"
+    ],
+    "playing tennis": [
+      "sport"
+    ],
+    "skateboarding": [
+      "sport"
+    ],
+    "cycling": [
+      "sport"
+    ],
+    "playing basketball": [
+      "sport"
+    ],
+    "working out": [
+      "fitness",
+      "sport"
+    ],
+    "walking on a beach": [
+      "travel",
+      "outdoor"
+    ],
+    "a stadium": [
+      "sport"
+    ],
+    "a sports field": [
+      "sport"
+    ],
+    "a supermarket": [
+      "food",
+      "beverage"
+    ],
+    "a landscape": [
+      "outdoor",
+      "travel"
+    ],
+    "food packages on shelves": [
+      "food"
+    ],
+    "drink bottles on shelves": [
+      "beverage",
+      "food"
     ]
   },
   "clipSceneLabels": [
@@ -255,8 +299,7 @@
     },
     {
       "label": "a landscape",
-      "kind": "scene",
-      "neutral": true
+      "kind": "scene"
     },
     {
       "label": "a room",
@@ -301,6 +344,89 @@
     {
       "label": "food on a plate",
       "kind": "object"
+    },
+    {
+      "label": "a person talking to the camera",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "an interview",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "a person sitting",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "people posing for a photo",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "looking at a screen",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "a person smiling",
+      "kind": "action",
+      "neutral": true
+    },
+    {
+      "label": "playing football",
+      "kind": "action"
+    },
+    {
+      "label": "playing tennis",
+      "kind": "action"
+    },
+    {
+      "label": "skateboarding",
+      "kind": "action"
+    },
+    {
+      "label": "cycling",
+      "kind": "action"
+    },
+    {
+      "label": "playing basketball",
+      "kind": "action"
+    },
+    {
+      "label": "working out",
+      "kind": "action"
+    },
+    {
+      "label": "walking on a beach",
+      "kind": "action"
+    },
+    {
+      "label": "a stadium",
+      "kind": "scene"
+    },
+    {
+      "label": "a sports field",
+      "kind": "scene"
+    },
+    {
+      "label": "a supermarket",
+      "kind": "scene"
+    },
+    {
+      "label": "food packages on shelves",
+      "kind": "object"
+    },
+    {
+      "label": "drink bottles on shelves",
+      "kind": "object"
+    },
+    {
+      "label": "a shop interior",
+      "kind": "scene",
+      "neutral": true
     }
   ],
   "brands": [
