@@ -63,7 +63,8 @@
             "scene": { "type": "string" },
             "text": { "type": "array", "items": { "type": "string" } },
             "audioKeywords": { "type": "array", "items": { "type": "string" },
-            "logos": { "type": "array", "items": { "type": "string" }, "description": "brands recognised visually (logo detector)" } }
+            "logos": { "type": "array", "items": { "type": "string" }, "description": "brands recognised visually (logo detector)" } },
+            "safety": { "type": "array", "items": { "type": "string" }, "description": "sensitive-content labels (brand safety)" }
           }
         }
       }

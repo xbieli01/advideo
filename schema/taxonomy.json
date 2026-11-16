@@ -1,5 +1,5 @@
 {
-  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only. clipSceneLabels (scored with a separate softmax per kind: action / scene / object): Labels with neutral=true are distractors (never emitted): CLIP zero-shot always distributes probability over this closed set, so ordinary scenes need somewhere to go (otherwise a crowd becomes 'dancing', a screen 'gaming'). brands[].clipPrompts + clipBrandNeutral: CLIP zero-shot logo detection (softmax over brand prompts + neutral distractors, on frame crops).",
+  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only. clipSceneLabels (scored with a separate softmax per kind: action / scene / object): Labels with neutral=true are distractors (never emitted): CLIP zero-shot always distributes probability over this closed set, so ordinary scenes need somewhere to go (otherwise a crowd becomes 'dancing', a screen 'gaming'). brands[].clipPrompts + clipBrandNeutral: CLIP zero-shot logo detection (softmax over brand prompts + neutral distractors, on frame crops). kind=safety labels (own softmax with everyday-scene neutrals) map to category 'sensitive' + subtype; the ad server shows no ad in sensitive segments unless platform.brandSafety.allowSensitive.",
   "version": "1.0",
   "categories": [
     "automotive",
@@ -13,7 +13,12 @@
     "sport",
     "tech",
     "transport",
-    "travel"
+    "travel",
+    "sensitive",
+    "politics",
+    "accident",
+    "weapons",
+    "violence"
   ],
   "termCategories": {
     "car": [
@@ -218,6 +223,54 @@
     "drink bottles on shelves": [
       "beverage",
       "food"
+    ],
+    "a protest or demonstration with banners": [
+      "sensitive",
+      "politics"
+    ],
+    "riot police in helmets and protective gear": [
+      "sensitive",
+      "politics"
+    ],
+    "a political rally": [
+      "sensitive",
+      "politics"
+    ],
+    "a car crash or traffic accident": [
+      "sensitive",
+      "accident"
+    ],
+    "a burning building with heavy smoke": [
+      "sensitive",
+      "accident"
+    ],
+    "a wildfire": [
+      "sensitive",
+      "accident"
+    ],
+    "soldiers holding rifles": [
+      "sensitive",
+      "weapons"
+    ],
+    "a person firing a gun": [
+      "sensitive",
+      "weapons"
+    ],
+    "people fighting": [
+      "sensitive",
+      "violence"
+    ],
+    "blood or a serious injury": [
+      "sensitive",
+      "violence"
+    ],
+    "a sit-in protest with people sitting on a street": [
+      "sensitive",
+      "politics"
+    ],
+    "emergency vehicles with flashing lights at an accident scene": [
+      "sensitive",
+      "accident"
     ]
   },
   "clipSceneLabels": [
@@ -427,6 +480,164 @@
       "label": "a shop interior",
       "kind": "scene",
       "neutral": true
+    },
+    {
+      "label": "a protest or demonstration with banners",
+      "kind": "safety"
+    },
+    {
+      "label": "riot police in helmets and protective gear",
+      "kind": "safety"
+    },
+    {
+      "label": "a political rally",
+      "kind": "safety"
+    },
+    {
+      "label": "a car crash or traffic accident",
+      "kind": "safety"
+    },
+    {
+      "label": "a burning building with heavy smoke",
+      "kind": "safety"
+    },
+    {
+      "label": "a wildfire",
+      "kind": "safety"
+    },
+    {
+      "label": "soldiers holding rifles",
+      "kind": "safety"
+    },
+    {
+      "label": "a person firing a gun",
+      "kind": "safety"
+    },
+    {
+      "label": "people fighting",
+      "kind": "safety"
+    },
+    {
+      "label": "blood or a serious injury",
+      "kind": "safety"
+    },
+    {
+      "label": "an ordinary everyday scene",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "people at a sports event",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a crowd at a concert or festival",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "people dancing",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "firefighters at a fire station",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a fire truck parked",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a barbecue or campfire",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "cars driving normally on a road",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a parked car",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a cooking video",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a landscape view",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a shopping street",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "an office or classroom",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a person speaking to the camera",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a city at night",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "spectators watching a contest or show",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a crowd at an exhibition or trade fair",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "people taking photos at an event",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a skateboarding contest",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a street festival",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "people waiting in line",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "athletes running",
+      "kind": "safety",
+      "neutral": true
+    },
+    {
+      "label": "a sit-in protest with people sitting on a street",
+      "kind": "safety"
+    },
+    {
+      "label": "emergency vehicles with flashing lights at an accident scene",
+      "kind": "safety"
     }
   ],
   "brands": [
