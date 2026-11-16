@@ -19,8 +19,8 @@ from .models import Detection, Segment
 
 TimedDetection = tuple[float, float, Detection]
 
-_SUPPORT_KINDS = {"object", "action", "scene", "logo"}
-_SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text", "logo": "logos",
+_SUPPORT_KINDS = {"object", "action", "scene", "logo", "safety"}
+_SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text", "logo": "logos", "safety": "safety",
                  "audio": "audioKeywords"}
 
 
@@ -82,8 +82,11 @@ def _filter_support(
             counts[d.term] += 1
             best[d.term] = max(best[d.term], d.score)
     logos = {d.term for d, _ in dets if d.kind == "logo"}
+    safety = {d.term for d, _ in dets if d.kind == "safety"}
 
     def ok(t: str) -> bool:
+        if t in safety:  # brand safety: always >= 2 frames, no single-frame bypass (a false block costs revenue)
+            return counts[t] >= max(2, min_support)
         ms, ss = (logo_min_support, logo_strong_score) if t in logos else (min_support, strong_score)
         return counts[t] >= ms or best[t] >= ss
 

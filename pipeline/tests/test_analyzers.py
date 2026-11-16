@@ -50,7 +50,7 @@ def test_taxonomy_categories():
 
 
 def test_clip_labels_have_valid_kinds():
-    valid = {"action", "scene", "object"}
+    valid = {"action", "scene", "object", "safety"}
     assert all(kind in valid for _, kind in CLIP_SCENE_LABELS)
 
 

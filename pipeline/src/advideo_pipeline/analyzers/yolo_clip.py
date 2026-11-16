@@ -36,6 +36,8 @@ class YoloClipAnalyzer(Analyzer):
         yolo_conf: float = 0.35,
         clip_threshold: float = 0.50,
         clip_topk: int = 3,
+        class_conf: dict[str, float] | None = None,
+        safety_threshold: float = 0.7,
     ) -> None:
         import torch  # lazy
         from ultralytics import YOLO  # lazy
@@ -45,8 +47,13 @@ class YoloClipAnalyzer(Analyzer):
         self.device = pick_device(device)
         self._torch = torch
         self.yolo_conf = yolo_conf
+        # per-class minimum confidence: screens are everywhere in the background (shop TVs, bus-shelter displays)
+        # and low-confidence tv/laptop/phone boxes create false tech/electronics segments
+        self.class_conf = {"tv": 0.6, "laptop": 0.6, "cell phone": 0.6} if class_conf is None else dict(class_conf)
         self.clip_threshold = clip_threshold
         self.clip_topk = clip_topk
+        # brand-safety labels (kind "safety") use their own, stricter threshold: a false "sensitive" blocks ads
+        self.kind_threshold = {"safety": safety_threshold}
 
         # object detector
         self._yolo = YOLO(yolo_weights)
@@ -88,6 +95,8 @@ class YoloClipAnalyzer(Analyzer):
                 score = float(box.conf)
                 best[label] = max(best.get(label, 0.0), score)
         for label, score in best.items():
+            if score < self.class_conf.get(label, 0.0):
+                continue
             cats = categories_for(label)
             dets.append(
                 Detection(
@@ -117,12 +126,13 @@ class YoloClipAnalyzer(Analyzer):
         # softmax per label kind (action / scene / object): otherwise a dominant action ("running")
         # takes all probability mass and objects ("sneakers") never surface.
         dets: list[Detection] = []
-        for idxs in self._groups.values():
+        for kind, idxs in self._groups.items():
+            threshold = self.kind_threshold.get(kind, self.clip_threshold)
             group = (self._logit_scale * sims[idxs]).softmax(dim=-1)
             k = min(self.clip_topk, len(idxs))
             vals, pos = group.topk(k)
             for score, p in zip(vals.tolist(), pos.tolist()):
-                if score < self.clip_threshold:
+                if score < threshold:
                     continue
                 label = self._labels[idxs[p]]
                 if label in CLIP_NEUTRAL_LABELS:

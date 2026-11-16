@@ -89,3 +89,14 @@ def test_logo_needs_three_frames_unless_near_certain():
     assert three.entities[0]["label"] == "Nike"
     certain = aggregate_segments([logo(0.0, 0.99)], 6.0, min_support=2)[0]
     assert certain.entities[0]["label"] == "Nike"
+
+
+def test_safety_label_needs_two_frames_even_when_strong():
+    def unsafe(t, s):
+        return (t, t, Detection(term="a car crash or traffic accident", score=s, kind="safety",
+                                category="sensitive", categories=["sensitive", "accident"]))
+    one = aggregate_segments([unsafe(0.0, 0.99)], 6.0, min_support=2)[0]
+    assert "sensitive" not in one.categories
+    two = aggregate_segments([unsafe(0.0, 0.75), unsafe(1.0, 0.8)], 6.0, min_support=2)[0]
+    assert two.categories == ["accident", "sensitive"]
+    assert two.signals["safety"] == ["a car crash or traffic accident"]
