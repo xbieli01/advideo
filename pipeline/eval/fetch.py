@@ -7,6 +7,7 @@ Clips (title, licence, author) are listed in eval/samples.json; videos are gitig
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import shutil
 import subprocess
@@ -25,6 +26,26 @@ def _get(url: str) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=120) as r:
         return r.read()
+
+
+def _download(url: str, dst: Path, attempts: int = 4) -> None:
+    """Stream to file, resume with HTTP Range after a broken connection."""
+    import time
+
+    for i in range(attempts):
+        have = dst.stat().st_size if dst.exists() else 0
+        headers = {"User-Agent": UA}
+        if have:
+            headers["Range"] = f"bytes={have}-"
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=120) as r, \
+                    dst.open("ab" if have and r.status == 206 else "wb") as fh:
+                shutil.copyfileobj(r, fh, 1 << 20)
+            return
+        except (OSError, http.client.HTTPException) as exc:
+            print(f"     retry {i + 1}: {exc}", file=sys.stderr)
+            time.sleep(2)
+    raise RuntimeError(f"download failed: {url}")
 
 
 def file_info(title: str) -> dict:
@@ -59,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"get  {s['id']:<14} {info['size'] / 1e6:6.1f} MB  {s['commonsTitle']}")
         with tempfile.TemporaryDirectory() as td:
             src = Path(td) / ("src" + Path(info["url"]).suffix)
-            src.write_bytes(_get(info["url"]))
+            _download(info["url"], src)
             cmd = ["ffmpeg", "-loglevel", "error", "-y", "-i", str(src)]
             if s.get("maxSec"):
                 cmd += ["-t", str(s["maxSec"])]

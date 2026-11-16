@@ -1,0 +1,8 @@
+{
+  "note": "Reference metrics on the 26-clip eval set (2026-11-16, CPU, fps 1). Update deliberately when a change is an accepted improvement: run run_eval.py, then check_regression.py --update.",
+  "tolerance": {"drop": 0.03, "brandRecallDrop": 0.05, "falseBrandsIncrease": 0},
+  "configs": {
+    "yolo+clip": {"clips": 26, "categoryPrecision": 0.89, "categoryRecall": 0.96, "termRecall": 0.94},
+    "ocr,clip-brand": {"clips": 26, "brandRecall": 0.52, "falseBrands": 3}
+  }
+}

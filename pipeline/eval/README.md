@@ -73,3 +73,30 @@ Findings
 Gaps: 7 brand clips only, mostly one brand each; brand recall numbers have wide error bars.
 
 Clips: Wikimedia Commons, licences in `samples.json` (CC0 / CC BY / CC BY-SA); used for evaluation only, not redistributed.
+
+## R1c + R3: bigger eval set, label fixes, regression guard (2026-11-16)
+
+11 more clips (`set: r3`): beach football, tennis, outdoor gym, beach, airplane takeoff, traditional dance,
+supermarket, mountains, Tour de France, skateboarding, political street demonstration (negative, brand-safety
+relevant) → **26 clips, 823 s**.
+
+| yolo+clip, 26 clips | cat P | cat R | term R |
+|---|---|---|---|
+| before (T-009 taxonomy) | 0.79 | 0.75 | 0.93 |
+| + neutral talking-head actions (R1c: interview, talking to camera, sitting, posing, looking at a screen) | — | — | — |
+| + sport actions (football, tennis, skateboarding, cycling, basketball, working out), stadium / sports field, supermarket + food/drink shelves, "a landscape" → outdoor (was a neutral that stole mountain/outdoor), no "swimming" | **0.89** | **0.96** | 0.94 |
+
+On the 15-clip set R1c alone moved category precision 0.81 → 0.88 (Nike interviews no longer "running" → fitness).
+Brand config `ocr,clip-brand` on 26 clips: brand R 0.52, 3 false brands (new: green four-square regional logo →
+Microsoft).
+
+Regression guard: `baseline.json` + `check_regression.py` (exit 1 when cat P/R or term R drop > 0.03, brand R
+drops > 0.05 or false brands increase). Run after any taxonomy/threshold change:
+
+```bash
+python eval/run_eval.py --config yolo+clip --config "ocr,clip-brand" --cache
+python eval/check_regression.py            # --update to accept a deliberate improvement
+```
+
+Remaining errors: YOLO tv/laptop/cell phone → tech/electronics on real screens (shop TV, bus shelter screen);
+running-form windows without the runner; beach football / cycling single windows.
