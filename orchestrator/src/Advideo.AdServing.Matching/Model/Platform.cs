@@ -29,8 +29,18 @@ public sealed record FrequencySettings
 
 public sealed record BrandSafetySettings
 {
+    /// <summary>Category the analysis pipeline puts on sensitive content (protests, accidents, weapons, violence).</summary>
+    public const string SensitiveCategory = "sensitive";
+
     public IReadOnlyList<string> ExcludeCategories { get; init; } = [];
     public IReadOnlyList<string> ExcludeKeywords { get; init; } = [];
+
+    /// <summary>
+    /// Sensitive segments get no ad unless the platform explicitly allows it (e.g. a news portal with its own
+    /// advertisers). Safe by default; subtypes (politics, accident, weapons, violence) can still be excluded
+    /// individually via <see cref="ExcludeCategories"/>.
+    /// </summary>
+    public bool AllowSensitive { get; init; }
 }
 
 public sealed record MatchWeights

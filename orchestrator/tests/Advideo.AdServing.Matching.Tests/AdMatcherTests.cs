@@ -103,6 +103,32 @@ public class AdMatcherTests
     }
 
     [Fact]
+    public void Sensitive_segment_gets_no_ad_by_default()
+    {
+        var crash = Segment(
+            keywords: [new ScoredTerm("car", 0.8), new ScoredTerm("a car crash or traffic accident", 0.9)],
+            categories: ["automotive", "sensitive", "accident"],
+            signals: new SegmentSignals(Safety: ["a car crash or traffic accident"]));
+        var d = Matcher.Decide("v1", crash, [Campaign("auto", new Targeting { Categories = ["automotive"] })], Platform(), Ctx());
+        Assert.False(d.HasAd);
+        Assert.Equal("Brand safety: sensitive content (a car crash or traffic accident).", d.NoAdReason);
+    }
+
+    [Fact]
+    public void Platform_can_allow_sensitive_content_but_still_exclude_subtypes()
+    {
+        var protest = Segment(keywords: [new ScoredTerm("city street", 0.8)], categories: ["sensitive", "politics", "transport"]);
+        var campaign = Campaign("bus", new Targeting { Categories = ["transport"] });
+        var news = Platform() with { BrandSafety = new() { AllowSensitive = true } };
+        Assert.True(Matcher.Decide("v1", protest, [campaign], news, Ctx()).HasAd);
+
+        var newsNoPolitics = Platform() with { BrandSafety = new() { AllowSensitive = true, ExcludeCategories = ["politics"] } };
+        var d = Matcher.Decide("v1", protest, [campaign], newsNoPolitics, Ctx());
+        Assert.False(d.HasAd);
+        Assert.StartsWith("Platform brand safety: category 'politics'", d.NoAdReason);
+    }
+
+    [Fact]
     public void Inactive_out_of_window_or_wrong_platform_campaigns_are_rejected()
     {
         var t = new Targeting { Brands = ["Tesla"] };

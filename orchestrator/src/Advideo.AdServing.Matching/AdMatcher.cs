@@ -26,6 +26,13 @@ public sealed class AdMatcher(Taxonomy taxonomy)
         if (ctx.LastAdAtSec is { } last && now >= last && now - last < freq.MinIntervalSec)
             return new AdDecision(null, [], $"Minimum interval {freq.MinIntervalSec}s between ads not reached.");
 
+        if (!platform.BrandSafety.AllowSensitive &&
+            segment.Categories.Contains(BrandSafetySettings.SensitiveCategory, StringComparer.OrdinalIgnoreCase))
+        {
+            var what = segment.Signals?.Safety is { Count: > 0 } labels ? $" ({string.Join(", ", labels)})" : "";
+            return new AdDecision(null, [], $"Brand safety: sensitive content{what}.");
+        }
+
         if (Violates(segment, platform.BrandSafety.ExcludeCategories, platform.BrandSafety.ExcludeKeywords) is { } unsafeReason)
             return new AdDecision(null, [], $"Platform brand safety: {unsafeReason}.");
 

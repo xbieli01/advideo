@@ -34,7 +34,7 @@ export interface PlatformConfig {
   };
   slots: AdSlot[];
   frequency: { minIntervalSec: number; maxPerVideo: number; maxPerViewerPerDay: number | null };
-  brandSafety: { excludeCategories: string[]; excludeKeywords: string[] };
+  brandSafety: { excludeCategories: string[]; excludeKeywords: string[]; allowSensitive?: boolean };
   matching: {
     relevanceThreshold: number;
     weights: { brand: number; entity: number; keyword: number; category: number };

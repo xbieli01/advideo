@@ -20,5 +20,15 @@ describe('platform form mapping', () => {
     expect(p.pricing.currency).toBe('CZK');
     expect(p.brandSafety.excludeKeywords).toEqual(['gore', 'war']);
     expect(p.frequency.maxPerViewerPerDay).toBeNull();
+    expect(p.brandSafety.allowSensitive).toBe(false);
+  });
+
+  it('maps allowSensitive both ways', () => {
+    const f = newPlatformForm();
+    f.id = 'news';
+    f.name = 'News';
+    f.allowSensitive = true;
+    expect(formToPlatform(f).brandSafety.allowSensitive).toBe(true);
+    expect(platformToForm(formToPlatform(f)).allowSensitive).toBe(true);
   });
 });

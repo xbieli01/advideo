@@ -72,6 +72,11 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
             <mat-form-field appearance="outline"><mat-label>Max per viewer / day</mat-label><input matInput type="number" min="0" name="maxD" [(ngModel)]="f.maxPerViewerPerDay" /><mat-hint>empty = no limit</mat-hint></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Exclude categories</mat-label><input matInput name="exCat" [(ngModel)]="f.excludeCategories" /></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Exclude keywords</mat-label><input matInput name="exKw" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
+            <div class="full">
+              <mat-checkbox name="allowSensitive" [(ngModel)]="f.allowSensitive">Allow ads in sensitive content</mat-checkbox>
+              <div class="muted small">Off (recommended): no ad in segments marked sensitive (protests, accidents, weapons, violence).
+                On: e.g. a news portal; subtypes can still be blocked via Exclude categories (politics, accident, weapons, violence).</div>
+            </div>
             <mat-form-field appearance="outline"><mat-label>Relevance threshold</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="thr" [(ngModel)]="f.relevanceThreshold" /></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Weight brand</mat-label><input matInput type="number" step="0.1" name="wb" [(ngModel)]="f.wBrand" /></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Weight entity</mat-label><input matInput type="number" step="0.1" name="we" [(ngModel)]="f.wEntity" /></mat-form-field>

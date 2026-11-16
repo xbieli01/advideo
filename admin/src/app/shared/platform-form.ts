@@ -15,6 +15,7 @@ export interface PlatformForm {
   maxPerVideo: number;
   maxPerViewerPerDay: number | null;
   excludeCategories: string;
+  allowSensitive: boolean;
   excludeKeywords: string;
   relevanceThreshold: number;
   wBrand: number;
@@ -38,6 +39,7 @@ export function newPlatformForm(): PlatformForm {
     maxPerVideo: 3,
     maxPerViewerPerDay: null,
     excludeCategories: '',
+    allowSensitive: false,
     excludeKeywords: '',
     relevanceThreshold: 0.3,
     wBrand: 1,
@@ -66,6 +68,7 @@ export function platformToForm(p: PlatformConfig): PlatformForm {
     maxPerViewerPerDay: p.frequency?.maxPerViewerPerDay ?? null,
     excludeCategories: fromList(p.brandSafety?.excludeCategories),
     excludeKeywords: fromList(p.brandSafety?.excludeKeywords),
+    allowSensitive: p.brandSafety?.allowSensitive ?? false,
     relevanceThreshold: p.matching?.relevanceThreshold ?? d.relevanceThreshold,
     wBrand: w?.brand ?? d.wBrand,
     wEntity: w?.entity ?? d.wEntity,
@@ -95,7 +98,11 @@ export function formToPlatform(f: PlatformForm): PlatformConfig {
       maxPerVideo: Number(f.maxPerVideo),
       maxPerViewerPerDay: toNumberOrNull(f.maxPerViewerPerDay),
     },
-    brandSafety: { excludeCategories: toList(f.excludeCategories), excludeKeywords: toList(f.excludeKeywords) },
+    brandSafety: {
+      excludeCategories: toList(f.excludeCategories),
+      excludeKeywords: toList(f.excludeKeywords),
+      allowSensitive: !!f.allowSensitive,
+    },
     matching: {
       relevanceThreshold: Number(f.relevanceThreshold),
       weights: { brand: Number(f.wBrand), entity: Number(f.wEntity), keyword: Number(f.wKeyword), category: Number(f.wCategory) },
