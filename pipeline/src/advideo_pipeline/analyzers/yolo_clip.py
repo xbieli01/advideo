@@ -39,7 +39,8 @@ class YoloClipAnalyzer(Analyzer):
     ) -> None:
         import torch  # lazy
         from ultralytics import YOLO  # lazy
-        import open_clip  # lazy
+
+        from ..clip_cache import load_clip
 
         self.device = pick_device(device)
         self._torch = torch
@@ -51,12 +52,9 @@ class YoloClipAnalyzer(Analyzer):
         self._yolo = YOLO(yolo_weights)
 
         # zero-shot label model
-        self._clip, _, self._preprocess = open_clip.create_model_and_transforms(
-            clip_model, pretrained=clip_pretrained, device=self.device
+        self._clip, self._preprocess, self._tokenizer, self._logit_scale = load_clip(
+            clip_model, clip_pretrained, self.device
         )
-        self._clip.eval()
-        self._logit_scale = float(self._clip.logit_scale.exp().item())
-        self._tokenizer = open_clip.get_tokenizer(clip_model)
 
         self._labels = [lbl for lbl, _ in CLIP_SCENE_LABELS]
         self._label_kind = dict(CLIP_SCENE_LABELS)

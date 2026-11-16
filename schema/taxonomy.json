@@ -1,5 +1,5 @@
 {
-  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only. clipSceneLabels (scored with a separate softmax per kind: action / scene / object): Labels with neutral=true are distractors (never emitted): CLIP zero-shot always distributes probability over this closed set, so ordinary scenes need somewhere to go (otherwise a crowd becomes 'dancing', a screen 'gaming').",
+  "$comment": "Shared advideo taxonomy. Single source of truth for the Python pipeline (M1) and the .NET ad matcher (M2). Edit here only. clipSceneLabels (scored with a separate softmax per kind: action / scene / object): Labels with neutral=true are distractors (never emitted): CLIP zero-shot always distributes probability over this closed set, so ordinary scenes need somewhere to go (otherwise a crowd becomes 'dancing', a screen 'gaming'). brands[].clipPrompts + clipBrandNeutral: CLIP zero-shot logo detection (softmax over brand prompts + neutral distractors, on frame crops).",
   "version": "1.0",
   "categories": [
     "automotive",
@@ -311,6 +311,10 @@
       ],
       "aliases": [
         "tesla"
+      ],
+      "clipPrompts": [
+        "the Tesla logo",
+        "the word TESLA in the Tesla font"
       ]
     },
     {
@@ -321,6 +325,10 @@
       "aliases": [
         "volkswagen",
         "vw"
+      ],
+      "clipPrompts": [
+        "the Volkswagen VW logo",
+        "a round VW badge on a car"
       ]
     },
     {
@@ -330,6 +338,10 @@
       ],
       "aliases": [
         "audi"
+      ],
+      "clipPrompts": [
+        "the Audi four rings logo",
+        "the four interlocking rings of Audi on a car"
       ]
     },
     {
@@ -339,6 +351,10 @@
       ],
       "aliases": [
         "bmw"
+      ],
+      "clipPrompts": [
+        "the BMW roundel logo",
+        "a blue and white BMW badge on a car"
       ]
     },
     {
@@ -348,6 +364,10 @@
       ],
       "aliases": [
         "mercedes"
+      ],
+      "clipPrompts": [
+        "the Mercedes-Benz three-pointed star logo",
+        "a Mercedes-Benz star badge on a car"
       ]
     },
     {
@@ -357,6 +377,10 @@
       ],
       "aliases": [
         "toyota"
+      ],
+      "clipPrompts": [
+        "the Toyota logo",
+        "a Toyota oval badge on a car"
       ]
     },
     {
@@ -367,6 +391,11 @@
       ],
       "aliases": [
         "nike"
+      ],
+      "clipPrompts": [
+        "the Nike swoosh logo",
+        "a Nike swoosh printed on clothing",
+        "the word NIKE"
       ]
     },
     {
@@ -377,6 +406,10 @@
       ],
       "aliases": [
         "adidas"
+      ],
+      "clipPrompts": [
+        "the Adidas three stripes logo",
+        "the Adidas trefoil logo"
       ]
     },
     {
@@ -387,6 +420,9 @@
       ],
       "aliases": [
         "puma"
+      ],
+      "clipPrompts": [
+        "the Puma leaping cat logo"
       ]
     },
     {
@@ -397,6 +433,10 @@
       "aliases": [
         "coca cola",
         "coca-cola"
+      ],
+      "clipPrompts": [
+        "the Coca-Cola script logo",
+        "the words Coca-Cola in white script on red"
       ]
     },
     {
@@ -406,6 +446,10 @@
       ],
       "aliases": [
         "pepsi"
+      ],
+      "clipPrompts": [
+        "the Pepsi globe logo",
+        "the word PEPSI"
       ]
     },
     {
@@ -415,6 +459,10 @@
       ],
       "aliases": [
         "red bull"
+      ],
+      "clipPrompts": [
+        "the Red Bull logo with two red bulls",
+        "the words Red Bull"
       ]
     },
     {
@@ -424,6 +472,9 @@
       ],
       "aliases": [
         "apple"
+      ],
+      "clipPrompts": [
+        "the Apple bitten apple logo"
       ]
     },
     {
@@ -434,6 +485,9 @@
       ],
       "aliases": [
         "samsung"
+      ],
+      "clipPrompts": [
+        "the word SAMSUNG logo"
       ]
     },
     {
@@ -443,6 +497,9 @@
       ],
       "aliases": [
         "google"
+      ],
+      "clipPrompts": [
+        "the Google logo"
       ]
     },
     {
@@ -452,7 +509,33 @@
       ],
       "aliases": [
         "microsoft"
+      ],
+      "clipPrompts": [
+        "the Microsoft four squares logo"
       ]
     }
+  ],
+  "clipBrandNeutral": [
+    "a photo with no logo",
+    "a car with no visible logo",
+    "a car",
+    "a van",
+    "a truck",
+    "a running shoe",
+    "a sports shoe without logo",
+    "plain clothing without a logo",
+    "a t-shirt",
+    "a soda can",
+    "a drink in a glass",
+    "a smartphone",
+    "a laptop",
+    "a person's face",
+    "a crowd of people",
+    "a landscape",
+    "a street with buses",
+    "a factory interior",
+    "an interior",
+    "text in a foreign language",
+    "plain text"
   ]
 }

@@ -63,5 +63,13 @@ BRAND_LEXICON: dict[str, tuple[str, list[str]]] = {
 }
 
 
+# CLIP logo prompts per canonical brand (label -> prompts) + neutral distractor prompts
+BRAND_CLIP_PROMPTS: dict[str, list[str]] = {
+    b["label"]: list(b.get("clipPrompts") or [f"the {b['label']} logo"]) for b in _DOC["brands"]
+}
+BRAND_CATEGORIES: dict[str, list[str]] = {b["label"]: list(b["categories"]) for b in _DOC["brands"]}
+CLIP_BRAND_NEUTRAL: list[str] = list(_DOC.get("clipBrandNeutral", ["a photo with no logo"]))
+
+
 def categories_for(term: str) -> list[str]:
     return list(TERM_CATEGORIES.get(term.lower(), []))

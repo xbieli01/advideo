@@ -11,6 +11,7 @@ def get_analyzer(name: str = "mock", **kwargs) -> Analyzer:
     - "mock"      : deterministic, no dependencies (default)
     - "yolo+clip" : real YOLO objects + CLIP zero-shot labels (needs .[ml])
     - "ocr"       : on-screen text -> brand entities (needs .[ml])
+    - "clip-brand": logos via CLIP zero-shot on frame crops -> brand entities (needs .[ml])
     """
     if name == "mock":
         return MockAnalyzer(**kwargs)
@@ -18,6 +19,10 @@ def get_analyzer(name: str = "mock", **kwargs) -> Analyzer:
         from .yolo_clip import YoloClipAnalyzer  # lazy
 
         return YoloClipAnalyzer(**kwargs)
+    if name in ("clip-brand", "logo", "brands"):
+        from .clip_brand import ClipBrandAnalyzer  # lazy
+
+        return ClipBrandAnalyzer(**kwargs)
     if name == "ocr":
         from .ocr import OcrBrandAnalyzer  # lazy
 

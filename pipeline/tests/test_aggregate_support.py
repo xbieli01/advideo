@@ -77,3 +77,15 @@ def test_ocr_interval_resets_for_a_new_video():
     for t in (0, 1, 2, 3, 4, 0, 1, 2):  # second video starts at t=0
         a.analyze(Frame(time_sec=float(t), image=img))
     assert len(calls) == 3 + 2
+
+
+def test_logo_needs_three_frames_unless_near_certain():
+    def logo(t, s):
+        return (t, t, Detection(term="Nike", score=s, kind="logo", entity_type="brand", entity_label="Nike",
+                                category="footwear", categories=["footwear", "sport"]))
+    two = aggregate_segments([logo(0.0, 0.9), logo(1.0, 0.9)], 6.0, min_support=2)[0]
+    assert two.entities == []                       # 2 frames are enough for objects, not for logos
+    three = aggregate_segments([logo(0.0, 0.8), logo(1.0, 0.8), logo(2.0, 0.8)], 6.0, min_support=2)[0]
+    assert three.entities[0]["label"] == "Nike"
+    certain = aggregate_segments([logo(0.0, 0.99)], 6.0, min_support=2)[0]
+    assert certain.entities[0]["label"] == "Nike"

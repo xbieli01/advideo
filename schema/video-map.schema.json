@@ -62,7 +62,8 @@
             "actions": { "type": "array", "items": { "type": "string" } },
             "scene": { "type": "string" },
             "text": { "type": "array", "items": { "type": "string" } },
-            "audioKeywords": { "type": "array", "items": { "type": "string" } }
+            "audioKeywords": { "type": "array", "items": { "type": "string" },
+            "logos": { "type": "array", "items": { "type": "string" }, "description": "brands recognised visually (logo detector)" } }
           }
         }
       }

@@ -19,8 +19,8 @@ from .models import Detection, Segment
 
 TimedDetection = tuple[float, float, Detection]
 
-_SUPPORT_KINDS = {"object", "action", "scene"}
-_SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text",
+_SUPPORT_KINDS = {"object", "action", "scene", "logo"}
+_SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text", "logo": "logos",
                  "audio": "audioKeywords"}
 
 
@@ -30,6 +30,8 @@ def aggregate_segments(
     window_sec: float = 6.0,
     min_support: int = 1,
     strong_score: float = 0.8,
+    logo_min_support: int = 3,
+    logo_strong_score: float = 0.97,
 ) -> list[Segment]:
     """Group timed detections into windows.
 
@@ -38,6 +40,8 @@ def aggregate_segments(
     score >= `strong_score`. One noisy frame (e.g. CLIP "running" 0.4 on a glass of soda) then does
     not label 6 seconds. Text (OCR) and audio detections are exact lexicon matches and range
     detections come from track analyzers (Whisper), so both bypass the filter.
+    Logos (kind "logo") use stricter `logo_min_support` / `logo_strong_score`: a false brand would show the
+    wrong advertiser, so a logo must be seen in >= 3 frames of the window (or once almost certainly).
     """
     if window_sec <= 0:
         raise ValueError("window_sec must be > 0")
@@ -55,7 +59,7 @@ def aggregate_segments(
 
     if min_support > 1:
         for idx, dets in list(buckets.items()):
-            buckets[idx] = _filter_support(dets, min_support, strong_score)
+            buckets[idx] = _filter_support(dets, min_support, strong_score, logo_min_support, logo_strong_score)
 
     segments: list[Segment] = []
     for idx in range(n_windows):
@@ -68,7 +72,8 @@ def aggregate_segments(
 
 
 def _filter_support(
-    dets: list[tuple[Detection, bool]], min_support: int, strong_score: float
+    dets: list[tuple[Detection, bool]], min_support: int, strong_score: float,
+    logo_min_support: int = 3, logo_strong_score: float = 0.97,
 ) -> list[tuple[Detection, bool]]:
     counts: dict[str, int] = defaultdict(int)
     best: dict[str, float] = defaultdict(float)
@@ -76,7 +81,13 @@ def _filter_support(
         if not exempt:
             counts[d.term] += 1
             best[d.term] = max(best[d.term], d.score)
-    keep = {t for t in counts if counts[t] >= min_support or best[t] >= strong_score}
+    logos = {d.term for d, _ in dets if d.kind == "logo"}
+
+    def ok(t: str) -> bool:
+        ms, ss = (logo_min_support, logo_strong_score) if t in logos else (min_support, strong_score)
+        return counts[t] >= ms or best[t] >= ss
+
+    keep = {t for t in counts if ok(t)}
     return [(d, r) for d, r in dets if r or d.term in keep]
 
 
