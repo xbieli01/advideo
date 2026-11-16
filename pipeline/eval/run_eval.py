@@ -92,6 +92,14 @@ def score_video(vmap: dict, gt: list[dict]) -> dict:
         c["cat_fn"] += len(fn)
         for x in fp:
             c["fp_cats"][x] = c["fp_cats"].get(x, 0) + 1
+        pc = c.setdefault("per_cat", {})
+        for x in tp:
+            pc[x] = pc.get(x, 0) + 1
+            pc["tp:" + x] = pc.get("tp:" + x, 0) + 1
+        for x in fp:
+            pc["fp:" + x] = pc.get("fp:" + x, 0) + 1
+        for x in fn:
+            pc["fn:" + x] = pc.get("fn:" + x, 0) + 1
         for x in fn:
             c["missed_cats"][x] = c["missed_cats"].get(x, 0) + 1
         c["brand_tp"] += len(brands & exp["brands"])
@@ -112,6 +120,16 @@ def score_video(vmap: dict, gt: list[dict]) -> dict:
 
 def ratio(a: int, b: int) -> float | None:
     return round(a / b, 3) if b else None
+
+
+def per_category(c: dict) -> dict:
+    pc = c.get("per_cat", {})
+    cats = {k.split(":", 1)[1] for k in pc if ":" in k}
+    out = {}
+    for x in sorted(cats):
+        tp, fp, fn = pc.get("tp:" + x, 0), pc.get("fp:" + x, 0), pc.get("fn:" + x, 0)
+        out[x] = {"precision": ratio(tp, tp + fp), "recall": ratio(tp, tp + fn), "tp": tp, "fp": fp, "fn": fn}
+    return out
 
 
 def summarize(c: dict) -> dict:
@@ -203,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         rtf = proc_total / dur_total if dur_total else 0
         result = {"config": cfg, "options": args.opt, "minSupport": args.min_support, "device": device, "fps": args.fps, "modelLoadSec": round(load_s, 1),
                   "processingSec": round(proc_total, 1), "videoSec": round(dur_total, 1), "realtimeFactor": round(rtf, 2),
-                  **overall, "falseCategories": total.get("fp_cats", {}), "missedCategories": total.get("missed_cats", {}),
+                  **overall, "perCategory": per_category(total), "falseCategories": total.get("fp_cats", {}), "missedCategories": total.get("missed_cats", {}),
                   "missedTerms": total.get("missed_terms", {}), "videos": per_video}
         (Path(args.results) / f"{tag}.json").write_text(
             json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -213,7 +231,12 @@ def main(argv: list[str] | None = None) -> int:
                   f"categories P/R **{fmt(overall['categoryPrecision'])} / {fmt(overall['categoryRecall'])}**, "
                   f"terms R {fmt(overall['termRecall'])}, brands R {fmt(overall['brandRecall'])} (false brands {overall['falseBrands']}); "
                   f"load {load_s:.0f}s, {proc_total:.0f}s for {dur_total:.0f}s video = **{rtf:.2f}× realtime**", "",
-                  "| video | cat P | cat R | term R | brand R | s | missed | false |", "|---|---|---|---|---|---|---|---|"]
+                  ]
+        sens = per_category(total).get("sensitive")
+        if sens:
+            lines += [f"sensitive (brand safety) P/R **{fmt(sens['precision'])} / {fmt(sens['recall'])}** "
+                      f"(tp {sens['tp']}, false {sens['fp']}, missed {sens['fn']})", ""]
+        lines += ["| video | cat P | cat R | term R | brand R | s | missed | false |", "|---|---|---|---|---|---|---|---|"]
         for v in per_video:
             lines.append(f"| {v['id']} | {fmt(v['categoryPrecision'])} | {fmt(v['categoryRecall'])} | {fmt(v['termRecall'])} | "
                          f"{fmt(v['brandRecall'])} | {v['processingSec']:.0f} | {', '.join(v['missedCategories']) or '–'} | "

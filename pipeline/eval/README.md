@@ -100,3 +100,28 @@ python eval/check_regression.py            # --update to accept a deliberate imp
 
 Remaining errors: YOLO tv/laptop/cell phone → tech/electronics on real screens (shop TV, bus shelter screen);
 running-form windows without the runner; beach football / cycling single windows.
+
+## R9 + R8: screen classes, brand safety (2026-11-16)
+
+**R9** — YOLO per-class minimum confidence for screens (`class_conf`, default tv/laptop/cell phone ≥ 0.6):
+26 clips cat P 0.89 → 0.93, recall unchanged.
+
+**R8 brand safety** — new CLIP label kind `safety` (own softmax): protest/demonstration, riot police, sit-in,
+political rally (→ `sensitive`, `politics`), car crash, emergency vehicles at an accident, burning building,
+wildfire (→ `accident`), soldiers with rifles, firing a gun (→ `weapons`), fighting, blood/injury
+(→ `violence`), against ~22 everyday neutrals (sports crowd, concert, festival, contest spectators, fire station,
+parked fire truck, barbecue, normal traffic, …). `safety_threshold` 0.7 and always ≥ 2 frames per window
+(no single-frame bypass). Signal `signals.safety`. 6 clips added (`set: safety`: Kolkata protest, riot police,
+car accident, building fire, live-fire exercise, hard negative firefighters' games) → **32 clips, 1031 s**.
+
+| yolo+clip, 32 clips | cat P | cat R | sensitive P | sensitive R |
+|---|---|---|---|---|
+| first label set | 0.72 | 0.90 | 0.65 | 0.86 |
+| + event-crowd neutrals, sit-in + emergency-vehicle labels, threshold 0.7 / 2 frames | **0.85** | **0.93** | **0.94** | **0.92** |
+
+Tuned offline from `dump_safety_scores.py` (per-frame softmax of the safety group). Remaining: 2 false blocks
+(Coca-Cola pavilion crowd), the Kolkata protest (crowd under a tent, no banners) mostly missed.
+
+Ad server: segments with category `sensitive` get **no ad** unless `platform.brandSafety.allowSensitive`
+(admin UI checkbox); subtypes can be excluded individually via `excludeCategories`.
+`baseline.json` now covers 32 clips incl. `perCategory.sensitive.*`.

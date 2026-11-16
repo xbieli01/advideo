@@ -14,6 +14,7 @@ matches Nike, and so on.
 - **M1 (done):** offline pipeline `video → JSON content map` + .NET orchestrator.
 - **M2 (done):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher (T-005a), ad-serving API + map cache (T-005b), events/ledger/stats + golden & perf tests (T-005c).
 - **M3 (in progress):** JS snippet for customer portals done (M3a, `client/`); browser extension next (M3b).
+- **Brand safety (done):** sensitive content (protests, accidents, weapons, violence) is detected in the content map; the ad server shows no ad there unless a platform allows it.
 - **Admin UI (done):** Angular SPA for campaigns, platforms, video analysis and decision explain, served by the API under `/admin` (`admin/`).
 
 ## Architecture (short)

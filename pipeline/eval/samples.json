@@ -710,9 +710,157 @@
         {
           "start": 0,
           "end": 30.1,
-          "categories": [],
+          "categories": [
+            "sensitive",
+            "politics"
+          ],
           "allowed": [],
-          "note": "political demonstration with banners (data retention protest) - no ad category; brand-safety relevant"
+          "note": "political demonstration with banners (data retention protest)"
+        }
+      ]
+    },
+    {
+      "id": "safety-protest-kolkata",
+      "commonsTitle": "File:West Bengal Junior Doctors Protest Outside Swasthya Bhawan Kolkata on 14 September 2024.webm",
+      "license": "CC BY-SA 4.0",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 15.6,
+          "categories": [
+            "sensitive",
+            "politics"
+          ],
+          "allowed": [],
+          "note": "junior doctors protest at night under a tent - HARD: no banners visible, looks like a crowd/event"
+        }
+      ]
+    },
+    {
+      "id": "safety-riot-police",
+      "commonsTitle": "File:Gallivanting with Riot Police - NATO 2012.webm",
+      "license": "CC BY 3.0",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 50,
+          "categories": [
+            "sensitive",
+            "politics"
+          ],
+          "allowed": [
+            "outdoor"
+          ],
+          "note": "riot police line in helmets with batons, sit-in protesters (NATO 2012 Chicago)"
+        },
+        {
+          "start": 50,
+          "end": 58.2,
+          "categories": [],
+          "allowed": [
+            "sensitive",
+            "politics"
+          ],
+          "note": "black"
+        }
+      ]
+    },
+    {
+      "id": "safety-accident-lv",
+      "commonsTitle": "File:Las Vegas Boulevard 4 Car Accident No.2.webm",
+      "license": "CC BY-SA 3.0",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 14.3,
+          "categories": [
+            "sensitive",
+            "accident"
+          ],
+          "terms": [
+            "car"
+          ],
+          "allowed": [
+            "automotive",
+            "transport"
+          ],
+          "note": "multi-car accident aftermath, fire engine with lights"
+        }
+      ]
+    },
+    {
+      "id": "safety-fire-durham",
+      "commonsTitle": "File:Building Fire at Durham Regional Police Service in Courtice, ON (2022-07-17) 004.webm",
+      "license": "CC BY 3.0",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 50.8,
+          "categories": [
+            "sensitive",
+            "accident"
+          ],
+          "allowed": [
+            "automotive",
+            "transport",
+            "outdoor",
+            "travel"
+          ],
+          "note": "aerial view of building fire with heavy smoke next to highway"
+        }
+      ]
+    },
+    {
+      "id": "safety-livefire",
+      "commonsTitle": "File:Rifle, M320, and Sniper Live Fire Exercise (953746).webm",
+      "license": "Public domain",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 39.8,
+          "categories": [
+            "sensitive",
+            "weapons"
+          ],
+          "terms": [
+            "person"
+          ],
+          "allowed": [
+            "outdoor",
+            "sport"
+          ],
+          "note": "soldiers with rifles / grenade launcher, live-fire range"
+        }
+      ]
+    },
+    {
+      "id": "safety-neg-firehouse",
+      "commonsTitle": "File:Fire House Olympics (1026421).webm",
+      "license": "Public domain",
+      "maxSec": 60,
+      "set": "safety",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 30,
+          "categories": [],
+          "allowed": [
+            "sport",
+            "fitness",
+            "automotive",
+            "transport"
+          ],
+          "note": "HARD NEGATIVE: firefighters' games (bowling, hose drill), interviews in front of fire engine - NOT sensitive"
         }
       ]
     }

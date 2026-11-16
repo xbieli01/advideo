@@ -13,6 +13,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+def _get(d: dict, key: str):
+    """'perCategory.sensitive.precision' -> nested lookup."""
+    for part in key.split("."):
+        if not isinstance(d, dict) or part not in d:
+            return None
+        d = d[part]
+    return d
+
+
 def tag(cfg: str, ms: int = 2) -> str:
     return cfg.replace("+", "_").replace(",", "__") + f"__ms{ms}"
 
@@ -36,12 +45,12 @@ def main(argv: list[str] | None = None) -> int:
         if n != ref.get("clips", n):
             lines.append(f"  note {cfg}: {n} clips evaluated, baseline has {ref['clips']}")
         for k, v in ref.items():
-            if k == "clips" or cur.get(k) is None:
+            c = _get(cur, k)
+            if k == "clips" or c is None:
                 continue
-            c = cur[k]
             if k == "falseBrands":
                 bad = c > v + tol["falseBrandsIncrease"]
-            elif k == "brandRecall":
+            elif k in ("brandRecall", "perCategory.sensitive.recall", "perCategory.sensitive.precision"):
                 bad = c < v - tol["brandRecallDrop"]
             else:
                 bad = c < v - tol["drop"]
