@@ -204,6 +204,208 @@
           "note": "recipe close-ups: pork belly, pot, eggs, sandwich"
         }
       ]
+    },
+    {
+      "id": "brand-vw-t2",
+      "commonsTitle": "File:Volkswagen T2.webm",
+      "license": "CC0",
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 9.6,
+          "categories": [
+            "automotive"
+          ],
+          "terms": [
+            "car"
+          ],
+          "termsAny": [
+            "car",
+            "truck",
+            "bus"
+          ],
+          "allowed": [
+            "transport",
+            "outdoor",
+            "travel"
+          ],
+          "note": "VW T2 van drives towards camera, VW badge on the front visible ~3-8 s"
+        },
+        {
+          "start": 3,
+          "end": 8,
+          "brands": [
+            "VW"
+          ],
+          "note": "VW badge"
+        }
+      ]
+    },
+    {
+      "id": "brand-audi-oled",
+      "commonsTitle": "File:Audi — dynamische OLED-Fahrtrichtungsanzeiger (Warnblinker).ogv",
+      "license": "CC BY 2.0 de",
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 8.1,
+          "categories": [
+            "automotive"
+          ],
+          "terms": [
+            "car"
+          ],
+          "brands": [
+            "Audi"
+          ],
+          "allowed": [
+            "transport"
+          ],
+          "note": "rear of an Audi A6 allroad, four rings visible"
+        }
+      ]
+    },
+    {
+      "id": "brand-bmw-neueklasse",
+      "commonsTitle": "File:BMW VISION NEUE KLASSE X.webm",
+      "license": "CC BY 3.0",
+      "maxSec": 60,
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 60,
+          "categories": [],
+          "brands": [
+            "BMW"
+          ],
+          "allowed": [
+            "automotive",
+            "outdoor",
+            "transport",
+            "travel"
+          ],
+          "note": "BMW concept film; small disclaimer 'Beim BMW Vision Neue Klasse X ...' at the bottom most of the time, BMW roundel on the car 42-51 s"
+        },
+        {
+          "start": 42,
+          "end": 51,
+          "categories": [
+            "automotive"
+          ],
+          "note": "car visible"
+        }
+      ]
+    },
+    {
+      "id": "brand-toyota-lc",
+      "commonsTitle": "File:Toyota Land Cruiser near Dordogne River (4b) (video).webm",
+      "license": "CC BY-SA 4.0",
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 7.8,
+          "categories": [
+            "automotive"
+          ],
+          "terms": [
+            "truck"
+          ],
+          "termsAny": [
+            "car",
+            "truck"
+          ],
+          "allowed": [
+            "outdoor",
+            "sport"
+          ],
+          "note": "Toyota Land Cruiser off-road BUT no Toyota logo visible (VACCO decals) -> no brand expected"
+        }
+      ]
+    },
+    {
+      "id": "brand-nike-kobe",
+      "commonsTitle": "File:Nike Athletes Salute Kobe Bryant.webm",
+      "license": "CC BY 3.0",
+      "maxSec": 60,
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 60,
+          "categories": [],
+          "brands": [
+            "Nike"
+          ],
+          "allowed": [
+            "sport",
+            "fashion",
+            "footwear"
+          ],
+          "note": "athletes in Nike apparel, swoosh/NIKE on shirts and caps most of the time"
+        }
+      ]
+    },
+    {
+      "id": "brand-pepsi-shelter",
+      "commonsTitle": "File:Unbelievable bus shelter by pepsi max.webm",
+      "license": "CC BY 3.0",
+      "maxSec": 60,
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 60,
+          "categories": [],
+          "allowed": [
+            "automotive",
+            "transport",
+            "beverage"
+          ],
+          "note": "Pepsi Max bus shelter stunt, London buses"
+        },
+        {
+          "start": 0,
+          "end": 6,
+          "brands": [
+            "Pepsi"
+          ],
+          "note": "title text PEPSI MAX PRESENTS"
+        }
+      ]
+    },
+    {
+      "id": "brand-tesla-shanghai",
+      "commonsTitle": "File:特斯拉上海超级工厂第400万辆整车下线.webm",
+      "license": "CC BY 3.0",
+      "set": "brands",
+      "groundTruth": [
+        {
+          "start": 0,
+          "end": 58.9,
+          "categories": [],
+          "allowed": [
+            "automotive",
+            "tech",
+            "transport"
+          ],
+          "note": "Tesla Shanghai factory news, Chinese captions; Tesla cars/bodies visible without legible logo -> Tesla allowed (not penalised) outside 15-21 s",
+          "brandsAllowed": [
+            "Tesla"
+          ]
+        },
+        {
+          "start": 15,
+          "end": 21,
+          "brands": [
+            "Tesla"
+          ],
+          "note": "huge TESLA lettering on factory building"
+        }
+      ]
     }
   ]
 }

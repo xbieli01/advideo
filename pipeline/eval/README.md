@@ -43,7 +43,33 @@ Findings
 - Bugs fixed on the way: Whisper crashed on videos without an audio track (failed the whole job); the pipeline
   closed analyzer instances owned by the caller (breaks a worker that keeps models loaded).
 
-Gaps of this eval set: no clip with clear brand text/logo, little speech, 8 clips only. Add brand-rich and
-customer-like videos before trusting brand recall.
+## R1 brands / logos (2026-11-16)
+
+7 brand clips added (`set: brands` in samples.json: VW T2, Audi, BMW film, Toyota without visible logo,
+Nike, Pepsi Max, Tesla factory) → 15 clips, 493 s, 29 brand windows. Ground truth may use `brandsAllowed`
+(brand identifiable from the product but no legible logo: not rewarded, not penalised).
+
+New opt-in frame analyzer **`clip-brand`**: CLIP zero-shot over logo prompts (`brands[].clipPrompts` in
+taxonomy.json) + neutral distractors (`clipBrandNeutral`, incl. generic products: car, running shoe, soda can…)
+on full frame + 2×2 tiles + centre crop; detections kind `logo` → `signals.logos` + brand entity. Logos use a
+stricter temporal filter (≥3 frames per window or one ≥0.97). `dump_brand_scores.py` dumps raw per-frame
+scores for offline threshold tuning.
+
+| config (15 clips, CPU) | brand R | false brands | cat P / R | speed |
+|---|---|---|---|---|
+| yolo+clip,ocr (brands only from text) | 0.28 | 0 | 0.81 / 0.93 | 0.93× RT |
+| **yolo+clip,ocr,clip-brand** | **0.52** | 2 | 0.81 / 0.93 | 1.07× RT |
+
+Findings
+- OCR reads brands written as text (BMW disclaimer, NIKE on a shirt, PEPSI MAX title) but no logos.
+- CLIP finds logos it knows well (Nike swoosh 9/10 windows, Audi rings, TESLA lettering), misses small ones
+  (VW badge on a moving van, BMW roundel) — tiles help but logos < ~5 % of the frame stay invisible.
+- CLIP conflates a product category with its dominant brand (running shoe → Nike, electric car → Tesla):
+  generic product distractors + logo-only prompts removed this (running-form false Nike 19 frames → 0).
+- Remaining false brands: Red Bull on a Pepsi shelter frame, Audi on a Tesla assembly line.
+- Next for higher recall/precision: a dedicated logo detector (YOLO trained on a logo dataset, e.g.
+  LogoDet-3K / OpenLogo, restricted to customer brands), crops from YOLO vehicle/person boxes.
+
+Gaps: 7 brand clips only, mostly one brand each; brand recall numbers have wide error bars.
 
 Clips: Wikimedia Commons, licences in `samples.json` (CC0 / CC BY / CC BY-SA); used for evaluation only, not redistributed.

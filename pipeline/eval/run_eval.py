@@ -58,13 +58,14 @@ def parse_opts(items: list[str]) -> dict[str, dict]:
 
 
 def expected_for(gt: list[dict], start: float, end: float) -> dict:
-    exp = {"categories": set(), "allowed": set(), "brands": set(), "terms": [], "covered": False}
+    exp = {"categories": set(), "allowed": set(), "brands": set(), "brandsAllowed": set(), "terms": [], "covered": False}
     for r in gt:
         if r["start"] < end and r["end"] > start:
             exp["covered"] = True
             exp["categories"] |= set(r.get("categories", []))
             exp["allowed"] |= set(r.get("allowed", []))
             exp["brands"] |= set(r.get("brands", []))
+            exp["brandsAllowed"] |= set(r.get("brandsAllowed", []))
             groups = [set(r["termsAny"])] if r.get("termsAny") else [{t} for t in r.get("terms", [])]
             for g in groups:
                 if g not in exp["terms"]:
@@ -95,7 +96,10 @@ def score_video(vmap: dict, gt: list[dict]) -> dict:
             c["missed_cats"][x] = c["missed_cats"].get(x, 0) + 1
         c["brand_tp"] += len(brands & exp["brands"])
         c["brand_fn"] += len(exp["brands"] - brands)
-        c["brand_fp"] += len(brands - exp["brands"])
+        fpb = brands - exp["brands"] - exp["brandsAllowed"]
+        c["brand_fp"] += len(fpb)
+        for x in fpb:
+            c.setdefault("fp_brands", {})[x] = c.setdefault("fp_brands", {}).get(x, 0) + 1
         for group in exp["terms"]:
             c["term_total"] += 1
             if group & kws:
