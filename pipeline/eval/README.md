@@ -125,3 +125,21 @@ Tuned offline from `dump_safety_scores.py` (per-frame softmax of the safety grou
 Ad server: segments with category `sensitive` get **no ad** unless `platform.brandSafety.allowSensitive`
 (admin UI checkbox); subtypes can be excluded individually via `excludeCategories`.
 `baseline.json` now covers 32 clips incl. `perCategory.sensitive.*`.
+
+**R8b brand safety from speech / on-screen text** — lexicon in `schema/taxonomy.json` (`safetyTerms`: 14 groups,
+EN/SK/CS/DE, diacritics-insensitive, `*` prefix for SK/CS inflection, idiom `exclusions` such as "zabili čas",
+"crash course", "fire station"; `newsMarkers`). Whisper and OCR emit `safety_speech` / `safety_ocr` detections
+(`signals.safety`: "speech: killed", "on-screen: …") and `news` cues. Per 6 s window: one **high** hit or
+**≥ 2 different medium** hits are needed (a lone "attack" or "war" does not block ads); profanity/drugs are
+categories only (blocked by the `strict` preset), and they never corroborate a sensitive hit.
+
+| set | cases | precision | recall | note |
+|---|---|---|---|---|
+| `text_safety_cases.json` (tuning) | 83 | 1.00 | 1.00 | written with the lexicon — optimistic |
+| `text_safety_holdout.json` v1 (before fixes) | 20 | 0.67 | 0.40 | then moved into the tuning set |
+| `text_safety_holdout.json` v2 (never tuned) | 20 | **1.00** | **0.55** | realistic estimate |
+| 32 eval videos, OCR + Whisper (181 windows) | — | 1 false block → fixed ("on-screen: fire" + "speech: army") | — | eval clips have little speech |
+
+Run `python eval/run_text_safety_eval.py` (tuning set). The lexicon is precise but misses paraphrases
+("rescue teams searching the rubble", "boje na hraniciach", "zaútočil nožom") — next step: a multilingual
+sentence-embedding classifier on top of the lexicon (R8c).

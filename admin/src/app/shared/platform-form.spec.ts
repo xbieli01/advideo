@@ -31,4 +31,11 @@ describe('platform form mapping', () => {
     expect(formToPlatform(f).brandSafety.allowSensitive).toBe(true);
     expect(platformToForm(formToPlatform(f)).allowSensitive).toBe(true);
   });
+
+  it('maps the brand safety preset both ways (default standard)', () => {
+    const f = newPlatformForm();
+    expect(formToPlatform(f).brandSafety.preset).toBe('standard');
+    f.safetyPreset = 'news';
+    expect(platformToForm(formToPlatform(f)).safetyPreset).toBe('news');
+  });
 });

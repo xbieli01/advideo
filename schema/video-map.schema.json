@@ -62,9 +62,10 @@
             "actions": { "type": "array", "items": { "type": "string" } },
             "scene": { "type": "string" },
             "text": { "type": "array", "items": { "type": "string" } },
-            "audioKeywords": { "type": "array", "items": { "type": "string" },
-            "logos": { "type": "array", "items": { "type": "string" }, "description": "brands recognised visually (logo detector)" } },
-            "safety": { "type": "array", "items": { "type": "string" }, "description": "sensitive-content labels (brand safety)" }
+            "audioKeywords": { "type": "array", "items": { "type": "string" } },
+            "logos": { "type": "array", "items": { "type": "string" }, "description": "brands recognised visually (logo detector)" },
+            "safety": { "type": "array", "items": { "type": "string" }, "description": "brand-safety labels: visual (CLIP) and from speech/on-screen text ('speech: …', 'on-screen: …')" },
+            "news": { "type": "array", "items": { "type": "string" }, "description": "news-report cues from speech/on-screen text" }
           }
         }
       }

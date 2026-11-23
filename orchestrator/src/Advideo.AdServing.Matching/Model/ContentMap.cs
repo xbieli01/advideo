@@ -43,4 +43,5 @@ public sealed record SegmentSignals(
     IReadOnlyList<string>? Text = null,
     IReadOnlyList<string>? AudioKeywords = null,
     IReadOnlyList<string>? Logos = null,
-    IReadOnlyList<string>? Safety = null);
+    IReadOnlyList<string>? Safety = null,
+    IReadOnlyList<string>? News = null);

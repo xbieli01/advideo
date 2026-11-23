@@ -164,4 +164,19 @@ public class AdServingApiTests : IClassFixture<WebApplicationFactory<Program>>
         var resp = await _factory.AdminClient().PostAsJsonAsync("/platforms", new { id = "p2", name = "P2", slots = Array.Empty<object>() }, Json);
         Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
     }
+
+    [Fact]
+    public async Task Platform_brand_safety_preset_round_trips()
+    {
+        var c = _factory.AdminClient();
+        var resp = await c.PostAsJsonAsync("/platforms", new
+        {
+            id = "kids-portal", name = "Kids",
+            slots = new[] { new { id = "below", position = "below", width = 728, height = 90 } },
+            brandSafety = new { preset = "strict", excludeCategories = Array.Empty<string>(), excludeKeywords = Array.Empty<string>() }
+        }, Json);
+        Assert.Equal(HttpStatusCode.Created, resp.StatusCode);
+        var p = await c.GetFromJsonAsync<JsonElement>("/platforms/kids-portal", Json);
+        Assert.Equal("strict", p.GetProperty("brandSafety").GetProperty("preset").GetString());
+    }
 }

@@ -128,6 +128,39 @@ public class AdMatcherTests
         Assert.StartsWith("Platform brand safety: category 'politics'", d.NoAdReason);
     }
 
+    [Theory]
+    // categories of the segment, preset, allowSensitive, expected: ad shown?
+    [InlineData(new[] { "automotive" }, BrandSafetyPreset.Standard, false, true)]
+    [InlineData(new[] { "automotive", "sensitive", "violence" }, BrandSafetyPreset.Standard, false, false)]
+    [InlineData(new[] { "automotive", "sensitive", "violence", "news" }, BrandSafetyPreset.Standard, false, false)]
+    [InlineData(new[] { "automotive", "sensitive", "violence", "news" }, BrandSafetyPreset.News, false, true)]
+    [InlineData(new[] { "automotive", "sensitive", "war" }, BrandSafetyPreset.News, false, false)]
+    [InlineData(new[] { "automotive", "profanity" }, BrandSafetyPreset.Standard, false, true)]
+    [InlineData(new[] { "automotive", "profanity" }, BrandSafetyPreset.Strict, false, false)]
+    [InlineData(new[] { "automotive", "drugs" }, BrandSafetyPreset.Strict, false, false)]
+    [InlineData(new[] { "automotive", "sensitive" }, BrandSafetyPreset.Strict, true, true)]
+    [InlineData(new[] { "automotive", "sensitive", "profanity" }, BrandSafetyPreset.Strict, true, false)]
+    [InlineData(new[] { "automotive", "sensitive" }, BrandSafetyPreset.Standard, true, true)]
+    public void Brand_safety_presets(string[] categories, BrandSafetyPreset preset, bool allowSensitive, bool expectAd)
+    {
+        var seg = Segment(keywords: [new ScoredTerm("car", 0.9)], categories: categories,
+            signals: new SegmentSignals(Safety: ["speech: killed"]));
+        var platform = Platform() with { BrandSafety = new() { Preset = preset, AllowSensitive = allowSensitive } };
+        var d = Matcher.Decide("v1", seg, [Campaign("auto", new Targeting { Categories = ["automotive"] })], platform, Ctx());
+        Assert.Equal(expectAd, d.HasAd);
+        if (!expectAd) Assert.StartsWith("Brand safety", d.NoAdReason);
+    }
+
+    [Fact]
+    public void Strict_reason_names_the_category_and_labels()
+    {
+        var seg = Segment(keywords: [new ScoredTerm("car", 0.9)], categories: ["automotive", "profanity"],
+            signals: new SegmentSignals(Safety: ["speech: fuck"]));
+        var platform = Platform() with { BrandSafety = new() { Preset = BrandSafetyPreset.Strict } };
+        var d = Matcher.Decide("v1", seg, [Campaign("auto", new Targeting { Categories = ["automotive"] })], platform, Ctx());
+        Assert.Equal("Brand safety (strict): profanity (speech: fuck).", d.NoAdReason);
+    }
+
     [Fact]
     public void Inactive_out_of_window_or_wrong_platform_campaigns_are_rejected()
     {

@@ -28,6 +28,8 @@ class Detection:
     entity_label: str | None = None
     # all ad categories of the term (``category`` is the first one, kept for compatibility)
     categories: list[str] = field(default_factory=list)
+    # brand-safety severity for text/speech safety hits: high | medium | low (None for everything else)
+    severity: str | None = None
 
 
 @dataclass

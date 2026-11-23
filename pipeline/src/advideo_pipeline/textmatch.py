@@ -7,16 +7,24 @@ without any models: the backends just feed recognized/transcribed text in here.
 from __future__ import annotations
 
 import re
+import unicodedata
+from functools import lru_cache
 
 from .models import Detection
-from .taxonomy import BRAND_LEXICON, TERM_CATEGORIES
+from .taxonomy import BRAND_LEXICON, NEWS_MARKERS, SAFETY_EXCLUSIONS, SAFETY_TERMS, TERM_CATEGORIES, SafetyTerm
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 
 
+def _strip_accents(text: str) -> str:
+    # "Zabitých" -> "Zabitych", "Überschwemmung" -> "Uberschwemmung" (ß -> ss)
+    text = text.replace("ß", "ss")
+    return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
+
+
 def normalize(text: str) -> str:
-    """Lowercase and collapse to single-space-separated alphanumeric tokens."""
-    return " ".join(_WORD_RE.findall(text.lower()))
+    """Lowercase, drop diacritics and collapse to single-space-separated alphanumeric tokens."""
+    return " ".join(_WORD_RE.findall(_strip_accents(text).lower()))
 
 
 def _contains_phrase(norm: str, phrase: str) -> bool:
@@ -78,4 +86,102 @@ def keyword_detections(text: str, kind: str, score: float) -> list[Detection]:
                 categories=list(cats),
             )
         )
+    return out
+
+
+# --- brand safety from speech / on-screen text ---------------------------------
+
+@lru_cache(maxsize=None)
+def _pattern(phrase: str) -> tuple[tuple[str, bool], ...]:
+    """'tragick* nehod*' -> (('tragick', True), ('nehod', True)); token, is_prefix."""
+    out = []
+    for raw in phrase.split():
+        prefix = raw.endswith("*")
+        tok = normalize(raw.rstrip("*"))
+        if tok:
+            out.append((tok, prefix))
+    return tuple(out)
+
+
+def _spans(tokens: list[str], phrase: str) -> list[tuple[int, int]]:
+    """All (start, end) token spans where the pattern of `phrase` occurs."""
+    pat = _pattern(phrase)
+    n = len(pat)
+    if n == 0:
+        return []
+    return [
+        (i, i + n) for i in range(len(tokens) - n + 1)
+        if all((tokens[i + j].startswith(t) if pre else tokens[i + j] == t) for j, (t, pre) in enumerate(pat))
+    ]
+
+
+def _find(tokens: list[str], phrase: str) -> str | None:
+    spans = _spans(tokens, phrase)
+    return " ".join(tokens[spans[0][0]:spans[0][1]]) if spans else None
+
+
+def match_safety(text: str) -> list[tuple[str, SafetyTerm]]:
+    """[(matched words, SafetyTerm)].
+
+    Longest match wins: "car crash" (high) suppresses the "crash" (medium) inside it, so one phrase
+    is never counted as two hits. Same surface form matched by several groups keeps the highest severity.
+    """
+    tokens = normalize(text).split()
+    cands: list[tuple[int, int, SafetyTerm]] = [
+        (a, b, st) for st in SAFETY_TERMS for a, b in _spans(tokens, st.phrase)
+    ]
+    cands.sort(key=lambda c: (-(c[1] - c[0]), -_SEV_RANK[c[2].severity]))
+    # idioms ("zabili cas", "crash course") block every match inside them
+    taken: list[tuple[int, int]] = [sp for ex in SAFETY_EXCLUSIONS for sp in _spans(tokens, ex)]
+    excluded = len(taken)
+    hits: dict[str, SafetyTerm] = {}
+    for a, b, st in cands:
+        if any(a >= x and b <= y for x, y in taken):
+            continue  # inside an exclusion idiom or a longer (or equal, already taken) match
+        if any(a < y and b > x for x, y in taken[:excluded]):
+            continue  # overlaps an exclusion idiom
+        taken.append((a, b))
+        words = " ".join(tokens[a:b])
+        prev = hits.get(words)
+        if prev is None or _SEV_RANK[st.severity] > _SEV_RANK[prev.severity]:
+            hits[words] = st
+    return list(hits.items())
+
+
+_SEV_RANK = {"low": 0, "medium": 1, "high": 2}
+_SOURCE_PREFIX = {"audio": "speech", "text": "on-screen"}
+
+
+def safety_detections(text: str, kind: str, score: float) -> list[Detection]:
+    """Brand-safety hits in text as Detections.
+
+    kind: "audio" (Whisper) -> detection kind "safety_speech"; "text" (OCR) -> "safety_ocr".
+    Term "speech: killed" ends up in signals.safety; categories = [subtype] (+ "sensitive").
+    Whether a window really becomes sensitive is decided in aggregate (severity rules).
+    """
+    source = _SOURCE_PREFIX.get(kind, kind)
+    out: list[Detection] = []
+    for words, st in match_safety(text):
+        cats = [st.subtype] + (["sensitive"] if st.sensitive else [])
+        out.append(Detection(
+            term=f"{source}: {words}",
+            score=score,
+            kind="safety_speech" if kind == "audio" else "safety_ocr",
+            category=st.subtype,
+            categories=cats,
+            severity=st.severity,
+        ))
+    return out
+
+
+def news_detections(text: str, kind: str, score: float) -> list[Detection]:
+    """News-report cues (category "news", signal "news")."""
+    tokens = normalize(text).split()
+    source = _SOURCE_PREFIX.get(kind, kind)
+    out: list[Detection] = []
+    for phrase in NEWS_MARKERS:
+        found = _find(tokens, phrase)
+        if found:
+            out.append(Detection(term=f"{source}: {found}", score=score, kind="news",
+                                 category="news", categories=["news"]))
     return out

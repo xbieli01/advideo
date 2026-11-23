@@ -1,0 +1,25 @@
+{
+  "$comment": "Held-out v2, written after the lexicon change of 2026-11-23 and evaluated once without tuning. Report these numbers as the realistic estimate. When you tune on a failure here, move the case to text_safety_cases.json and write new held-out cases first.",
+  "cases": [
+    {"lang": "en", "expect": "sensitive", "text": "Rescue teams are still searching the rubble after the quake flattened the old town."},
+    {"lang": "en", "expect": "sensitive", "text": "A teenager was shot and killed near the station on Friday night."},
+    {"lang": "en", "expect": "sensitive", "text": "Heavy fighting continues in the east as artillery pounds the front line."},
+    {"lang": "en", "expect": "sensitive", "text": "The bus plunged off the bridge; at least twelve passengers lost their lives."},
+    {"lang": "en", "expect": "sensitive", "text": "Police found a body in the river and are treating the death as suspicious."},
+    {"lang": "en", "expect": "sensitive", "text": "An explosion ripped through the factory, injuring dozens of workers."},
+    {"lang": "en", "expect": "safe", "text": "This blender will blow your mind, smoothies in ten seconds."},
+    {"lang": "en", "expect": "safe", "text": "Our gym classes will kick your butt in the best way."},
+    {"lang": "en", "expect": "safe", "text": "The final was a battle between two great teams, and the fans went wild."},
+    {"lang": "en", "expect": "safe", "text": "Grab the deal before it dies at midnight."},
+    {"lang": "sk", "expect": "sensitive", "text": "Hasiči z trosiek vytiahli telá troch obetí výbuchu plynu."},
+    {"lang": "sk", "expect": "sensitive", "text": "Na hraniciach pokračujú boje, armáda hlási ďalšie straty."},
+    {"lang": "sk", "expect": "sensitive", "text": "Muž zaútočil nožom na okoloidúcich, dvoch ťažko zranil."},
+    {"lang": "sk", "expect": "sensitive", "text": "Autobus zišiel z cesty a prevrátil sa, hlásia mŕtvych aj zranených."},
+    {"lang": "sk", "expect": "sensitive", "text": "Silné búrky spôsobili záplavy, voda zaplavila stovky domov."},
+    {"lang": "sk", "expect": "safe", "text": "Nový smartfón je fakt pecka, fotky sú úžasné."},
+    {"lang": "sk", "expect": "safe", "text": "Hokejisti zvíťazili v boji o tretie miesto."},
+    {"lang": "sk", "expect": "safe", "text": "Výpredaj letnej kolekcie, zľavy až do mínus päťdesiat percent."},
+    {"lang": "sk", "expect": "safe", "text": "Recept na kurací vývar, ktorý vás postaví na nohy."},
+    {"lang": "sk", "expect": "safe", "text": "Tento výhľad z Kriváňa ma úplne odrovnal."}
+  ]
+}

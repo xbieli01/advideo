@@ -26,12 +26,8 @@ public sealed class AdMatcher(Taxonomy taxonomy)
         if (ctx.LastAdAtSec is { } last && now >= last && now - last < freq.MinIntervalSec)
             return new AdDecision(null, [], $"Minimum interval {freq.MinIntervalSec}s between ads not reached.");
 
-        if (!platform.BrandSafety.AllowSensitive &&
-            segment.Categories.Contains(BrandSafetySettings.SensitiveCategory, StringComparer.OrdinalIgnoreCase))
-        {
-            var what = segment.Signals?.Safety is { Count: > 0 } labels ? $" ({string.Join(", ", labels)})" : "";
-            return new AdDecision(null, [], $"Brand safety: sensitive content{what}.");
-        }
+        if (BrandSafetyBlock(segment, platform.BrandSafety) is { } safetyReason)
+            return new AdDecision(null, [], safetyReason);
 
         if (Violates(segment, platform.BrandSafety.ExcludeCategories, platform.BrandSafety.ExcludeKeywords) is { } unsafeReason)
             return new AdDecision(null, [], $"Platform brand safety: {unsafeReason}.");
@@ -150,6 +146,28 @@ public sealed class AdMatcher(Taxonomy taxonomy)
                       select (cr, sl);
         var best = options.FirstOrDefault();
         return best == default ? (null, null) : (best.cr, best.sl);
+    }
+
+    /// <summary>
+    /// Brand-safety gate by preset (R8b). Returns the reason when the segment must not carry an ad.
+    /// <see cref="BrandSafetySettings.AllowSensitive"/> (legacy switch) allows sensitive content in every preset;
+    /// strict still blocks profanity and drugs.
+    /// </summary>
+    public static string? BrandSafetyBlock(ContentSegment segment, BrandSafetySettings bs)
+    {
+        bool Has(string c) => segment.Categories.Contains(c, StringComparer.OrdinalIgnoreCase);
+        var labels = segment.Signals?.Safety is { Count: > 0 } l ? $" ({string.Join(", ", l)})" : "";
+        var preset = bs.Preset == BrandSafetyPreset.Standard ? "" : $" ({bs.Preset.ToString().ToLowerInvariant()})";
+
+        if (Has(BrandSafetySettings.SensitiveCategory) && !bs.AllowSensitive)
+        {
+            if (bs.Preset != BrandSafetyPreset.News || !Has(BrandSafetySettings.NewsCategory))
+                return $"Brand safety{preset}: sensitive content{labels}.";
+        }
+        if (bs.Preset == BrandSafetyPreset.Strict &&
+            BrandSafetySettings.StrictOnlyCategories.FirstOrDefault(Has) is { } strictCat)
+            return $"Brand safety (strict): {strictCat}{labels}.";
+        return null;
     }
 
     private static string? Violates(ContentSegment seg, IReadOnlyList<string> excludeCategories, IReadOnlyList<string> excludeKeywords)

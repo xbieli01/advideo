@@ -41,6 +41,26 @@ public sealed record BrandSafetySettings
     /// individually via <see cref="ExcludeCategories"/>.
     /// </summary>
     public bool AllowSensitive { get; init; }
+
+    /// <summary>How strict brand safety is (R8b). See <see cref="BrandSafetyPreset"/>.</summary>
+    public BrandSafetyPreset Preset { get; init; } = BrandSafetyPreset.Standard;
+
+    /// <summary>Category the pipeline puts on news reports (speech/on-screen cues).</summary>
+    public const string NewsCategory = "news";
+
+    /// <summary>Categories blocked only by the strict preset (not sensitive by themselves).</summary>
+    public static readonly IReadOnlyList<string> StrictOnlyCategories = ["profanity", "drugs"];
+}
+
+/// <summary>Brand-safety strictness of a platform.</summary>
+public enum BrandSafetyPreset
+{
+    /// <summary>No ads in sensitive segments (violence, death, war, terror, disaster, accident, weapons, protests).</summary>
+    Standard,
+    /// <summary>Standard + no ads with profanity or drug references (family / kids platforms).</summary>
+    Strict,
+    /// <summary>Sensitive segments may carry ads when they are a news report (category "news"); otherwise like Standard.</summary>
+    News
 }
 
 public sealed record MatchWeights

@@ -1,4 +1,4 @@
-import { AdSlot, PlatformConfig, PlatformKind, PricingModel } from '../core/models';
+import { AdSlot, BrandSafetyPreset, PlatformConfig, PlatformKind, PricingModel } from '../core/models';
 import { fromList, toList, toNumberOrNull } from './util';
 
 export interface PlatformForm {
@@ -16,6 +16,7 @@ export interface PlatformForm {
   maxPerViewerPerDay: number | null;
   excludeCategories: string;
   allowSensitive: boolean;
+  safetyPreset: BrandSafetyPreset;
   excludeKeywords: string;
   relevanceThreshold: number;
   wBrand: number;
@@ -40,6 +41,7 @@ export function newPlatformForm(): PlatformForm {
     maxPerViewerPerDay: null,
     excludeCategories: '',
     allowSensitive: false,
+    safetyPreset: 'standard',
     excludeKeywords: '',
     relevanceThreshold: 0.3,
     wBrand: 1,
@@ -69,6 +71,7 @@ export function platformToForm(p: PlatformConfig): PlatformForm {
     excludeCategories: fromList(p.brandSafety?.excludeCategories),
     excludeKeywords: fromList(p.brandSafety?.excludeKeywords),
     allowSensitive: p.brandSafety?.allowSensitive ?? false,
+    safetyPreset: p.brandSafety?.preset ?? 'standard',
     relevanceThreshold: p.matching?.relevanceThreshold ?? d.relevanceThreshold,
     wBrand: w?.brand ?? d.wBrand,
     wEntity: w?.entity ?? d.wEntity,
@@ -102,6 +105,7 @@ export function formToPlatform(f: PlatformForm): PlatformConfig {
       excludeCategories: toList(f.excludeCategories),
       excludeKeywords: toList(f.excludeKeywords),
       allowSensitive: !!f.allowSensitive,
+      preset: f.safetyPreset || 'standard',
     },
     matching: {
       relevanceThreshold: Number(f.relevanceThreshold),

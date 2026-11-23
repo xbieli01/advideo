@@ -21,7 +21,11 @@ TimedDetection = tuple[float, float, Detection]
 
 _SUPPORT_KINDS = {"object", "action", "scene", "logo", "safety"}
 _SIGNAL_KINDS = {"object": "objects", "action": "actions", "text": "text", "logo": "logos", "safety": "safety",
-                 "audio": "audioKeywords"}
+                 "audio": "audioKeywords", "safety_speech": "safety", "safety_ocr": "safety", "news": "news"}
+# brand-safety hits from speech/on-screen text: decided per window by severity (see _apply_text_safety)
+_TEXT_SAFETY_KINDS = {"safety_speech", "safety_ocr"}
+# cues that only label the segment (categories + signals), never ad-matching keywords
+_NO_KEYWORD_KINDS = _TEXT_SAFETY_KINDS | {"news"}
 
 
 def aggregate_segments(
@@ -32,6 +36,7 @@ def aggregate_segments(
     strong_score: float = 0.8,
     logo_min_support: int = 3,
     logo_strong_score: float = 0.97,
+    text_safety_min_hits: int = 2,
 ) -> list[Segment]:
     """Group timed detections into windows.
 
@@ -42,6 +47,8 @@ def aggregate_segments(
     detections come from track analyzers (Whisper), so both bypass the filter.
     Logos (kind "logo") use stricter `logo_min_support` / `logo_strong_score`: a false brand would show the
     wrong advertiser, so a logo must be seen in >= 3 frames of the window (or once almost certainly).
+    Brand-safety hits from speech/OCR (R8b) count only if the window has one high-severity hit or at least
+    `text_safety_min_hits` different medium/high hits ("killer feature" or one "attack" alone does not block ads).
     """
     if window_sec <= 0:
         raise ValueError("window_sec must be > 0")
@@ -60,6 +67,8 @@ def aggregate_segments(
     if min_support > 1:
         for idx, dets in list(buckets.items()):
             buckets[idx] = _filter_support(dets, min_support, strong_score, logo_min_support, logo_strong_score)
+    for idx, dets in list(buckets.items()):
+        buckets[idx] = _apply_text_safety(dets, text_safety_min_hits)
 
     segments: list[Segment] = []
     for idx in range(n_windows):
@@ -94,6 +103,29 @@ def _filter_support(
     return [(d, r) for d, r in dets if r or d.term in keep]
 
 
+def _apply_text_safety(dets: list[tuple[Detection, bool]], min_hits: int) -> list[tuple[Detection, bool]]:
+    """Drop medium-severity speech/OCR safety hits unless corroborated in the same window.
+
+    low (profanity) is always kept (never sensitive). Sensitive hits and non-sensitive ones (drugs) are
+    corroborated separately: a group is kept when it has a high-severity hit or >= `min_hits` distinct matched
+    phrases (source prefix ignored, so the same word in speech and on screen counts once). A drugs word therefore
+    never turns a lone "victims" into a sensitive window.
+    """
+    def group(d: Detection) -> bool:
+        return "sensitive" in d.categories
+
+    text_hits = [d for d, _ in dets if d.kind in _TEXT_SAFETY_KINDS and d.severity in ("medium", "high")]
+    if not text_hits:
+        return dets
+    keep_group: dict[bool, bool] = {}
+    for g in (True, False):
+        hits = [d for d in text_hits if group(d) == g]
+        distinct = {d.term.split(": ", 1)[-1] for d in hits}
+        keep_group[g] = any(d.severity == "high" for d in hits) or len(distinct) >= max(1, min_hits)
+    return [(d, r) for d, r in dets
+            if not (d.kind in _TEXT_SAFETY_KINDS and d.severity in ("medium", "high")) or keep_group[group(d)]]
+
+
 def _build_segment(start: float, end: float, dets: list[Detection]) -> Segment:
     kw_score: dict[str, float] = {}
     ent: dict[tuple[str, str], float] = {}
@@ -102,7 +134,8 @@ def _build_segment(start: float, end: float, dets: list[Detection]) -> Segment:
     scene: str | None = None
 
     for d in dets:
-        kw_score[d.term] = max(kw_score.get(d.term, 0.0), d.score)
+        if d.kind not in _NO_KEYWORD_KINDS:
+            kw_score[d.term] = max(kw_score.get(d.term, 0.0), d.score)
         if d.category:
             categories.add(d.category)
         categories.update(d.categories)

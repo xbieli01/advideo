@@ -34,7 +34,7 @@ export interface PlatformConfig {
   };
   slots: AdSlot[];
   frequency: { minIntervalSec: number; maxPerVideo: number; maxPerViewerPerDay: number | null };
-  brandSafety: { excludeCategories: string[]; excludeKeywords: string[]; allowSensitive?: boolean };
+  brandSafety: { excludeCategories: string[]; excludeKeywords: string[]; allowSensitive?: boolean; preset?: BrandSafetyPreset };
   matching: {
     relevanceThreshold: number;
     weights: { brand: number; entity: number; keyword: number; category: number };
@@ -100,6 +100,9 @@ export interface CampaignStats {
   spentTotal: number;
   spentToday: number;
 }
+
+/** standard: no ads in sensitive content · strict: + profanity/drugs · news: sensitive allowed in news reports */
+export type BrandSafetyPreset = 'standard' | 'strict' | 'news';
 
 export interface VideoJob {
   videoId: string;

@@ -11,6 +11,8 @@ Lookup order for the JSON file:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import json
 import os
 from pathlib import Path
@@ -69,6 +71,24 @@ BRAND_CLIP_PROMPTS: dict[str, list[str]] = {
 }
 BRAND_CATEGORIES: dict[str, list[str]] = {b["label"]: list(b["categories"]) for b in _DOC["brands"]}
 CLIP_BRAND_NEUTRAL: list[str] = list(_DOC.get("clipBrandNeutral", ["a photo with no logo"]))
+
+
+# --- brand safety from speech / on-screen text --------------------------------
+@dataclass(frozen=True)
+class SafetyTerm:
+    phrase: str          # as written in taxonomy.json (may contain * prefix tokens)
+    subtype: str         # violence | death | war | terror | disaster | accident | weapons | drugs | profanity
+    severity: str        # high | medium | low
+    sensitive: bool      # adds the "sensitive" category (blocked by the standard preset)
+
+
+SAFETY_TERMS: list[SafetyTerm] = [
+    SafetyTerm(term, g["subtype"], g["severity"], bool(g.get("sensitive", True)))
+    for g in _DOC.get("safetyTerms", {}).get("groups", [])
+    for term in g["terms"]
+]
+SAFETY_EXCLUSIONS: list[str] = list(_DOC.get("safetyTerms", {}).get("exclusions", []))
+NEWS_MARKERS: list[str] = list(_DOC.get("newsMarkers", {}).get("terms", []))
 
 
 def categories_for(term: str) -> list[str]:

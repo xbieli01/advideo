@@ -1,0 +1,549 @@
+{
+ "$comment": "R8b text/speech brand-safety eval. One case = the transcript (or on-screen text) of one 6 s window. expect: sensitive | safe; also optional 'categories' that must be present and 'news': true. Hand-written; traps are everyday phrases with ambiguous words. Extend with real transcripts when available.",
+ "cases": [
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Police say two people were killed when a gunman opened fire outside the school this morning.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "The death toll from the earthquake has risen to more than three hundred.",
+   "categories": [
+    "death",
+    "disaster"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Russian airstrikes hit the city overnight, officials said.",
+   "categories": [
+    "war"
+   ],
+   "news": true
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "A suicide bomber attacked a crowded market.",
+   "categories": [
+    "terror"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Three people died in a head on collision on the motorway.",
+   "categories": [
+    "accident"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Soldiers and armed troops moved towards the border as the war entered its second week.",
+   "categories": [
+    "war"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Residents were evacuated as the flooding destroyed hundreds of homes, a disaster for the region.",
+   "categories": [
+    "disaster"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "He was stabbed during a brawl outside the club.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Breaking news: hostages are being held inside the bank.",
+   "categories": [
+    "terror"
+   ],
+   "news": true
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "The wounded were taken to hospital after the attack.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "This camera is a real killer feature for vlogging."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Take a crash course in cooking pasta with our chef."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Let's shoot a few photos at sunset on the beach."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Our fire sale starts today, everything must go."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "The striker scored again and the team will attack the title next season."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "My phone battery died right before the concert."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "In this game you fight dragons and explore a huge open world."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Star Wars fans will love this new Lego set."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Water the plants twice a week and they will grow fast."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "This is a dead simple recipe for banana bread."
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Pri streľbe v obchodnom centre zahynuli dvaja ľudia, uviedla polícia.",
+   "categories": [
+    "violence",
+    "death"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Zemetrasenie si vyžiadalo desiatky obetí a stovky zranených.",
+   "categories": [
+    "disaster"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Vojna na Ukrajine pokračuje, ruské rakety zasiahli energetickú infraštruktúru.",
+   "categories": [
+    "war"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Pri tragickej nehode na diaľnici D1 prišli o život traja ľudia.",
+   "categories": [
+    "accident",
+    "death"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Muža ubodali počas bitky pred barom.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Teroristi zadržiavajú rukojemníkov v budove ambasády.",
+   "categories": [
+    "terror"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Povodne zaplavili obce na východe, ľudí museli evakuovať.",
+   "categories": [
+    "disaster"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Ozbrojený útočník napadol dvoch policajtov.",
+   "categories": [
+    "violence",
+    "weapons"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Bombardovanie mesta trvalo celú noc, hlási náš spravodajca.",
+   "categories": [
+    "war"
+   ],
+   "news": true
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Polícia vyšetruje vraždu ženy z Trnavy.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Tento telefón má skvelý fotoaparát a výdrž batérie."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Pôvodný recept na bryndzové halušky od babky."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "V drogérii nájdete novú kozmetiku za skvelé ceny."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Útočník Slovana strelil v zápase dva góly."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Na dovolenke sme zabili čas hraním kariet."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Zrážky v podobe dažďa budú len ojedinelé, cez víkend bude slnečno."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Nová Škoda Octavia ponúka priestranný kufor a úsporný motor."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Pozrite si náš kurz varenia pre začiatočníkov."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Bežecké tenisky pre každý terén, ideálne na maratón."
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Rodina oslávila narodeniny pri torte a balónoch."
+  },
+  {
+   "lang": "cs",
+   "expect": "sensitive",
+   "text": "Při střelbě na fakultě zemřelo několik lidí, policie zasahovala.",
+   "categories": [
+    "violence"
+   ]
+  },
+  {
+   "lang": "cs",
+   "expect": "sensitive",
+   "text": "Válka a bombardování si vyžádaly stovky obětí.",
+   "categories": [
+    "war"
+   ]
+  },
+  {
+   "lang": "cs",
+   "expect": "sensitive",
+   "text": "Při tragické nehodě zahynul řidič kamionu.",
+   "categories": [
+    "accident",
+    "death"
+   ]
+  },
+  {
+   "lang": "cs",
+   "expect": "sensitive",
+   "text": "Povodeň zaplavila centrum města, lidé byli evakuováni.",
+   "categories": [
+    "disaster"
+   ]
+  },
+  {
+   "lang": "cs",
+   "expect": "sensitive",
+   "text": "Teroristé drží rukojmí v nákupním centru.",
+   "categories": [
+    "terror"
+   ]
+  },
+  {
+   "lang": "cs",
+   "expect": "safe",
+   "text": "Dnes vám ukážeme, jak upéct domácí chleba."
+  },
+  {
+   "lang": "cs",
+   "expect": "safe",
+   "text": "Srážky budou jen místní, jinak polojasno."
+  },
+  {
+   "lang": "cs",
+   "expect": "safe",
+   "text": "Nový notebook je rychlý a tenký."
+  },
+  {
+   "lang": "cs",
+   "expect": "safe",
+   "text": "Útočník Sparty dal hattrick."
+  },
+  {
+   "lang": "cs",
+   "expect": "safe",
+   "text": "Výlet na kolech po jižních Čechách."
+  },
+  {
+   "lang": "de",
+   "expect": "sensitive",
+   "text": "Bei dem Anschlag wurden zwölf Menschen getötet, sagt die Polizei.",
+   "categories": [
+    "terror",
+    "violence"
+   ]
+  },
+  {
+   "lang": "de",
+   "expect": "sensitive",
+   "text": "Das Erdbeben forderte zahlreiche Todesopfer.",
+   "categories": [
+    "disaster",
+    "death"
+   ]
+  },
+  {
+   "lang": "de",
+   "expect": "sensitive",
+   "text": "Nach dem tödlichen Unfall war die Autobahn stundenlang gesperrt.",
+   "categories": [
+    "accident"
+   ]
+  },
+  {
+   "lang": "de",
+   "expect": "sensitive",
+   "text": "Soldaten und Raketen: der Krieg eskaliert weiter.",
+   "categories": [
+    "war"
+   ]
+  },
+  {
+   "lang": "de",
+   "expect": "sensitive",
+   "text": "Ein bewaffneter Mann hat mehrere Schüsse abgegeben, zwei Menschen wurden verletzt.",
+   "categories": [
+    "weapons"
+   ]
+  },
+  {
+   "lang": "de",
+   "expect": "safe",
+   "text": "Unser neues Rezept für Apfelstrudel ist ganz einfach."
+  },
+  {
+   "lang": "de",
+   "expect": "safe",
+   "text": "Die Mannschaft startet einen Angriff auf die Tabellenspitze."
+  },
+  {
+   "lang": "de",
+   "expect": "safe",
+   "text": "Der neue Elektroauto-Test: Reichweite und Ladezeit."
+  },
+  {
+   "lang": "de",
+   "expect": "safe",
+   "text": "Sommerurlaub am See mit der ganzen Familie."
+  },
+  {
+   "lang": "de",
+   "expect": "safe",
+   "text": "Die Kollektion für den Winter ist da."
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "What the fuck is this, that's insane!",
+   "categories": [
+    "profanity"
+   ]
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Do kurvy, zase mi ušiel autobus.",
+   "categories": [
+    "profanity"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "The documentary follows a cocaine dealer and his overdose victims.",
+   "categories": [
+    "drugs"
+   ]
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Firefighters recovered the bodies of four victims from the collapsed apartment block.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "The shooter was arrested after a standoff with police; six people were injured.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Missiles struck a hospital, and the army says dozens of civilians are dead.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "A tornado tore through the town, leaving a trail of destruction and several fatalities.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "sensitive",
+   "text": "Protesters clashed with riot police and tear gas was fired into the crowd.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "These sneakers are made to beat your personal best on race day.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "The bomb of the summer: our new ice cream flavour is here.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Kill two birds with one stone by booking flight and hotel together.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "He absolutely murdered that guitar solo last night.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "en",
+   "expect": "safe",
+   "text": "Our travel guide shows the best beaches of Croatia.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Pri požiari rodinného domu zomreli dve deti, hasiči zasahovali celú noc.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Ruská armáda ostreľovala Charkov, hlásia mŕtvych civilistov.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Vodič zrazil na priechode chodkyňu, ktorá na mieste zomrela.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Útočník strieľal do ľudí na námestí, zranených je osem.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "sensitive",
+   "text": "Víchrica strhla strechy a zabila staršieho muža.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Táto pizza je bomba, musíte ju ochutnať.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Tréner chce, aby mužstvo viac útočilo po krídlach.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Zľavy na zimné bundy a čiapky až do konca týždňa.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Ten film ma úplne zabil, toľko som sa nasmial.",
+   "note": "from holdout v1 (2026-11-23)"
+  },
+  {
+   "lang": "sk",
+   "expect": "safe",
+   "text": "Výlet do Vysokých Tatier s deťmi a psom.",
+   "note": "from holdout v1 (2026-11-23)"
+  }
+ ]
+}

@@ -72,10 +72,19 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
             <mat-form-field appearance="outline"><mat-label>Max per viewer / day</mat-label><input matInput type="number" min="0" name="maxD" [(ngModel)]="f.maxPerViewerPerDay" /><mat-hint>empty = no limit</mat-hint></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Exclude categories</mat-label><input matInput name="exCat" [(ngModel)]="f.excludeCategories" /></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Exclude keywords</mat-label><input matInput name="exKw" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Brand safety preset</mat-label>
+              <mat-select name="safetyPreset" [(ngModel)]="f.safetyPreset">
+                <mat-option value="standard">Standard</mat-option>
+                <mat-option value="strict">Strict (family / kids)</mat-option>
+                <mat-option value="news">News portal</mat-option>
+              </mat-select>
+              <mat-hint>{{ presetHint(f.safetyPreset) }}</mat-hint>
+            </mat-form-field>
             <div class="full">
-              <mat-checkbox name="allowSensitive" [(ngModel)]="f.allowSensitive">Allow ads in sensitive content</mat-checkbox>
-              <div class="muted small">Off (recommended): no ad in segments marked sensitive (protests, accidents, weapons, violence).
-                On: e.g. a news portal; subtypes can still be blocked via Exclude categories (politics, accident, weapons, violence).</div>
+              <mat-checkbox name="allowSensitive" [(ngModel)]="f.allowSensitive">Always allow ads in sensitive content</mat-checkbox>
+              <div class="muted small">Off (recommended). On overrides the preset for sensitive content (protests, accidents, weapons,
+                violence, war, disasters — from the picture, speech and on-screen text); subtypes can still be blocked via Exclude categories.</div>
             </div>
             <mat-form-field appearance="outline"><mat-label>Relevance threshold</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="thr" [(ngModel)]="f.relevanceThreshold" /></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Weight brand</mat-label><input matInput type="number" step="0.1" name="wb" [(ngModel)]="f.wBrand" /></mat-form-field>
@@ -97,6 +106,14 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
   `,
 })
 export class PlatformEditPage {
+  presetHint(p: string): string {
+    return p === 'strict'
+      ? 'No ads in sensitive content, profanity or drug references.'
+      : p === 'news'
+        ? 'Sensitive segments may carry ads when they are a news report; otherwise like Standard.'
+        : 'No ads in sensitive content (violence, death, war, disasters, accidents, weapons, protests).';
+  }
+
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
