@@ -15,6 +15,7 @@ matches Nike, and so on.
 - **M2 (done):** ad-serving API + keyword↔campaign matching engine, configurable per platform — design `docs/m2-ad-serving.md`; matcher (T-005a), ad-serving API + map cache (T-005b), events/ledger/stats + golden & perf tests (T-005c).
 - **M3 (in progress):** JS snippet for customer portals done (M3a, `client/`); browser extension next (M3b).
 - **Brand safety (done):** sensitive content (protests, accidents, weapons, violence) is detected in the content map; the ad server shows no ad there unless a platform allows it.
+- **Robust processing (done, R5):** videos from URLs and HLS, retries with backoff, dead-letter, restart recovery and bulk catalogue import (see below).
 - **Admin UI (done):** Angular SPA for campaigns, platforms, video analysis and decision explain, served by the API under `/admin` (`admin/`).
 
 ## Architecture (short)
@@ -91,6 +92,42 @@ advideo-analyze --video real.mp4 --analyzer "yolo+clip,ocr" --track whisper --ou
   yolo+clip, ocr) and **track-level** (`TrackAnalyzer`, whole video — whisper).
   Brand/keyword extraction from recognized/transcribed text lives in the pure,
   model-free `textmatch.py`, so that logic is fully unit-tested.
+
+## Robust processing (R5)
+
+**Video sources.** `videoUri` may be a local path, `file://`, an `http(s)://` video file or an HLS
+playlist (`…/index.m3u8`). The pipeline materializes remote sources once into a temp file
+(`pipeline/src/advideo_pipeline/sources.py`): streamed download with a size limit and retries
+(honours `Retry-After`), HLS remuxed by ffmpeg without re-encoding, HTML error pages rejected.
+For S3 use presigned https URLs. SSRF guard: loopback/private addresses are blocked unless
+`ADVIDEO_ALLOW_PRIVATE_HOSTS=1`; optionally restrict hosts with `ADVIDEO_ALLOWED_HOSTS=cdn.example.com,*.example.net`.
+Other knobs: `ADVIDEO_MAX_DOWNLOAD_BYTES` (5 GiB), `ADVIDEO_DOWNLOAD_TIMEOUT` (60 s), `ADVIDEO_HLS_TIMEOUT`
+(3600 s), `ADVIDEO_DOWNLOAD_RETRIES` (3).
+
+**Exit codes of `advideo-analyze`:** `0` ok · `3` permanent source error (404/403, not a video, too large,
+blocked host) · `4` transient source error (network, 5xx, timeout) · `1` unexpected error.
+
+**Retries and dead letter.** The worker retries transient failures (exit ≠ 3, timeouts, crashes) with
+exponential backoff — `Worker:MaxAttempts` (3), `Worker:RetryBaseDelaySeconds` (30, doubles),
+`Worker:RetryMaxDelaySeconds` (900). Between attempts a job is `Retrying` (`attempts`, `nextAttemptAt`).
+Permanent errors and exhausted retries end in `Failed` — the dead-letter state:
+`GET /videos?status=Failed` lists them, `POST /videos/{id}/retry` re-queues one (attempts reset).
+On start-up the worker re-queues `Queued`, interrupted `Running` and `Retrying` jobs from the
+repository (with `Persistence:Provider=postgres` nothing is lost on restart).
+
+**Bulk catalogue import.** `POST /videos/bulk` (admin key), up to 1000 videos per request:
+
+```json
+{ "analyzer": "yolo+clip,ocr", "track": "whisper", "force": false,
+  "items": [ { "videoId": "movie-001", "videoUri": "https://cdn.example.com/movie-001.mp4" },
+             { "videoId": "show-17",   "videoUri": "https://cdn.example.com/show-17/index.m3u8", "analyzer": "yolo+clip" } ] }
+```
+
+The response lists `queuedIds`, `skipped` (already queued/running, or already analyzed from the same URI —
+re-imports are idempotent unless `force`) and `invalid` items (missing/unsafe id, unsupported scheme,
+duplicates). Video ids may contain only letters, digits, `.`, `_`, `-` (max 128). The Admin UI
+(*Videos → Import catalogue*) accepts the same as CSV (`videoId,videoUri[,analyzer[,track]]`) or JSON,
+filters by status and offers *Retry* on failed jobs.
 
 ## Admin UI
 

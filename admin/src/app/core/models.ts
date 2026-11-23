@@ -106,11 +106,41 @@ export interface VideoJob {
   videoUri: string;
   analyzer: string;
   track: string | null;
-  status: string; // Queued | Running | Succeeded | Failed (PascalCase from the API)
+  status: string; // Queued | Running | Retrying | Completed | Failed (PascalCase from the API; Failed = dead letter)
   mapKey: string | null;
   error: string | null;
   createdAt: string;
   updatedAt: string;
+  attempts: number;
+  nextAttemptAt: string | null;
+}
+
+export interface BulkVideoItem {
+  videoId: string;
+  videoUri: string;
+  analyzer?: string | null;
+  track?: string | null;
+}
+
+export interface BulkRegisterRequest {
+  items: BulkVideoItem[];
+  analyzer?: string | null;
+  track?: string | null;
+  force?: boolean;
+}
+
+export interface BulkItemResult {
+  index: number;
+  videoId: string | null;
+  reason: string;
+}
+
+export interface BulkRegisterResponse {
+  received: number;
+  queued: number;
+  queuedIds: string[];
+  skipped: BulkItemResult[];
+  invalid: BulkItemResult[];
 }
 
 export interface RegisterVideoRequest {

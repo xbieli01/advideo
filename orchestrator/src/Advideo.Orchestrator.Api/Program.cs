@@ -213,8 +213,8 @@ var videos = app.MapGroup("/videos").RequireAuthorization(ApiKeyDefaults.AdminPo
 
 videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQueue queue) =>
 {
-    if (string.IsNullOrWhiteSpace(req.VideoId) || string.IsNullOrWhiteSpace(req.VideoUri))
-        return Results.BadRequest(new { error = "videoId and videoUri are required" });
+    if ((VideoRules.ValidateId(req.VideoId) ?? VideoRules.ValidateUri(req.VideoUri)) is { } error)
+        return Results.BadRequest(new { error });
 
     var job = new VideoJob
     {
@@ -227,6 +227,68 @@ videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQue
     await repo.UpsertAsync(job);
     await queue.EnqueueAsync(job);
     return Results.Accepted($"/videos/{job.VideoId}", JobResponse.From(job));
+});
+
+// Catalogue import: up to VideoRules.MaxBulkItems videos per request.
+videos.MapPost("/bulk", async (BulkRegisterRequest req, IJobRepository repo, IJobQueue queue) =>
+{
+    var items = req.Items ?? [];
+    if (items.Count == 0) return Results.BadRequest(new { error = "items must contain at least one video" });
+    if (items.Count > VideoRules.MaxBulkItems)
+        return Results.BadRequest(new { error = $"at most {VideoRules.MaxBulkItems} items per request (got {items.Count}); split the catalogue" });
+
+    var queuedIds = new List<string>();
+    var skipped = new List<BulkItemResult>();
+    var invalid = new List<BulkItemResult>();
+    var seen = new HashSet<string>(StringComparer.Ordinal);
+
+    for (var i = 0; i < items.Count; i++)
+    {
+        var it = items[i];
+        var id = it.VideoId?.Trim();
+        var uri = it.VideoUri?.Trim();
+        if ((VideoRules.ValidateId(id) ?? VideoRules.ValidateUri(uri)) is { } error)
+        {
+            invalid.Add(new BulkItemResult(i, id, error));
+            continue;
+        }
+        if (!seen.Add(id!))
+        {
+            invalid.Add(new BulkItemResult(i, id, "duplicate videoId in this batch"));
+            continue;
+        }
+
+        var existing = await repo.GetAsync(id!);
+        if (existing is { Status: JobStatus.Queued or JobStatus.Running or JobStatus.Retrying })
+        {
+            skipped.Add(new BulkItemResult(i, id, $"already {existing.Status.ToString().ToLowerInvariant()}"));
+            continue;
+        }
+        if (!req.Force && existing is { Status: JobStatus.Completed } && existing.VideoUri == uri)
+        {
+            skipped.Add(new BulkItemResult(i, id, "already analyzed (use force to re-analyze)"));
+            continue;
+        }
+
+        var analyzer = FirstNonEmpty(it.Analyzer, req.Analyzer) ?? "yolo+clip";
+        var job = new VideoJob
+        {
+            VideoId = id!,
+            VideoUri = uri!,
+            Analyzer = analyzer,
+            Track = FirstNonEmpty(it.Track, req.Track),
+            Status = JobStatus.Queued,
+            CreatedAt = existing?.CreatedAt ?? DateTimeOffset.UtcNow
+        };
+        await repo.UpsertAsync(job);
+        await queue.EnqueueAsync(job);
+        queuedIds.Add(job.VideoId);
+    }
+
+    return Results.Ok(new BulkRegisterResponse(items.Count, queuedIds.Count, queuedIds, skipped, invalid));
+
+    static string? FirstNonEmpty(params string?[] values) =>
+        values.Select(v => v?.Trim()).FirstOrDefault(v => !string.IsNullOrEmpty(v));
 });
 
 videos.MapGet("", async (string? status, IJobRepository repo) =>

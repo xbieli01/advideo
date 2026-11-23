@@ -17,8 +17,8 @@ namespace Advideo.Orchestrator.Tests;
 
 /// <summary>
 /// Pipeline whose behaviour is scripted by the video URI:
-/// "transient-N://…" fails N times with a transient error, then succeeds;
-/// "permanent://…" always fails permanently; "crash://…" always throws a plain exception.
+/// "/scripted/transient-N/…" fails N times with a transient error, then succeeds;
+/// "/scripted/permanent/…" always fails permanently; "/scripted/crash/…" always throws a plain exception.
 /// </summary>
 internal sealed class ScriptedPipelineRunner : IPipelineRunner
 {
@@ -27,14 +27,14 @@ internal sealed class ScriptedPipelineRunner : IPipelineRunner
     public Task<Stream> RunAsync(VideoJob job, CancellationToken ct = default)
     {
         var n = Calls.AddOrUpdate(job.VideoId, 1, (_, c) => c + 1);
-        var uri = job.VideoUri;
-        if (uri.StartsWith("permanent://"))
+        var uri = job.VideoUri.Replace("/scripted/", "");
+        if (uri.StartsWith("permanent"))
             throw new PipelineFailureException("HTTP 404 for source", transient: false, exitCode: 3);
-        if (uri.StartsWith("crash://"))
+        if (uri.StartsWith("crash"))
             throw new InvalidOperationException("worker crashed");
         if (uri.StartsWith("transient-"))
         {
-            var failures = int.Parse(uri["transient-".Length..uri.IndexOf(':')]);
+            var failures = int.Parse(uri["transient-".Length..uri.IndexOf('/')]);
             if (n <= failures) throw new PipelineFailureException("HTTP 503 for source", transient: true, exitCode: 4);
         }
         var json = $$"""{"schemaVersion":"1.0","videoId":"{{job.VideoId}}","durationSec":12,"generatedAt":"2026-11-23T00:00:00Z","segments":[]}""";
@@ -80,7 +80,7 @@ public class RetryDeadLetterTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Transient_failures_are_retried_until_success()
     {
         var c = _factory.AdminClient();
-        (await c.PostAsJsonAsync("/videos", new { videoId = "t2", videoUri = "transient-2://cdn/v.mp4", analyzer = "mock" }))
+        (await c.PostAsJsonAsync("/videos", new { videoId = "t2", videoUri = "/scripted/transient-2/v.mp4", analyzer = "mock" }))
             .EnsureSuccessStatusCode();
 
         var job = await WaitFor(c, "t2", "Completed", "Failed");
@@ -94,7 +94,7 @@ public class RetryDeadLetterTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Retries_exhausted_end_in_failed_dead_letter()
     {
         var c = _factory.AdminClient();
-        await c.PostAsJsonAsync("/videos", new { videoId = "t9", videoUri = "transient-9://cdn/v.mp4", analyzer = "mock" });
+        await c.PostAsJsonAsync("/videos", new { videoId = "t9", videoUri = "/scripted/transient-9/v.mp4", analyzer = "mock" });
 
         var job = await WaitFor(c, "t9", "Completed", "Failed");
         Assert.Equal("Failed", job.status);
@@ -109,7 +109,7 @@ public class RetryDeadLetterTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Permanent_failure_is_not_retried()
     {
         var c = _factory.AdminClient();
-        await c.PostAsJsonAsync("/videos", new { videoId = "p1", videoUri = "permanent://cdn/missing.mp4", analyzer = "mock" });
+        await c.PostAsJsonAsync("/videos", new { videoId = "p1", videoUri = "/scripted/permanent/missing.mp4", analyzer = "mock" });
 
         var job = await WaitFor(c, "p1", "Failed");
         Assert.Equal(1, job.attempts);
@@ -121,7 +121,7 @@ public class RetryDeadLetterTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Unexpected_exceptions_count_as_transient()
     {
         var c = _factory.AdminClient();
-        await c.PostAsJsonAsync("/videos", new { videoId = "c1", videoUri = "crash://x", analyzer = "mock" });
+        await c.PostAsJsonAsync("/videos", new { videoId = "c1", videoUri = "/scripted/crash/x.mp4", analyzer = "mock" });
         var job = await WaitFor(c, "c1", "Failed");
         Assert.Equal(3, job.attempts);
     }
@@ -130,7 +130,7 @@ public class RetryDeadLetterTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Retry_endpoint_requeues_failed_job()
     {
         var c = _factory.AdminClient();
-        await c.PostAsJsonAsync("/videos", new { videoId = "r1", videoUri = "transient-3://cdn/v.mp4", analyzer = "mock" });
+        await c.PostAsJsonAsync("/videos", new { videoId = "r1", videoUri = "/scripted/transient-3/v.mp4", analyzer = "mock" });
         await WaitFor(c, "r1", "Failed"); // 3 attempts used, 3 failures scripted
 
         var resp = await c.PostAsync("/videos/r1/retry", null);

@@ -6,6 +6,8 @@ import {
   CampaignStats,
   ExplainResponse,
   PlatformConfig,
+  BulkRegisterRequest,
+  BulkRegisterResponse,
   RegisterVideoRequest,
   VideoJob,
 } from './models';
@@ -59,8 +61,15 @@ export class ApiService {
   }
 
   // videos (analysis jobs)
-  videos(): Observable<VideoJob[]> {
-    return this.http.get<VideoJob[]>('/videos');
+  videos(status?: string | null): Observable<VideoJob[]> {
+    const params = status ? new HttpParams().set('status', status) : undefined;
+    return this.http.get<VideoJob[]>('/videos', { params });
+  }
+  retryVideo(videoId: string): Observable<VideoJob> {
+    return this.http.post<VideoJob>(`/videos/${enc(videoId)}/retry`, null);
+  }
+  bulkRegisterVideos(req: BulkRegisterRequest): Observable<BulkRegisterResponse> {
+    return this.http.post<BulkRegisterResponse>('/videos/bulk', req);
   }
   registerVideo(req: RegisterVideoRequest): Observable<VideoJob> {
     return this.http.post<VideoJob>('/videos', req);
