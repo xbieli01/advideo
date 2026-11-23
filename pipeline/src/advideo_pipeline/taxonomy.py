@@ -87,6 +87,7 @@ SAFETY_TERMS: list[SafetyTerm] = [
     for g in _DOC.get("safetyTerms", {}).get("groups", [])
     for term in g["terms"]
 ]
+SEMANTIC_SAFETY: dict = dict(_DOC.get("semanticSafety", {}))
 SAFETY_EXCLUSIONS: list[str] = list(_DOC.get("safetyTerms", {}).get("exclusions", []))
 NEWS_MARKERS: list[str] = list(_DOC.get("newsMarkers", {}).get("terms", []))
 

@@ -1,0 +1,29 @@
+{
+  "$comment": "Held-out v3, written 2026-11-23 BEFORE the semantic classifier (R8c) was evaluated for the first time. Never tune on it (same rule as v2).",
+  "cases": [
+    {"lang": "en", "expect": "sensitive", "text": "Paramedics tried for an hour to revive the victim, but he did not survive."},
+    {"lang": "en", "expect": "sensitive", "text": "Entire neighbourhoods were wiped out when the river burst its banks overnight."},
+    {"lang": "en", "expect": "sensitive", "text": "Witnesses heard gunfire and saw people running for cover."},
+    {"lang": "en", "expect": "sensitive", "text": "The militants blew up a bridge and took control of the town."},
+    {"lang": "en", "expect": "sensitive", "text": "Her body was discovered in the woods three days after she went missing."},
+    {"lang": "en", "expect": "sensitive", "text": "Thousands fled as rebels advanced on the capital and shelling intensified."},
+    {"lang": "en", "expect": "safe", "text": "We tested five budget headphones so you don't have to."},
+    {"lang": "en", "expect": "safe", "text": "Today we're painting the kids' room in a soft mint green."},
+    {"lang": "en", "expect": "safe", "text": "The match ended in a dramatic penalty shootout."},
+    {"lang": "en", "expect": "safe", "text": "Our new mattress gives you the best sleep of your life."},
+    {"lang": "en", "expect": "safe", "text": "In this level you have to defeat the boss to unlock the castle."},
+    {"lang": "en", "expect": "safe", "text": "The price of the flight dropped, so we booked a weekend in Rome."},
+    {"lang": "sk", "expect": "sensitive", "text": "Záchranári sa ho snažili oživiť, no zraneniam podľahol."},
+    {"lang": "sk", "expect": "sensitive", "text": "Rozvodnená rieka strhla most a odrezala celú dedinu od sveta."},
+    {"lang": "sk", "expect": "sensitive", "text": "Svedkovia počuli výstrely a ľudia utekali do úkrytov."},
+    {"lang": "sk", "expect": "sensitive", "text": "Telo nezvestnej ženy našli po troch dňoch v lese."},
+    {"lang": "sk", "expect": "sensitive", "text": "Povstalci obsadili mesto a tisíce ľudí utekajú z krajiny."},
+    {"lang": "sk", "expect": "sensitive", "text": "Lavína zasypala skupinu skialpinistov, pátranie pokračuje."},
+    {"lang": "sk", "expect": "safe", "text": "Otestovali sme päť lacných slúchadiel, aby ste nemuseli vy."},
+    {"lang": "sk", "expect": "safe", "text": "Dnes maľujeme detskú izbu jemnou mätovou farbou."},
+    {"lang": "sk", "expect": "safe", "text": "Zápas rozhodli až pokutové kopy."},
+    {"lang": "sk", "expect": "safe", "text": "S novým matracom sa konečne poriadne vyspíte."},
+    {"lang": "sk", "expect": "safe", "text": "V tomto leveli musíte poraziť bossa a odomknúť hrad."},
+    {"lang": "sk", "expect": "safe", "text": "Letenky zlacneli, tak sme si kúpili víkend v Ríme."}
+  ]
+}

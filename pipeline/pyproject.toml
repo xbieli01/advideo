@@ -22,6 +22,7 @@ ml = [
     "open-clip-torch>=2.24",  # CLIP zero-shot labels
     "easyocr>=1.7",           # on-screen text -> brands
     "faster-whisper>=1.0",    # audio transcription -> spoken keywords/brands
+    "transformers>=4.40",     # R8c semantic brand safety (multilingual sentence embeddings)
 ]
 dev = [
     "pytest>=7.0",

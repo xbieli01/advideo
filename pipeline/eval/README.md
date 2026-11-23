@@ -142,4 +142,22 @@ categories only (blocked by the `strict` preset), and they never corroborate a s
 
 Run `python eval/run_text_safety_eval.py` (tuning set). The lexicon is precise but misses paraphrases
 ("rescue teams searching the rubble", "boje na hraniciach", "zaútočil nožom") — next step: a multilingual
-sentence-embedding classifier on top of the lexicon (R8c).
+sentence-embedding classifier on top of the lexicon (R8c, below).
+
+**R8c semantic text safety** — `semantic_safety.py`: Whisper segments are embedded with
+`paraphrase-multilingual-MiniLM-L12-v2` (transformers, mean pooling) and compared with 54 sensitive prototypes
+(violence, death, war, terror, disaster, accident; EN+SK) and 45 neutral ones (`schema/taxonomy.json` →
+`semanticSafety`). score = mean top-3 cosine to sensitive − mean top-3 cosine to neutral; ≥ 0.21 → high hit,
+≥ 0.14 → medium (needs one more hit). Thresholds = highest SAFE score on the tuning set (0.087) + 0.12 / + 0.05,
+chosen by `eval/semantic_safety_eval.py --search` on the tuning set only. Cost: model load ~3 s, ~3.4 ms per
+segment on CPU (~470 MB download on first use; `ADVIDEO_SEMANTIC_SAFETY=0` disables it).
+
+| set (never tuned) | lexicon P / R | lexicon + semantic P / R |
+|---|---|---|
+| held-out v2 (20) | 1.00 / 0.55 | **1.00 / 0.91** |
+| held-out v3 (24, written before the first semantic run) | 1.00 / 0.08 | **1.00 / 0.67** |
+| real speech of the 32 eval videos (139 Whisper segments) | no hit | no hit (max score 0.104 < 0.14) |
+
+Still missed: implicit events without violent words ("militants blew up a bridge", "body found in the woods",
+"avalanche buried skiers"). The eval videos contain little speech — real news/vlog transcripts are the next
+eval need before raising the thresholds' trust.

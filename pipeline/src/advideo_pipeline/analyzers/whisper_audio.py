@@ -29,7 +29,10 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
         device: str | None = None,
         compute_type: str = "auto",
         language: str | None = None,
+        semantic_safety: "bool | object | None" = None,
     ) -> None:
+        """`semantic_safety`: None = on when enabled by env (ADVIDEO_SEMANTIC_SAFETY, default on) and the
+        model can be loaded; False = off; or a ready SemanticSafety instance (shared across videos)."""
         from faster_whisper import WhisperModel  # lazy
 
         dev = device
@@ -42,6 +45,17 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
                 dev = "cpu"
         self._model = WhisperModel(model_size, device=dev, compute_type=compute_type)
         self.language = language
+        self._semantic_spec = semantic_safety
+        self._semantic = semantic_safety if semantic_safety not in (None, True, False) else None
+        self._semantic_tried = self._semantic is not None or semantic_safety is False
+
+    def _semantic_classifier(self):
+        if not self._semantic_tried:
+            self._semantic_tried = True
+            from ..semantic_safety import SemanticSafety, load_or_none
+
+            self._semantic = SemanticSafety() if self._semantic_spec is True else load_or_none()
+        return self._semantic
 
     def analyze_track(
         self, video_path: str, duration_sec: float
@@ -59,11 +73,17 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
             # unreadable/odd audio must not fail the whole video analysis; visual backends still count
             log.warning("whisper: audio of %s could not be decoded (%s), skipped", video_path, exc)
             return []
-        for seg in segments:
+        semantic = self._semantic_classifier()
+        semantic_hits = (semantic.detections([seg.text or "" for seg in segments],
+                                             [_avg_logprob_to_score(getattr(seg, "avg_logprob", None)) for seg in segments])
+                         if semantic and segments else [[] for _ in segments])
+        for seg, sem_dets in zip(segments, semantic_hits):
             text = seg.text or ""
             start = float(seg.start)
             end = float(seg.end)
             score = _avg_logprob_to_score(getattr(seg, "avg_logprob", None))
+            for det in sem_dets:  # R8c: paraphrases the lexicon misses ("speech: ~war")
+                out.append((start, end, det))
             for det in brand_detections(text, kind="audio", score=score):
                 out.append((start, end, det))
             for det in keyword_detections(text, kind="audio", score=score):
@@ -77,6 +97,9 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
 
     def close(self) -> None:
         self._model = None
+        if self._semantic is not None and self._semantic_spec in (None, True):
+            self._semantic.close()  # created here; a passed-in instance belongs to the caller
+        self._semantic = None
 
 
 def _avg_logprob_to_score(avg_logprob: float | None) -> float:
