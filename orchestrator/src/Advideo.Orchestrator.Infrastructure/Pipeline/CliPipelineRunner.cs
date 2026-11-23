@@ -54,7 +54,15 @@ public sealed class CliPipelineRunner : IPipelineRunner
         _log.LogInformation("Running pipeline for {VideoId}: {Cmd} {Args}",
             job.VideoId, _opt.Command, string.Join(' ', psi.ArgumentList));
 
-        proc.Start();
+        try
+        {
+            proc.Start();
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            throw new PipelineFailureException(
+                $"cannot start pipeline command '{_opt.Command}': {ex.Message}", transient: false, inner: ex);
+        }
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeoutCts.CancelAfter(TimeSpan.FromSeconds(_opt.TimeoutSeconds));
 
@@ -66,22 +74,37 @@ public sealed class CliPipelineRunner : IPipelineRunner
         catch (OperationCanceledException)
         {
             TryKill(proc);
-            throw;
+            TryDelete(outPath);
+            if (ct.IsCancellationRequested) throw; // host shutdown / caller cancel
+            throw new PipelineFailureException(
+                $"pipeline timed out after {_opt.TimeoutSeconds}s for {job.VideoId}", transient: true);
         }
 
         var stderr = await stderrTask;
         if (proc.ExitCode != 0)
-            throw new InvalidOperationException(
-                $"pipeline exited {proc.ExitCode} for {job.VideoId}: {stderr}");
+        {
+            TryDelete(outPath);
+            // exit codes of advideo-analyze: 3 = permanent source error, 4 = transient source error, other = crash
+            var permanent = proc.ExitCode == PermanentExitCode;
+            throw new PipelineFailureException(
+                $"pipeline exited {proc.ExitCode} for {job.VideoId}: {Tail(stderr)}",
+                transient: !permanent, exitCode: proc.ExitCode);
+        }
 
         if (!File.Exists(outPath))
-            throw new InvalidOperationException($"pipeline produced no output for {job.VideoId}");
+            throw new PipelineFailureException($"pipeline produced no output for {job.VideoId}", transient: true);
 
         // read into memory then delete the temp file, so the caller owns the stream
         var bytes = await File.ReadAllBytesAsync(outPath, ct);
         TryDelete(outPath);
         return new MemoryStream(bytes, writable: false);
     }
+
+    /// <summary>advideo-analyze exit code for bad input that a retry cannot fix.</summary>
+    public const int PermanentExitCode = 3;
+
+    private static string Tail(string s, int max = 2000) =>
+        s.Length <= max ? s.Trim() : "…" + s[^max..].Trim();
 
     private static void TryKill(Process p) { try { if (!p.HasExited) p.Kill(true); } catch { } }
     private static void TryDelete(string path) { try { File.Delete(path); } catch { } }

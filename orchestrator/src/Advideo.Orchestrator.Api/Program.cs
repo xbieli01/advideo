@@ -158,7 +158,10 @@ builder.Services.AddSingleton<IReadinessProbe, MapStoreReadinessProbe>();
 // --- worker ------------------------------------------------------------------
 builder.Services.AddSingleton(new WorkerOptions
 {
-    MaxConcurrency = builder.Configuration.GetValue("Worker:MaxConcurrency", 2)
+    MaxConcurrency = builder.Configuration.GetValue("Worker:MaxConcurrency", 2),
+    MaxAttempts = builder.Configuration.GetValue("Worker:MaxAttempts", 3),
+    RetryBaseDelaySeconds = builder.Configuration.GetValue("Worker:RetryBaseDelaySeconds", 30.0),
+    RetryMaxDelaySeconds = builder.Configuration.GetValue("Worker:RetryMaxDelaySeconds", 900.0)
 });
 builder.Services.AddHostedService<AnalysisWorker>();
 
@@ -226,8 +229,31 @@ videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQue
     return Results.Accepted($"/videos/{job.VideoId}", JobResponse.From(job));
 });
 
-videos.MapGet("", async (IJobRepository repo) =>
-    Results.Ok((await repo.ListAsync()).Select(JobResponse.From)));
+videos.MapGet("", async (string? status, IJobRepository repo) =>
+{
+    IEnumerable<VideoJob> jobs = await repo.ListAsync();
+    if (!string.IsNullOrWhiteSpace(status))
+    {
+        if (!Enum.TryParse<JobStatus>(status, ignoreCase: true, out var st))
+            return Results.BadRequest(new { error = $"unknown status '{status}'", allowed = Enum.GetNames<JobStatus>() });
+        jobs = jobs.Where(j => j.Status == st);
+    }
+    return Results.Ok(jobs.Select(JobResponse.From));
+});
+
+// Re-run a failed (dead-lettered) or completed job: attempts reset, job re-queued.
+videos.MapPost("/{videoId}/retry", async (string videoId, IJobRepository repo, IJobQueue queue) =>
+{
+    var job = await repo.GetAsync(videoId);
+    if (job is null) return Results.NotFound();
+    if (job.Status is JobStatus.Queued or JobStatus.Running or JobStatus.Retrying)
+        return Results.Conflict(new { error = $"job is {job.Status}; retry is possible for Failed or Completed jobs" });
+
+    var requeued = job with { Status = JobStatus.Queued, Attempts = 0, NextAttemptAt = null, Error = null };
+    await repo.UpsertAsync(requeued);
+    await queue.EnqueueAsync(requeued);
+    return Results.Accepted($"/videos/{videoId}", JobResponse.From(requeued));
+});
 
 videos.MapGet("/{videoId}", async (string videoId, IJobRepository repo) =>
 {

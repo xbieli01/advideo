@@ -6,7 +6,10 @@ public enum JobStatus
     Queued,
     Running,
     Completed,
-    Failed
+    /// <summary>Final failure ("dead letter"): permanent error or retries exhausted. Re-run via POST /videos/{id}/retry.</summary>
+    Failed,
+    /// <summary>An attempt failed with a transient error; the job is re-queued at <see cref="VideoJob.NextAttemptAt"/>.</summary>
+    Retrying
 }
 
 /// <summary>
@@ -32,6 +35,12 @@ public sealed record VideoJob
     public string? MapKey { get; init; }
 
     public string? Error { get; init; }
+
+    /// <summary>Number of processing attempts started so far (0 = never picked up).</summary>
+    public int Attempts { get; init; }
+
+    /// <summary>When a <see cref="JobStatus.Retrying"/> job is due to be re-queued.</summary>
+    public DateTimeOffset? NextAttemptAt { get; init; }
 
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.UtcNow;

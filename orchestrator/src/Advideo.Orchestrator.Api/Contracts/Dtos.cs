@@ -18,9 +18,11 @@ public sealed record JobResponse(
     string? MapKey,
     string? Error,
     DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt)
+    DateTimeOffset UpdatedAt,
+    int Attempts = 0,
+    DateTimeOffset? NextAttemptAt = null)
 {
     public static JobResponse From(VideoJob j) => new(
         j.VideoId, j.VideoUri, j.Analyzer, j.Track, j.Status.ToString(),
-        j.MapKey, j.Error, j.CreatedAt, j.UpdatedAt);
+        j.MapKey, j.Error, j.CreatedAt, j.UpdatedAt, j.Attempts, j.NextAttemptAt);
 }
