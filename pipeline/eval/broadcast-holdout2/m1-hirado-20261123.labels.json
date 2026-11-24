@@ -1,0 +1,118 @@
+{
+ "id": "m1-hirado-20261123",
+ "source": "M1 Híradó 23.11.2026 19:30 (main news, mediaklikk.hu)",
+ "language": "hu",
+ "durationSec": 1978.0,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 52,
+   "label": "A",
+   "topic": "headlines (mixed)"
+  },
+  {
+   "start": 52,
+   "end": 243,
+   "label": "A",
+   "topic": "parliament: Ukraine, Transcarpathia, recalled Russian attack"
+  },
+  {
+   "start": 243,
+   "end": 430,
+   "label": "N",
+   "topic": "parliament house-rules change"
+  },
+  {
+   "start": 430,
+   "end": 486,
+   "label": "N",
+   "topic": "court refuses bail for ex-officials (corruption case)"
+  },
+  {
+   "start": 486,
+   "end": 618,
+   "label": "N",
+   "topic": "construction investment, bridge project"
+  },
+  {
+   "start": 618,
+   "end": 649,
+   "label": "N",
+   "topic": "education council"
+  },
+  {
+   "start": 649,
+   "end": 784,
+   "label": "N",
+   "topic": "heating outage in Paks"
+  },
+  {
+   "start": 784,
+   "end": 953,
+   "label": "N",
+   "topic": "opera performance cancelled"
+  },
+  {
+   "start": 953,
+   "end": 1061,
+   "label": "N",
+   "topic": "NVIDIA CEO reinstated"
+  },
+  {
+   "start": 1061,
+   "end": 1116,
+   "label": "N",
+   "topic": "EU budget approved"
+  },
+  {
+   "start": 1116,
+   "end": 1169,
+   "label": "A",
+   "topic": "EU sanctions on Russia"
+  },
+  {
+   "start": 1169,
+   "end": 1328,
+   "label": "S",
+   "topic": "Ukrainian sea-drone strikes, apartment block bombed, 11 dead"
+  },
+  {
+   "start": 1328,
+   "end": 1436,
+   "label": "N",
+   "topic": "Belgian air-traffic strike"
+  },
+  {
+   "start": 1436,
+   "end": 1465,
+   "label": "A",
+   "topic": "protest march ended in violence"
+  },
+  {
+   "start": 1465,
+   "end": 1496,
+   "label": "S",
+   "topic": "bomb threats at schools in Denmark and Germany"
+  },
+  {
+   "start": 1496,
+   "end": 1707,
+   "label": "N",
+   "topic": "new public media director"
+  },
+  {
+   "start": 1707,
+   "end": 1846,
+   "label": "N",
+   "topic": "cartoon characters shop"
+  },
+  {
+   "start": 1846,
+   "end": 1978,
+   "label": "N",
+   "topic": "national Christmas tree"
+  }
+ ]
+}

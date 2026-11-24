@@ -1,0 +1,190 @@
+{
+ "id": "dw-pl-reel-20261123",
+ "source": "DW Polska media center: 30 consecutive videos of 09-23.11.2026 concatenated with 1 s gaps (api.dw.com mediacenter list 23)",
+ "language": "pl",
+ "durationSec": 2638.1,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 69.9,
+   "label": "N",
+   "topic": "COP31 failure [DW video 80025711]"
+  },
+  {
+   "start": 69.9,
+   "end": 103.7,
+   "label": "N",
+   "topic": "paying in German restaurants [DW video 79972104]"
+  },
+  {
+   "start": 103.7,
+   "end": 212.2,
+   "label": "A",
+   "topic": "Christmas markets security [DW video 80013378]"
+  },
+  {
+   "start": 212.2,
+   "end": 356.9,
+   "label": "N",
+   "topic": "Polish-German military cooperation [DW video 80010180]"
+  },
+  {
+   "start": 356.9,
+   "end": 433.7,
+   "label": "A",
+   "topic": "AI fakes about the Holocaust [DW video 77083948]"
+  },
+  {
+   "start": 433.7,
+   "end": 547.6,
+   "label": "N",
+   "topic": "dubbing actors vs Netflix AI [DW video 80005681]"
+  },
+  {
+   "start": 547.6,
+   "end": 583.8,
+   "label": "N",
+   "topic": "Pistorius on talks with Moscow [DW video 80001192]"
+  },
+  {
+   "start": 583.8,
+   "end": 694.5,
+   "label": "N",
+   "topic": "Berlin summit on Ukraine [DW video 80000971]"
+  },
+  {
+   "start": 694.5,
+   "end": 713.8,
+   "label": "A",
+   "topic": "Merz on 'new Yalta' (almost no speech) [DW video 79997435]"
+  },
+  {
+   "start": 713.8,
+   "end": 741.9,
+   "label": "N",
+   "topic": "Trump on Putin, meeting in China [DW video 79993957]"
+  },
+  {
+   "start": 741.9,
+   "end": 831.9,
+   "label": "A",
+   "topic": "private help for Polish victims of Nazi occupation [DW video 79971907]"
+  },
+  {
+   "start": 831.9,
+   "end": 980.9,
+   "label": "N",
+   "topic": "EU deportations to Rwanda [DW video 79978041]"
+  },
+  {
+   "start": 980.9,
+   "end": 1126.6,
+   "label": "N",
+   "topic": "coalition of the willing in Berlin [DW video 79990989]"
+  },
+  {
+   "start": 1126.6,
+   "end": 1221.3,
+   "label": "N",
+   "topic": "German Gen Z protests [DW video 79988799]"
+  },
+  {
+   "start": 1221.3,
+   "end": 1302.4,
+   "label": "S",
+   "topic": "violence in German primary schools [DW video 79962237]"
+  },
+  {
+   "start": 1302.4,
+   "end": 1374.9,
+   "label": "N",
+   "topic": "pension savings for children [DW video 79960668]"
+  },
+  {
+   "start": 1374.9,
+   "end": 1393.9,
+   "label": "A",
+   "topic": "oldest workforce in EU (no speech) [DW video 75945189]"
+  },
+  {
+   "start": 1393.9,
+   "end": 1484.8,
+   "label": "N",
+   "topic": "90-year-old doctor in Bulgaria [DW video 76235165]"
+  },
+  {
+   "start": 1484.8,
+   "end": 1542.2,
+   "label": "A",
+   "topic": "Ukrainians do not trust Russia (bombing mentioned) [DW video 79942622]"
+  },
+  {
+   "start": 1542.2,
+   "end": 1615.1,
+   "label": "N",
+   "topic": "more powers for German police [DW video 79932507]"
+  },
+  {
+   "start": 1615.1,
+   "end": 1730.8,
+   "label": "S",
+   "topic": "sexual harassment in the Bundeswehr [DW video 79933151]"
+  },
+  {
+   "start": 1730.8,
+   "end": 1845.9,
+   "label": "N",
+   "topic": "first female German president candidate [DW video 79933613]"
+  },
+  {
+   "start": 1845.9,
+   "end": 1915.9,
+   "label": "N",
+   "topic": "patriotism vox pop [DW video 79913443]"
+  },
+  {
+   "start": 1915.9,
+   "end": 2009.5,
+   "label": "S",
+   "topic": "dead 13-year-old girl found, suspected abduction [DW video 79933174]"
+  },
+  {
+   "start": 2009.5,
+   "end": 2114.9,
+   "label": "N",
+   "topic": "AfD leader Weidel leaked mails [DW video 79919602]"
+  },
+  {
+   "start": 2114.9,
+   "end": 2159.7,
+   "label": "N",
+   "topic": "St Martin's day [DW video 79922625]"
+  },
+  {
+   "start": 2159.7,
+   "end": 2247.9,
+   "label": "A",
+   "topic": "EU cities redesigned after terror attacks [DW video 79911622]"
+  },
+  {
+   "start": 2247.9,
+   "end": 2349.0,
+   "label": "N",
+   "topic": "Berlin Wall fall: the press-conference question [DW video 79904776]"
+  },
+  {
+   "start": 2349.0,
+   "end": 2493.6,
+   "label": "N",
+   "topic": "cameraman filmed fall of the regime [DW video 79898260]"
+  },
+  {
+   "start": 2493.6,
+   "end": 2638.1,
+   "label": "N",
+   "topic": "same story, second upload (near-duplicate) [DW video 79896823]"
+  }
+ ]
+}

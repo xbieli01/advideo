@@ -1,0 +1,94 @@
+{
+ "id": "stvr-gbs-20261123",
+ "source": "STVR Góly-body-sekundy 23.11.2026 (sports news)",
+ "language": "sk",
+ "durationSec": 1003.0,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 27,
+   "label": "N",
+   "topic": "headlines"
+  },
+  {
+   "start": 27,
+   "end": 104,
+   "label": "N",
+   "topic": "football league: Dunajská Streda vs Komárno, player injuries"
+  },
+  {
+   "start": 104,
+   "end": 218,
+   "label": "N",
+   "topic": "Slovan before Champions League match"
+  },
+  {
+   "start": 218,
+   "end": 244,
+   "label": "N",
+   "topic": "Spanish league"
+  },
+  {
+   "start": 244,
+   "end": 273,
+   "label": "N",
+   "topic": "football federation funding dispute"
+  },
+  {
+   "start": 273,
+   "end": 357,
+   "label": "N",
+   "topic": "ice hockey national team roster"
+  },
+  {
+   "start": 357,
+   "end": 441,
+   "label": "N",
+   "topic": "NHL results"
+  },
+  {
+   "start": 441,
+   "end": 600,
+   "label": "N",
+   "topic": "coach Adrian Gula leaves Riga, interview"
+  },
+  {
+   "start": 600,
+   "end": 682,
+   "label": "N",
+   "topic": "Zvolen hockey new coach"
+  },
+  {
+   "start": 682,
+   "end": 737,
+   "label": "N",
+   "topic": "Slovak hockey league game"
+  },
+  {
+   "start": 737,
+   "end": 817,
+   "label": "N",
+   "topic": "tennis: Alcaraz title"
+  },
+  {
+   "start": 817,
+   "end": 871,
+   "label": "N",
+   "topic": "NBA game"
+  },
+  {
+   "start": 871,
+   "end": 921,
+   "label": "N",
+   "topic": "MotoGP world champion"
+  },
+  {
+   "start": 921,
+   "end": 1003,
+   "label": "N",
+   "topic": "archive: football 1958"
+  }
+ ]
+}

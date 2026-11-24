@@ -205,3 +205,33 @@ trailers ("Vraždy v Dolinách"), Whisper mis-hearings ("Veľká dopravná akcia
 (truck checks, drunk man rolling a stone ball) flagged by the semantic classifier, story-boundary windows.
 Next: a stronger classifier (multilingual-e5 / small LLM judge on 30 s story chunks) and more labelled broadcasts.
 
+## R8e: stronger classifier — story chunks (2026-11-24)
+
+Two subagents, kept apart: **R8e-B** benchmarked classifiers on the R8d dev set only (`eval/r8e_bench/`);
+**R8e-A** built **holdout2** (`eval/broadcast-holdout2/`, labelled before any model run): STVR *Góly-body-sekundy*
+(SK sport, 0 S / 14 N — pure false-block test), M1 *Híradó* (HU, 2/12/4), DW English reel (18 videos, 3/10/5),
+DW Polska reel (30 videos, 3/20/7). TVP was geo-blocked, no full public EN bulletin was found → DW media-centre reels.
+
+Dev benchmark (lexicon + classifier, production window rule): MiniLM per segment (R8d) FBR 0.024 · **MiniLM on 24 s
+chunks (stride 8 s), thresholds 0.32/0.18: FBR 0.010, story recall 12/13** · e5-small/base + LR 0.006–0.014 (grid-tuned
+on dev) · mDeBERTa NLI 0.020 (1.1 s/chunk) · Qwen2.5-0.5B judge 0.014 but recall 11/13. Winner = chunking, same model
+(23 ms/chunk ≈ 3 ms per second of audio). Config: `semanticSafety.unit = "chunk"` (`"segment"` = R8c/R8d behaviour).
+
+Holdout evaluation, run once, languages pre-registered per programme (`sk,en` · `hu,en` · `en` · `pl,en`):
+
+| programme | lexicon FBR / story recall | R8d lex+sem FBR / recall | **R8e lex+sem FBR / recall** |
+|---|---|---|---|
+| JOJ Krimi 22.11 (old holdout, SK) | 0.000 · 3/3 | 0.046 · 3/3 | **0.000 · 3/3** |
+| STVR sport (SK) | 0.018 · – | 0.042 · – | **0.018** · – |
+| M1 Híradó (HU) | 0.008 · 1/2 | 0.008 · 1/2 | 0.008 · 1/2 |
+| DW English | 0.000 · 3/3 | 0.000 · 3/3 | 0.000 · 3/3 |
+| DW Polska | 0.016 · 2/3 | 0.063 · 3/3 | 0.063 · 2/3 |
+
+Slovak and English: semantic false blocks are gone (the classifier no longer adds any on SK). Remaining errors are
+lexicon / labelling issues, now known — fixing them requires a fresh holdout3, holdout2 is no longer "unseen":
+- sport vocabulary: *streľba/strela* (basketball shot), *zranený* hráč → needs sport-context exclusions;
+- HU *terrorizálhat* (metaphorical), PL: military-cooperation / Ukraine-summit politics labelled N but scored as war
+  (label policy question: is war *politics* without violence sensitive? — decide per preset, e.g. News vs Strict);
+- missed: bomb threats at schools (HU), school violence report (PL) — implicit wording; HU/PL lexicons are still
+  unreviewed by native speakers.
+
