@@ -109,6 +109,7 @@ export interface VideoJob {
   videoUri: string;
   analyzer: string;
   track: string | null;
+  languages?: string | null; // language packs, e.g. "sk,cs,en" (null = pipeline default)
   status: string; // Queued | Running | Retrying | Completed | Failed (PascalCase from the API; Failed = dead letter)
   mapKey: string | null;
   error: string | null;
@@ -123,12 +124,14 @@ export interface BulkVideoItem {
   videoUri: string;
   analyzer?: string | null;
   track?: string | null;
+  languages?: string | null;
 }
 
 export interface BulkRegisterRequest {
   items: BulkVideoItem[];
   analyzer?: string | null;
   track?: string | null;
+  languages?: string | null;
   force?: boolean;
 }
 
@@ -151,6 +154,7 @@ export interface RegisterVideoRequest {
   videoUri: string;
   analyzer?: string | null;
   track?: string | null;
+  languages?: string | null;
 }
 
 export interface MatchHit {

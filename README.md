@@ -93,6 +93,27 @@ advideo-analyze --video real.mp4 --analyzer "yolo+clip,ocr" --track whisper --ou
   Brand/keyword extraction from recognized/transcribed text lives in the pure,
   model-free `textmatch.py`, so that logic is fully unit-tested.
 
+## Languages (speech, on-screen text, lexicons)
+
+Everything language-specific lives in **language packs** `schema/languages/<code>.json` — shipped: `en`, `sk`,
+`cs`, `de`, `hu`, `pl`. A pack holds the brand-safety lexicon (terms + idiom exclusions), news-report markers,
+local keyword synonyms (`"auto": "car"` so Slovak speech hits the `car` ad keyword), example sentences for the
+semantic safety classifier and the Whisper / EasyOCR language codes. **Add a language = add a pack file**
+(copy `pl.json`, translate, enable) — no code change.
+
+| setting | effect |
+|---|---|
+| `taxonomy.json` → `languages.enabled` | default packs (`en, sk, cs, de`) |
+| `ADVIDEO_LANGUAGES=sk,hu` (or `all`) / CLI `--languages sk,hu` | packs for this process / this video |
+| job field `languages` (`POST /videos`, `/videos/bulk`, Admin UI) | per video; `Pipeline:DefaultLanguages` = orchestrator default |
+| `ADVIDEO_WHISPER_LANGUAGE` (`auto`) | Whisper language; default = the pack's code when exactly one pack is active, else auto-detect |
+| `ADVIDEO_WHISPER_MODEL` (`base`) | faster-whisper model; `small` is much better for Slovak news (R8d), ~3× slower on CPU |
+| `ADVIDEO_OCR_LANGUAGES` | EasyOCR codes; default = `en` + active packs |
+
+Only the active packs are matched: with `sk` alone, the English word *rifle* (Slovak: jeans) or the Czech *válka*
+(mis-heard Slovak *veľká*) cannot fire — on a Slovak broadcast `sk` (+ `en` for brand/English UI text) is the
+recommended setting.
+
 ## Robust processing (R5)
 
 **Video sources.** `videoUri` may be a local path, `file://`, an `http(s)://` video file or an HLS
@@ -126,7 +147,7 @@ repository (with `Persistence:Provider=postgres` nothing is lost on restart).
 The response lists `queuedIds`, `skipped` (already queued/running, or already analyzed from the same URI —
 re-imports are idempotent unless `force`) and `invalid` items (missing/unsafe id, unsupported scheme,
 duplicates). Video ids may contain only letters, digits, `.`, `_`, `-` (max 128). The Admin UI
-(*Videos → Import catalogue*) accepts the same as CSV (`videoId,videoUri[,analyzer[,track]]`) or JSON,
+(*Videos → Import catalogue*) accepts the same as CSV (`videoId,videoUri[,analyzer[,track[,languages]]]`) or JSON,
 filters by status and offers *Retry* on failed jobs.
 
 ## Admin UI
@@ -139,6 +160,12 @@ on the same origin (no CORS), with a strict CSP (`script-src 'self'`), `X-Frame-
 - Sign-in is the API key (`X-Api-Key`), validated via `GET /auth/me`; kept in sessionStorage only.
 - `admin` keys: full CRUD on campaigns/platforms, pause/resume, video analysis jobs, decision explain.
 - `reporting` keys: read-only views (Overview, Campaigns, Platforms) with stats.
+- **UI languages** (English, Slovak) come from runtime JSON files `admin/public/i18n/<code>.json` (served at
+  `/admin/i18n/`), listed in `languages.json`; the selector sits in the toolbar and on the login page, the choice is
+  kept in localStorage, missing texts fall back to English. Keys are the English source texts. Add a language:
+  copy `sk.json`, translate the values, add `{code, name}` to `languages.json` — no rebuild needed for a deployed
+  image if the file is mounted into `wwwroot/admin/i18n/`. `npm run i18n:extract` refreshes `en.json` from the
+  sources and lists missing/unused keys; `npm run i18n:check` fails on gaps (also covered by the unit tests).
 
 Local development (API on :5000 with the Development seed keys `dev-admin-key` / `dev-reporting-key`):
 

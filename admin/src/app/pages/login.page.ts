@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { I18nService, LanguageSelectComponent, TranslatePipe } from '../core/i18n.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,22 +11,22 @@ import { errorMessage } from '../shared/util';
 
 @Component({
   selector: 'adv-login',
-  imports: [FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [TranslatePipe, LanguageSelectComponent, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   template: `
     <div class="login-wrap">
       <mat-card class="login-card">
-        <mat-card-header><mat-card-title>advideo admin</mat-card-title></mat-card-header>
+        <mat-card-header><mat-card-title>advideo admin</mat-card-title><span class="spacer"></span><adv-lang-select /></mat-card-header>
         <mat-card-content>
-          <p class="muted">Sign in with your API key (admin or reporting).</p>
+          <p class="muted">{{ 'Sign in with your API key (admin or reporting).' | t }}</p>
           <form (ngSubmit)="submit()">
             <mat-form-field appearance="outline" class="full">
-              <mat-label>API key</mat-label>
+              <mat-label>{{ 'API key' | t }}</mat-label>
               <input matInput type="password" name="key" [(ngModel)]="key" autocomplete="off" required autofocus />
             </mat-form-field>
             @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-            <button mat-flat-button type="submit" [disabled]="busy() || !key.trim()">Sign in</button>
+            <button mat-flat-button type="submit" [disabled]="busy() || !key.trim()">{{ 'Sign in' | t }}</button>
           </form>
-          <p class="muted small">The key is kept only in this browser tab (session storage).</p>
+          <p class="muted small">{{ 'The key is kept only in this browser tab (session storage).' | t }}</p>
         </mat-card-content>
       </mat-card>
     </div>
@@ -33,6 +34,7 @@ import { errorMessage } from '../shared/util';
 })
 export class LoginPage {
   private readonly auth = inject(AuthService);
+  protected readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -48,7 +50,7 @@ export class LoginPage {
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
       await this.router.navigateByUrl(returnUrl);
     } catch (e) {
-      this.error.set(errorMessage(e).startsWith('401') ? 'Invalid API key.' : errorMessage(e));
+      this.error.set(this.i18n.t(errorMessage(e).startsWith('401') ? 'Invalid API key.' : errorMessage(e)));
     } finally {
       this.busy.set(false);
     }

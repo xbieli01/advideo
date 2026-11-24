@@ -1,5 +1,6 @@
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
+import { I18nService, TranslatePipe } from '../core/i18n.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -16,98 +17,98 @@ import { NotifyService } from '../shared/notify.service';
 
 @Component({
   selector: 'adv-campaign-edit',
-  imports: [FormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, DecimalPipe, PercentPipe, CurrencyPipe],
+  imports: [TranslatePipe, FormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, DecimalPipe, PercentPipe, CurrencyPipe],
   template: `
     <div class="page-head">
-      <h1>{{ isNew() ? 'New campaign' : f.name || f.id }}</h1>
-      <a mat-button routerLink="/campaigns">Back to list</a>
+      <h1>{{ isNew() ? ('New campaign' | t) : f.name || f.id }}</h1>
+      <a mat-button routerLink="/campaigns">{{ 'Back to list' | t }}</a>
     </div>
     @if (stats(); as s) {
       <div class="kpis">
-        <mat-card><mat-card-content><div class="kpi-label">Impressions</div><div class="kpi">{{ s.impressions | number }}</div></mat-card-content></mat-card>
-        <mat-card><mat-card-content><div class="kpi-label">Viewable</div><div class="kpi">{{ s.viewables | number }}</div></mat-card-content></mat-card>
-        <mat-card><mat-card-content><div class="kpi-label">Clicks · CTR</div><div class="kpi">{{ s.clicks | number }} · {{ s.ctr | percent: '1.2-2' }}</div></mat-card-content></mat-card>
-        <mat-card><mat-card-content><div class="kpi-label">Spent today / total</div><div class="kpi">{{ s.spentToday | currency: 'EUR' }} / {{ s.spentTotal | currency: 'EUR' }}</div></mat-card-content></mat-card>
+        <mat-card><mat-card-content><div class="kpi-label">{{ 'Impressions' | t }}</div><div class="kpi">{{ s.impressions | number }}</div></mat-card-content></mat-card>
+        <mat-card><mat-card-content><div class="kpi-label">{{ 'Viewable' | t }}</div><div class="kpi">{{ s.viewables | number }}</div></mat-card-content></mat-card>
+        <mat-card><mat-card-content><div class="kpi-label">{{ 'Clicks · CTR' | t }}</div><div class="kpi">{{ s.clicks | number }} · {{ s.ctr | percent: '1.2-2' }}</div></mat-card-content></mat-card>
+        <mat-card><mat-card-content><div class="kpi-label">{{ 'Spent today / total' | t }}</div><div class="kpi">{{ s.spentToday | currency: 'EUR' }} / {{ s.spentTotal | currency: 'EUR' }}</div></mat-card-content></mat-card>
       </div>
     }
     <form #form="ngForm" (ngSubmit)="save()">
       <fieldset [disabled]="!auth.isAdmin()" class="plain">
-        <mat-card class="section"><mat-card-header><mat-card-title>Basics</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Basics' | t }}</mat-card-title></mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline"><mat-label>Id</mat-label><input matInput name="id" [(ngModel)]="f.id" required pattern="[a-z0-9][a-z0-9-_.]*" [readonly]="!isNew()" /><mat-hint>lowercase, unique</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput name="name" [(ngModel)]="f.name" required /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Advertiser id</mat-label><input matInput name="advertiserId" [(ngModel)]="f.advertiserId" required /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Status</mat-label>
-              <mat-select name="status" [(ngModel)]="f.status" [disabled]="!auth.isAdmin()">@for (s of statuses; track s) { <mat-option [value]="s">{{ s }}</mat-option> }</mat-select></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Start</mat-label><input matInput type="datetime-local" name="startAt" [(ngModel)]="f.startAt" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>End</mat-label><input matInput type="datetime-local" name="endAt" [(ngModel)]="f.endAt" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Priority (1–10)</mat-label><input matInput type="number" min="1" max="10" name="priority" [(ngModel)]="f.priority" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclusivity key</mat-label><input matInput name="exclusivityKey" [(ngModel)]="f.exclusivityKey" /><mat-hint>e.g. automotive</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Id' | t }}</mat-label><input matInput name="id" [(ngModel)]="f.id" required pattern="[a-z0-9][a-z0-9-_.]*" [readonly]="!isNew()" /><mat-hint>{{ 'lowercase, unique' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Name' | t }}</mat-label><input matInput name="name" [(ngModel)]="f.name" required /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Advertiser id' | t }}</mat-label><input matInput name="advertiserId" [(ngModel)]="f.advertiserId" required /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Status' | t }}</mat-label>
+              <mat-select name="status" [(ngModel)]="f.status" [disabled]="!auth.isAdmin()">@for (s of statuses; track s) { <mat-option [value]="s">{{ s | t }}</mat-option> }</mat-select></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Start' | t }}</mat-label><input matInput type="datetime-local" name="startAt" [(ngModel)]="f.startAt" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'End' | t }}</mat-label><input matInput type="datetime-local" name="endAt" [(ngModel)]="f.endAt" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Priority (1–10)' | t }}</mat-label><input matInput type="number" min="1" max="10" name="priority" [(ngModel)]="f.priority" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclusivity key' | t }}</mat-label><input matInput name="exclusivityKey" [(ngModel)]="f.exclusivityKey" /><mat-hint>{{ 'e.g. automotive' | t }}</mat-hint></mat-form-field>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Bids, budget, frequency</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Bids, budget, frequency' | t }}</mat-card-title></mat-card-header>
           <mat-card-content>
             @for (b of f.bids; track $index) {
               <div class="row">
-                <mat-form-field appearance="outline"><mat-label>Model</mat-label>
+                <mat-form-field appearance="outline"><mat-label>{{ 'Model' | t }}</mat-label>
                   <mat-select [name]="'bidModel' + $index" [(ngModel)]="b.model" [disabled]="!auth.isAdmin()">@for (m of models; track m) { <mat-option [value]="m">{{ m.toUpperCase() }}</mat-option> }</mat-select></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Amount</mat-label><input matInput type="number" step="0.01" min="0" [name]="'bidAmount' + $index" [(ngModel)]="b.amount" /></mat-form-field>
-                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.bids.splice($index, 1)">Remove</button> }
+                <mat-form-field appearance="outline"><mat-label>{{ 'Amount' | t }}</mat-label><input matInput type="number" step="0.01" min="0" [name]="'bidAmount' + $index" [(ngModel)]="b.amount" /></mat-form-field>
+                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.bids.splice($index, 1)">{{ 'Remove' | t }}</button> }
               </div>
             }
-            @if (auth.isAdmin()) { <button mat-stroked-button type="button" (click)="f.bids.push({ model: 'cpm', amount: null })">Add bid</button> }
+            @if (auth.isAdmin()) { <button mat-stroked-button type="button" (click)="f.bids.push({ model: 'cpm', amount: null })">{{ 'Add bid' | t }}</button> }
             <div class="grid top-gap">
-              <mat-form-field appearance="outline"><mat-label>Budget daily</mat-label><input matInput type="number" min="0" name="budgetDaily" [(ngModel)]="f.budgetDaily" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Budget total</mat-label><input matInput type="number" min="0" name="budgetTotal" [(ngModel)]="f.budgetTotal" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Cap per viewer / video</mat-label><input matInput type="number" min="0" name="capV" [(ngModel)]="f.capPerViewerPerVideo" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Cap per viewer / day</mat-label><input matInput type="number" min="0" name="capD" [(ngModel)]="f.capPerViewerPerDay" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Budget daily' | t }}</mat-label><input matInput type="number" min="0" name="budgetDaily" [(ngModel)]="f.budgetDaily" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Budget total' | t }}</mat-label><input matInput type="number" min="0" name="budgetTotal" [(ngModel)]="f.budgetTotal" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Cap per viewer / video' | t }}</mat-label><input matInput type="number" min="0" name="capV" [(ngModel)]="f.capPerViewerPerVideo" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Cap per viewer / day' | t }}</mat-label><input matInput type="number" min="0" name="capD" [(ngModel)]="f.capPerViewerPerDay" /></mat-form-field>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Targeting</mat-card-title><mat-card-subtitle>comma separated</mat-card-subtitle></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Targeting' | t }}</mat-card-title><mat-card-subtitle>{{ 'comma separated' | t }}</mat-card-subtitle></mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline"><mat-label>Brands</mat-label><input matInput name="brands" [(ngModel)]="f.brands" placeholder="Tesla, Nike" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Keywords</mat-label><input matInput name="keywords" [(ngModel)]="f.keywords" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Categories</mat-label><input matInput name="categories" [(ngModel)]="f.categories" /><mat-hint>taxonomy ids, validated by the API</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Entities (type:label)</mat-label><input matInput name="entities" [(ngModel)]="f.entities" placeholder="object:car" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclude categories</mat-label><input matInput name="excludeCategories" [(ngModel)]="f.excludeCategories" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclude keywords</mat-label><input matInput name="excludeKeywords" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Min score (0–1)</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="minScore" [(ngModel)]="f.minScore" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Platforms</mat-label><input matInput name="platforms" [(ngModel)]="f.platforms" /><mat-hint>empty = all</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Geo (ISO codes)</mat-label><input matInput name="geo" [(ngModel)]="f.geo" placeholder="SK, CZ" /><mat-hint>empty = all</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Include videos</mat-label><input matInput name="includeVideos" [(ngModel)]="f.includeVideos" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclude videos</mat-label><input matInput name="excludeVideos" [(ngModel)]="f.excludeVideos" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Brands' | t }}</mat-label><input matInput name="brands" [(ngModel)]="f.brands" [placeholder]="'Tesla, Nike' | t" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Keywords' | t }}</mat-label><input matInput name="keywords" [(ngModel)]="f.keywords" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Categories' | t }}</mat-label><input matInput name="categories" [(ngModel)]="f.categories" /><mat-hint>{{ 'taxonomy ids, validated by the API' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Entities (type:label)' | t }}</mat-label><input matInput name="entities" [(ngModel)]="f.entities" [placeholder]="'object:car' | t" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclude categories' | t }}</mat-label><input matInput name="excludeCategories" [(ngModel)]="f.excludeCategories" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclude keywords' | t }}</mat-label><input matInput name="excludeKeywords" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Min score (0–1)' | t }}</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="minScore" [(ngModel)]="f.minScore" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Platforms' | t }}</mat-label><input matInput name="platforms" [(ngModel)]="f.platforms" /><mat-hint>{{ 'empty = all' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Geo (ISO codes)' | t }}</mat-label><input matInput name="geo" [(ngModel)]="f.geo" placeholder="SK, CZ" /><mat-hint>{{ 'empty = all' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Include videos' | t }}</mat-label><input matInput name="includeVideos" [(ngModel)]="f.includeVideos" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclude videos' | t }}</mat-label><input matInput name="excludeVideos" [(ngModel)]="f.excludeVideos" /></mat-form-field>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Creatives</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Creatives' | t }}</mat-card-title></mat-card-header>
           <mat-card-content>
             @for (c of f.creatives; track $index) {
               <div class="row creative">
-                <mat-form-field appearance="outline"><mat-label>Id</mat-label><input matInput [name]="'crId' + $index" [(ngModel)]="c.id" /></mat-form-field>
-                <mat-form-field appearance="outline" class="wide"><mat-label>Image URL</mat-label><input matInput [name]="'crUrl' + $index" [(ngModel)]="c.url" /></mat-form-field>
-                <mat-form-field appearance="outline" class="wide"><mat-label>Click URL</mat-label><input matInput [name]="'crClick' + $index" [(ngModel)]="c.clickUrl" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>{{ 'Id' | t }}</mat-label><input matInput [name]="'crId' + $index" [(ngModel)]="c.id" /></mat-form-field>
+                <mat-form-field appearance="outline" class="wide"><mat-label>{{ 'Image URL' | t }}</mat-label><input matInput [name]="'crUrl' + $index" [(ngModel)]="c.url" /></mat-form-field>
+                <mat-form-field appearance="outline" class="wide"><mat-label>{{ 'Click URL' | t }}</mat-label><input matInput [name]="'crClick' + $index" [(ngModel)]="c.clickUrl" /></mat-form-field>
                 <mat-form-field appearance="outline" class="narrow"><mat-label>W</mat-label><input matInput type="number" [name]="'crW' + $index" [(ngModel)]="c.width" /></mat-form-field>
                 <mat-form-field appearance="outline" class="narrow"><mat-label>H</mat-label><input matInput type="number" [name]="'crH' + $index" [(ngModel)]="c.height" /></mat-form-field>
                 @if (c.url) { <img class="thumb" [src]="c.url" [alt]="c.altText || c.id" /> }
-                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.creatives.splice($index, 1)">Remove</button> }
+                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.creatives.splice($index, 1)">{{ 'Remove' | t }}</button> }
               </div>
             }
             @if (auth.isAdmin()) {
-              <button mat-stroked-button type="button" (click)="f.creatives.push({ id: '', url: '', clickUrl: '', width: 300, height: 250, altText: null })">Add creative</button>
+              <button mat-stroked-button type="button" (click)="f.creatives.push({ id: '', url: '', clickUrl: '', width: 300, height: 250, altText: null })">{{ 'Add creative' | t }}</button>
             }
           </mat-card-content>
         </mat-card>
       </fieldset>
       @if (auth.isAdmin()) {
         <div class="form-actions">
-          <button mat-flat-button type="submit" [disabled]="busy() || form.invalid">{{ isNew() ? 'Create' : 'Save' }}</button>
-          <a mat-button routerLink="/campaigns">Cancel</a>
+          <button mat-flat-button type="submit" [disabled]="busy() || form.invalid">{{ (isNew() ? 'Create' : 'Save') | t }}</button>
+          <a mat-button routerLink="/campaigns">{{ 'Cancel' | t }}</a>
         </div>
       } @else {
-        <p class="muted">Read only — your API key has the reporting role.</p>
+        <p class="muted">{{ 'Read only — your API key has the reporting role.' | t }}</p>
       }
     </form>
   `,
@@ -116,6 +117,7 @@ export class CampaignEditPage {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
+  protected readonly i18n = inject(I18nService);
   protected readonly auth = inject(AuthService);
 
   /** Route param (component input binding); "new" for a new campaign. */
@@ -144,7 +146,7 @@ export class CampaignEditPage {
     try {
       const c = formToCampaign(this.f);
       const saved = await firstValueFrom(this.isNew() ? this.api.createCampaign(c) : this.api.updateCampaign(c));
-      this.notify.ok(`Saved ${saved.name}`);
+      this.notify.ok(this.i18n.t('Saved {name}', { name: saved.name }));
       await this.router.navigate(['/campaigns']);
     } catch (e) {
       this.notify.error(e);

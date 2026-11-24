@@ -181,19 +181,18 @@
   "basketball": "playing basketball",
   "fitnessstudio": "gym",
   "laptop": "laptop",
-  "handy": "cell phone",
   "fernseher": "tv",
   "pizza": "pizza",
   "wein": "wine glass",
   "flasche": "bottle",
   "flugzeug": "airplane",
-  "boot": "boat",
-  "strand": "beach",
   "berge": "mountain",
   "handtasche": "handbag",
   "kochen": "cooking",
   "kuchen": "cake",
   "supermarkt": "a supermarket",
-  "stadion": "a stadium"
+  "stadion": "a stadium",
+  "smartphone": "cell phone",
+  "badestrand": "beach"
  }
 }

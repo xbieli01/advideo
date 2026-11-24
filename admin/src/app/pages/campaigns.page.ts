@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { I18nService, TranslatePipe } from '../core/i18n.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,49 +16,49 @@ import { NotifyService } from '../shared/notify.service';
 
 @Component({
   selector: 'adv-campaigns',
-  imports: [FormsModule, RouterLink, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatProgressBarModule],
+  imports: [TranslatePipe, FormsModule, RouterLink, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatProgressBarModule],
   template: `
     <div class="page-head">
-      <h1>Campaigns</h1>
-      @if (auth.isAdmin()) { <a mat-flat-button routerLink="/campaigns/new">New campaign</a> }
+      <h1>{{ 'Campaigns' | t }}</h1>
+      @if (auth.isAdmin()) { <a mat-flat-button routerLink="/campaigns/new">{{ 'New campaign' | t }}</a> }
     </div>
     <div class="filters">
       <mat-form-field appearance="outline">
-        <mat-label>Search</mat-label>
-        <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="name, id, advertiser" />
+        <mat-label>{{ 'Search' | t }}</mat-label>
+        <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" [placeholder]="'name, id, advertiser' | t" />
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Status</mat-label>
+        <mat-label>{{ 'Status' | t }}</mat-label>
         <mat-select [ngModel]="status()" (ngModelChange)="status.set($event)">
-          <mat-option value="">All</mat-option>
-          @for (s of statuses; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+          <mat-option value="">{{ 'All' | t }}</mat-option>
+          @for (s of statuses; track s) { <mat-option [value]="s">{{ s | t }}</mat-option> }
         </mat-select>
       </mat-form-field>
     </div>
     @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
     <table mat-table [dataSource]="filtered()" class="full">
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'Name' | t }}</th>
         <td mat-cell *matCellDef="let c"><a [routerLink]="['/campaigns', c.id]">{{ c.name }}</a><div class="muted small">{{ c.id }}</div></td>
       </ng-container>
       <ng-container matColumnDef="advertiser">
-        <th mat-header-cell *matHeaderCellDef>Advertiser</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'Advertiser' | t }}</th>
         <td mat-cell *matCellDef="let c">{{ c.advertiserId }}</td>
       </ng-container>
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let c"><span [class]="'status ' + c.status">{{ c.status }}</span></td>
+        <th mat-header-cell *matHeaderCellDef>{{ 'Status' | t }}</th>
+        <td mat-cell *matCellDef="let c"><span [class]="'status ' + c.status">{{ c.status | t }}</span></td>
       </ng-container>
       <ng-container matColumnDef="bids">
-        <th mat-header-cell *matHeaderCellDef>Bids</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'Bids' | t }}</th>
         <td mat-cell *matCellDef="let c">{{ bids(c) }}</td>
       </ng-container>
       <ng-container matColumnDef="targeting">
-        <th mat-header-cell *matHeaderCellDef>Targeting</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'Targeting' | t }}</th>
         <td mat-cell *matCellDef="let c" class="small">{{ targeting(c) }}</td>
       </ng-container>
       <ng-container matColumnDef="priority">
-        <th mat-header-cell *matHeaderCellDef class="num">Prio</th>
+        <th mat-header-cell *matHeaderCellDef class="num">{{ 'Prio' | t }}</th>
         <td mat-cell *matCellDef="let c" class="num">{{ c.priority }}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
@@ -65,24 +66,25 @@ import { NotifyService } from '../shared/notify.service';
         <td mat-cell *matCellDef="let c" class="actions">
           @if (auth.isAdmin()) {
             @if (c.status === 'active') {
-              <button mat-button (click)="run(api.pauseCampaign(c.id), 'Paused ' + c.name)">Pause</button>
+              <button mat-button (click)="run(api.pauseCampaign(c.id), 'Paused ' + c.name)">{{ 'Pause' | t }}</button>
             } @else if (c.status !== 'ended') {
-              <button mat-button (click)="run(api.resumeCampaign(c.id), 'Activated ' + c.name)">Activate</button>
+              <button mat-button (click)="run(api.resumeCampaign(c.id), 'Activated ' + c.name)">{{ 'Activate' | t }}</button>
             }
-            <button mat-button class="danger" (click)="remove(c)">Delete</button>
+            <button mat-button class="danger" (click)="remove(c)">{{ 'Delete' | t }}</button>
           }
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="cols"></tr>
       <tr mat-row *matRowDef="let row; columns: cols"></tr>
     </table>
-    @if (!loading() && filtered().length === 0) { <p class="muted">No campaigns match.</p> }
+    @if (!loading() && filtered().length === 0) { <p class="muted">{{ 'No campaigns match.' | t }}</p> }
   `,
 })
 export class CampaignsPage {
   protected readonly api = inject(ApiService);
   protected readonly auth = inject(AuthService);
   private readonly notify = inject(NotifyService);
+  protected readonly i18n = inject(I18nService);
 
   readonly statuses = CAMPAIGN_STATUSES;
   readonly cols = ['name', 'advertiser', 'status', 'bids', 'targeting', 'priority', 'actions'];
@@ -135,7 +137,7 @@ export class CampaignsPage {
   }
 
   async remove(c: Campaign): Promise<void> {
-    if (!confirm(`Delete campaign "${c.name}"? This cannot be undone.`)) return;
+    if (!confirm(this.i18n.t('Delete campaign "{name}"? This cannot be undone.', { name: c.name }))) return;
     await this.run(this.api.deleteCampaign(c.id), `Deleted ${c.name}`);
   }
 }

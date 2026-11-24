@@ -161,3 +161,47 @@ segment on CPU (~470 MB download on first use; `ADVIDEO_SEMANTIC_SAFETY=0` disab
 Still missed: implicit events without violent words ("militants blew up a bridge", "body found in the woods",
 "avalanche buried skiers"). The eval videos contain little speech — real news/vlog transcripts are the next
 eval need before raising the thresholds' trust.
+
+## R8d: real broadcasts (2026-11-24)
+
+Whole Slovak news programmes instead of single sentences: **STVR Správy 23.11.2026** (50 min, main news) and
+**TV JOJ Krimi 23.11.2026** (23 min, crime news) as the dev set, **TV JOJ Krimi 22.11.2026** as a holdout that was
+labelled before any run and never tuned on. Audio → faster-whisper (`small` and `base`, language `sk`); stories
+labelled by Claude from the transcript — `S` sensitive / `N` safe for ads / `A` ambiguous (not scored); human review
+recommended. Only the labels are committed (`eval/broadcast/*.labels.json`, `eval/broadcast-holdout/`); media and
+transcripts are copyrighted and stay local. Run:
+`python eval/broadcast_safety_eval.py --transcripts DIR [--labels eval/broadcast-holdout] [--context 1]`.
+
+Metrics: *window recall* = share of 6 s windows inside sensitive stories that are flagged; *story recall* = sensitive
+stories with ≥ 1 flagged window; *false-block rate* = flagged windows inside safe stories (lost inventory).
+
+| set | rules | window recall | story recall | false-block rate | false stories |
+|---|---|---|---|---|---|
+| dev (2 broadcasts, 13 S / 29 N stories) | R8c lexicon | 0.09 | 7/13 | 0.002 | 1/29 |
+| | R8c lexicon + semantic | 0.39 | 12/13 | **0.062** | **12/29** |
+| | **R8d lexicon** | 0.27 | 10/13 | 0.004 | 2/29 |
+| | **R8d lexicon + semantic** | 0.48 | 12/13 | **0.024** | 6/29 |
+| holdout (3 S / 7 N stories) | R8c lexicon | 0.06 | 2/3 | 0 | 0/7 |
+| | R8c lexicon + semantic | 0.33 | 3/3 | 0.055 | 5/7 |
+| | **R8d lexicon** | 0.17 | **3/3** | 0 | 0/7 |
+| | **R8d lexicon + semantic** (`en,sk,cs,de`) | 0.33 | 3/3 | 0.046 | 3/7 |
+| | **R8d lexicon + semantic** (`sk` only) | 0.32 | 3/3 | **0.028** | **1/7** |
+
+What changed (tuned on dev only):
+1. **Context corroboration** — medium hits may be confirmed by hits in the neighbouring window on each side (18 s):
+   news spreads its cues over sentences ("zranený" … "smrť").
+2. **Semantic hits never corroborate each other** and are high only from 0.32 (was 0.21): the MiniLM classifier
+   repeats on routine police/court talk ("Mestská polícia sa prípadom ďalej zaoberá" scored 0.36). Below 0.32 a
+   semantic hit needs a lexicon word within ±1 window. Sentence-level held-out v2 stays at recall 0.91; v3 drops
+   0.67 → 0.33 (isolated paraphrases without any keyword) — the price for 2.5× fewer false blocks on real news.
+3. **Slovak/Czech lexicon gaps** from real speech: inflected *znásilnenie*, *masaker/masakra*, *postrelil*,
+   *prestrelka*, *dobodal*, *sexuálne vykorisťovanie/zneužívanie*, *bomba/bombová hrozba*, *drony*, *balistické
+   strely*, *smrteľne*, *obesil sa*, *troskách*.
+4. **Language packs** — matching only the broadcast's language removes cross-language false hits (*rifle* = jeans).
+
+Whisper model matters more than any threshold: with `base` the dev lexicon story recall is 6/13 (vs 10/13 with
+`small`), lexicon + semantic 11/13; Slovak transcripts from `base` are barely readable. Remaining errors: series titles in programme
+trailers ("Vraždy v Dolinách"), Whisper mis-hearings ("Veľká dopravná akcia" → "Válka"), routine police stories
+(truck checks, drunk man rolling a stone ball) flagged by the semantic classifier, story-boundary windows.
+Next: a stronger classifier (multilingual-e5 / small LLM judge on 30 s story chunks) and more labelled broadcasts.
+

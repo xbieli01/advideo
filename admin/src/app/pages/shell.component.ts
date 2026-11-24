@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { LanguageSelectComponent, TranslatePipe } from '../core/i18n.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -8,7 +9,7 @@ import { AuthService } from '../core/auth.service';
 
 @Component({
   selector: 'adv-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatSidenavModule, MatListModule, MatButtonModule],
+  imports: [TranslatePipe, LanguageSelectComponent, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatSidenavModule, MatListModule, MatButtonModule],
   template: `
     <mat-toolbar class="topbar">
       <span class="brand">advideo admin</span>
@@ -16,17 +17,18 @@ import { AuthService } from '../core/auth.service';
       @if (auth.me(); as me) {
         <span class="who">{{ me.name }} · {{ me.roles.join(', ') }}</span>
       }
-      <button mat-button (click)="logout()">Sign out</button>
+      <adv-lang-select />
+      <button mat-button (click)="logout()">{{ 'Sign out' | t }}</button>
     </mat-toolbar>
     <mat-sidenav-container class="body">
       <mat-sidenav mode="side" opened class="nav">
         <mat-nav-list>
-          <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Overview</a>
-          <a mat-list-item routerLink="/campaigns" routerLinkActive="active">Campaigns</a>
-          <a mat-list-item routerLink="/platforms" routerLinkActive="active">Platforms</a>
+          <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'Overview' | t }}</a>
+          <a mat-list-item routerLink="/campaigns" routerLinkActive="active">{{ 'Campaigns' | t }}</a>
+          <a mat-list-item routerLink="/platforms" routerLinkActive="active">{{ 'Platforms' | t }}</a>
           @if (auth.isAdmin()) {
-            <a mat-list-item routerLink="/videos" routerLinkActive="active">Videos</a>
-            <a mat-list-item routerLink="/explain" routerLinkActive="active">Explain decision</a>
+            <a mat-list-item routerLink="/videos" routerLinkActive="active">{{ 'Videos' | t }}</a>
+            <a mat-list-item routerLink="/explain" routerLinkActive="active">{{ 'Explain decision' | t }}</a>
           }
         </mat-nav-list>
       </mat-sidenav>

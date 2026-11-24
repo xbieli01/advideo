@@ -1,4 +1,5 @@
 import { Component, inject, input, signal } from '@angular/core';
+import { I18nService, TranslatePipe } from '../core/i18n.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -16,24 +17,24 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
 
 @Component({
   selector: 'adv-platform-edit',
-  imports: [FormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatButtonModule],
+  imports: [TranslatePipe, FormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatButtonModule],
   template: `
     <div class="page-head">
-      <h1>{{ isNew() ? 'New platform' : f.name || f.id }}</h1>
-      <a mat-button routerLink="/platforms">Back to list</a>
+      <h1>{{ isNew() ? ('New platform' | t) : f.name || f.id }}</h1>
+      <a mat-button routerLink="/platforms">{{ 'Back to list' | t }}</a>
     </div>
     <form #form="ngForm" (ngSubmit)="save()">
       <fieldset [disabled]="!auth.isAdmin()" class="plain">
-        <mat-card class="section"><mat-card-header><mat-card-title>Basics</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Basics' | t }}</mat-card-title></mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline"><mat-label>Id</mat-label><input matInput name="id" [(ngModel)]="f.id" required pattern="[a-z0-9][a-z0-9-_.]*" [readonly]="!isNew()" /><mat-hint>used by the snippet (data-platform)</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput name="name" [(ngModel)]="f.name" required /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Kind</mat-label>
-              <mat-select name="kind" [(ngModel)]="f.kind" [disabled]="!auth.isAdmin()"><mat-option value="portal">portal</mat-option><mat-option value="browserExtension">browser extension</mat-option></mat-select></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Id' | t }}</mat-label><input matInput name="id" [(ngModel)]="f.id" required pattern="[a-z0-9][a-z0-9-_.]*" [readonly]="!isNew()" /><mat-hint>{{ 'used by the snippet (data-platform)' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Name' | t }}</mat-label><input matInput name="name" [(ngModel)]="f.name" required /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Kind' | t }}</mat-label>
+              <mat-select name="kind" [(ngModel)]="f.kind" [disabled]="!auth.isAdmin()"><mat-option value="portal">{{ 'portal' | t }}</mat-option><mat-option value="browserExtension">{{ 'browser extension' | t }}</mat-option></mat-select></mat-form-field>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Pricing</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Pricing' | t }}</mat-card-title></mat-card-header>
           <mat-card-content>
             <div class="row">
               @for (m of models; track m) {
@@ -41,66 +42,65 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
               }
             </div>
             <div class="grid top-gap">
-              <mat-form-field appearance="outline"><mat-label>Currency</mat-label><input matInput name="currency" [(ngModel)]="f.currency" maxlength="3" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Default CTR</mat-label><input matInput type="number" step="0.0001" min="0" max="1" name="ctr" [(ngModel)]="f.defaultCtr" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Default viewable rate</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="vr" [(ngModel)]="f.defaultViewableRate" /></mat-form-field>
-              <mat-form-field appearance="outline"><mat-label>Flat sponsorship eCPM</mat-label><input matInput type="number" min="0" name="flat" [(ngModel)]="f.flatSponsorshipEcpm" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Currency' | t }}</mat-label><input matInput name="currency" [(ngModel)]="f.currency" maxlength="3" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Default CTR' | t }}</mat-label><input matInput type="number" step="0.0001" min="0" max="1" name="ctr" [(ngModel)]="f.defaultCtr" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Default viewable rate' | t }}</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="vr" [(ngModel)]="f.defaultViewableRate" /></mat-form-field>
+              <mat-form-field appearance="outline"><mat-label>{{ 'Flat sponsorship eCPM' | t }}</mat-label><input matInput type="number" min="0" name="flat" [(ngModel)]="f.flatSponsorshipEcpm" /></mat-form-field>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Ad slots</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Ad slots' | t }}</mat-card-title></mat-card-header>
           <mat-card-content>
             @for (s of f.slots; track $index) {
               <div class="row">
-                <mat-form-field appearance="outline"><mat-label>Id</mat-label><input matInput [name]="'slotId' + $index" [(ngModel)]="s.id" /></mat-form-field>
-                <mat-form-field appearance="outline"><mat-label>Position</mat-label>
+                <mat-form-field appearance="outline"><mat-label>{{ 'Id' | t }}</mat-label><input matInput [name]="'slotId' + $index" [(ngModel)]="s.id" /></mat-form-field>
+                <mat-form-field appearance="outline"><mat-label>{{ 'Position' | t }}</mat-label>
                   <mat-select [name]="'slotPos' + $index" [(ngModel)]="s.position" [disabled]="!auth.isAdmin()">@for (p of positions; track p) { <mat-option [value]="p">{{ p }}</mat-option> }</mat-select></mat-form-field>
-                <mat-form-field appearance="outline" class="narrow"><mat-label>Width</mat-label><input matInput type="number" [name]="'slotW' + $index" [(ngModel)]="s.width" /></mat-form-field>
-                <mat-form-field appearance="outline" class="narrow"><mat-label>Height</mat-label><input matInput type="number" [name]="'slotH' + $index" [(ngModel)]="s.height" /></mat-form-field>
-                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.slots.splice($index, 1)">Remove</button> }
+                <mat-form-field appearance="outline" class="narrow"><mat-label>{{ 'Width' | t }}</mat-label><input matInput type="number" [name]="'slotW' + $index" [(ngModel)]="s.width" /></mat-form-field>
+                <mat-form-field appearance="outline" class="narrow"><mat-label>{{ 'Height' | t }}</mat-label><input matInput type="number" [name]="'slotH' + $index" [(ngModel)]="s.height" /></mat-form-field>
+                @if (auth.isAdmin()) { <button mat-button type="button" (click)="f.slots.splice($index, 1)">{{ 'Remove' | t }}</button> }
               </div>
             }
-            @if (auth.isAdmin()) { <button mat-stroked-button type="button" (click)="f.slots.push({ id: '', position: 'below', width: 728, height: 90 })">Add slot</button> }
+            @if (auth.isAdmin()) { <button mat-stroked-button type="button" (click)="f.slots.push({ id: '', position: 'below', width: 728, height: 90 })">{{ 'Add slot' | t }}</button> }
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="section"><mat-card-header><mat-card-title>Frequency, brand safety, matching</mat-card-title></mat-card-header>
+        <mat-card class="section"><mat-card-header><mat-card-title>{{ 'Frequency, brand safety, matching' | t }}</mat-card-title></mat-card-header>
           <mat-card-content class="grid">
-            <mat-form-field appearance="outline"><mat-label>Min interval (s)</mat-label><input matInput type="number" min="0" name="minInt" [(ngModel)]="f.minIntervalSec" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Max ads per video</mat-label><input matInput type="number" min="0" name="maxV" [(ngModel)]="f.maxPerVideo" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Max per viewer / day</mat-label><input matInput type="number" min="0" name="maxD" [(ngModel)]="f.maxPerViewerPerDay" /><mat-hint>empty = no limit</mat-hint></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclude categories</mat-label><input matInput name="exCat" [(ngModel)]="f.excludeCategories" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Exclude keywords</mat-label><input matInput name="exKw" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Min interval (s)' | t }}</mat-label><input matInput type="number" min="0" name="minInt" [(ngModel)]="f.minIntervalSec" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Max ads per video' | t }}</mat-label><input matInput type="number" min="0" name="maxV" [(ngModel)]="f.maxPerVideo" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Max per viewer / day' | t }}</mat-label><input matInput type="number" min="0" name="maxD" [(ngModel)]="f.maxPerViewerPerDay" /><mat-hint>{{ 'empty = no limit' | t }}</mat-hint></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclude categories' | t }}</mat-label><input matInput name="exCat" [(ngModel)]="f.excludeCategories" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Exclude keywords' | t }}</mat-label><input matInput name="exKw" [(ngModel)]="f.excludeKeywords" /></mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Brand safety preset</mat-label>
+              <mat-label>{{ 'Brand safety preset' | t }}</mat-label>
               <mat-select name="safetyPreset" [(ngModel)]="f.safetyPreset">
-                <mat-option value="standard">Standard</mat-option>
-                <mat-option value="strict">Strict (family / kids)</mat-option>
-                <mat-option value="news">News portal</mat-option>
+                <mat-option value="standard">{{ 'Standard' | t }}</mat-option>
+                <mat-option value="strict">{{ 'Strict (family / kids)' | t }}</mat-option>
+                <mat-option value="news">{{ 'News portal' | t }}</mat-option>
               </mat-select>
-              <mat-hint>{{ presetHint(f.safetyPreset) }}</mat-hint>
+              <mat-hint>{{ presetHint(f.safetyPreset) | t }}</mat-hint>
             </mat-form-field>
             <div class="full">
-              <mat-checkbox name="allowSensitive" [(ngModel)]="f.allowSensitive">Always allow ads in sensitive content</mat-checkbox>
-              <div class="muted small">Off (recommended). On overrides the preset for sensitive content (protests, accidents, weapons,
-                violence, war, disasters — from the picture, speech and on-screen text); subtypes can still be blocked via Exclude categories.</div>
+              <mat-checkbox name="allowSensitive" [(ngModel)]="f.allowSensitive">{{ 'Always allow ads in sensitive content' | t }}</mat-checkbox>
+              <div class="muted small">{{ 'Off (recommended). On overrides the preset for sensitive content (protests, accidents, weapons, violence, war, disasters — from the picture, speech and on-screen text); subtypes can still be blocked via Exclude categories.' | t }}</div>
             </div>
-            <mat-form-field appearance="outline"><mat-label>Relevance threshold</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="thr" [(ngModel)]="f.relevanceThreshold" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Weight brand</mat-label><input matInput type="number" step="0.1" name="wb" [(ngModel)]="f.wBrand" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Weight entity</mat-label><input matInput type="number" step="0.1" name="we" [(ngModel)]="f.wEntity" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Weight keyword</mat-label><input matInput type="number" step="0.1" name="wk" [(ngModel)]="f.wKeyword" /></mat-form-field>
-            <mat-form-field appearance="outline"><mat-label>Weight category</mat-label><input matInput type="number" step="0.1" name="wc" [(ngModel)]="f.wCategory" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Relevance threshold' | t }}</mat-label><input matInput type="number" step="0.05" min="0" max="1" name="thr" [(ngModel)]="f.relevanceThreshold" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Weight brand' | t }}</mat-label><input matInput type="number" step="0.1" name="wb" [(ngModel)]="f.wBrand" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Weight entity' | t }}</mat-label><input matInput type="number" step="0.1" name="we" [(ngModel)]="f.wEntity" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Weight keyword' | t }}</mat-label><input matInput type="number" step="0.1" name="wk" [(ngModel)]="f.wKeyword" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>{{ 'Weight category' | t }}</mat-label><input matInput type="number" step="0.1" name="wc" [(ngModel)]="f.wCategory" /></mat-form-field>
           </mat-card-content>
         </mat-card>
       </fieldset>
       @if (auth.isAdmin()) {
         <div class="form-actions">
-          <button mat-flat-button type="submit" [disabled]="busy() || form.invalid">{{ isNew() ? 'Create' : 'Save' }}</button>
-          <a mat-button routerLink="/platforms">Cancel</a>
+          <button mat-flat-button type="submit" [disabled]="busy() || form.invalid">{{ (isNew() ? 'Create' : 'Save') | t }}</button>
+          <a mat-button routerLink="/platforms">{{ 'Cancel' | t }}</a>
         </div>
       } @else {
-        <p class="muted">Read only — your API key has the reporting role.</p>
+        <p class="muted">{{ 'Read only — your API key has the reporting role.' | t }}</p>
       }
     </form>
   `,
@@ -117,6 +117,7 @@ export class PlatformEditPage {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
+  protected readonly i18n = inject(I18nService);
   protected readonly auth = inject(AuthService);
 
   readonly id = input<string>('new');
@@ -142,7 +143,7 @@ export class PlatformEditPage {
     try {
       const p = formToPlatform(this.f);
       const saved = await firstValueFrom(this.isNew() ? this.api.createPlatform(p) : this.api.updatePlatform(p));
-      this.notify.ok(`Saved ${saved.name}`);
+      this.notify.ok(this.i18n.t('Saved {name}', { name: saved.name }));
       await this.router.navigate(['/platforms']);
     } catch (e) {
       this.notify.error(e);

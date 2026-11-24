@@ -14,3 +14,8 @@ Notes
 - Strict CSP (`script-src 'self'`): critical-CSS inlining is disabled in `angular.json`
   because it injects an inline loader script. Don't add inline scripts or external fonts/icons.
 - API key lives in sessionStorage (`advideo.apiKey`); a 401 drops it and returns to `/login`.
+- UI texts: runtime JSON translations in `public/i18n/` (`languages.json`, `en.json`, `sk.json`); use
+  `{{ 'English text' | t }}` / `i18n.t('Saved {name}', { name })` in code. `npm run i18n:extract` updates `en.json`
+  and reports missing keys per language, `npm run i18n:check` fails on gaps. Values used only through variables
+  (statuses, computed labels) are listed in `src/app/core/i18n-keys.ts`.
+

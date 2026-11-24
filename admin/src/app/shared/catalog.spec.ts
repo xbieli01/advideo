@@ -36,3 +36,12 @@ describe('parseCatalog', () => {
     expect(parseCatalog('  ')).toEqual({ items: [], errors: [] });
   });
 });
+
+describe('parseCatalog languages column', () => {
+  it('reads languages from CSV (tab / quoted) and JSON', () => {
+    expect(parseCatalog('v1\t/v.mp4\tmock\twhisper\tSK, cs').items[0].languages).toBe('sk,cs');
+    expect(parseCatalog('v1,/v.mp4,mock,whisper,"sk,cs"').items[0].languages).toBe('sk,cs');
+    expect(parseCatalog('[{"videoId":"a","videoUri":"/a.mp4","languages":"hu pl"}]').items[0].languages).toBe('hu,pl');
+    expect(parseCatalog('v1,/v.mp4').items[0].languages).toBeUndefined();
+  });
+});
