@@ -101,7 +101,7 @@ export interface CampaignStats {
   spentToday: number;
 }
 
-/** standard: no ads in sensitive content · strict: + profanity/drugs · news: sensitive allowed in news reports */
+/** standard: no ads in sensitive content · strict: + profanity/drugs/war politics · news: sensitive allowed in news reports */
 export type BrandSafetyPreset = 'standard' | 'strict' | 'news';
 
 export interface VideoJob {

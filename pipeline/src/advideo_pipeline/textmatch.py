@@ -181,6 +181,8 @@ def safety_detections(text: str, kind: str, score: float) -> list[Detection]:
             category=st.subtype,
             categories=cats,
             severity=st.severity,
+            ambiguous_in=("sport",) if st.sport_ambiguous else (),
+            supports_sensitive=st.supports_sensitive,
         ))
     return out
 
@@ -196,3 +198,18 @@ def news_detections(text: str, kind: str, score: float) -> list[Detection]:
             out.append(Detection(term=f"{source}: {found}", score=score, kind="news",
                                  category="news", categories=["news"]))
     return out
+
+
+def context_detections(text: str, kind: str, score: float) -> list[Detection]:
+    """Context cues (R8f): sport markers ("zápas", "gól", "NBA") as kind "context" detections ("sport: zapas").
+
+    They never reach the content map; aggregate uses them to drop sport-ambiguous safety hits nearby.
+    """
+    tokens = normalize(text).split()
+    out: list[Detection] = []
+    for phrase in languages.active().sport_markers:
+        found = _find(tokens, phrase)
+        if found:
+            out.append(Detection(term=f"sport: {found}", score=score, kind="context", category=None, categories=[]))
+    return out
+

@@ -108,7 +108,7 @@ import { PlatformForm, formToPlatform, newPlatformForm, platformToForm } from '.
 export class PlatformEditPage {
   presetHint(p: string): string {
     return p === 'strict'
-      ? 'No ads in sensitive content, profanity or drug references.'
+      ? 'No ads in sensitive content, profanity, drug references or war/military news (also without violence).'
       : p === 'news'
         ? 'Sensitive segments may carry ads when they are a news report; otherwise like Standard.'
         : 'No ads in sensitive content (violence, death, war, disasters, accidents, weapons, protests).';

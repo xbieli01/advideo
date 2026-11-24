@@ -79,8 +79,9 @@ CLIP_BRAND_NEUTRAL: list[str] = list(_DOC.get("clipBrandNeutral", ["a photo with
 
 # --- brand safety from speech / on-screen text --------------------------------
 # Group definitions only; the per-language terms live in schema/languages/<code>.json (see languages.py).
-SAFETY_GROUPS: dict[tuple[str, str], bool] = {
-    (g["subtype"], g["severity"]): bool(g.get("sensitive", True))
+SAFETY_GROUPS: dict[tuple[str, str], dict] = {
+    (g["subtype"], g["severity"]): {"sensitive": bool(g.get("sensitive", True)),
+                                    "supportsSensitive": bool(g.get("supportsSensitive", False))}
     for g in _DOC.get("safetyTerms", {}).get("groups", [])
 }
 # model / topK / thresholds; prototypes come from the active language packs

@@ -3,8 +3,8 @@
  "source": "M1 Híradó 23.11.2026 19:30 (main news, mediaklikk.hu)",
  "language": "hu",
  "durationSec": 1978.0,
- "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended)",
- "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended; R8f relabel 2026-11-24: EU sanctions -> W)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict; R8f policy), N = safe for ads, A = ambiguous (not scored)",
  "stories": [
   {
    "start": 0,
@@ -69,7 +69,7 @@
   {
    "start": 1116,
    "end": 1169,
-   "label": "A",
+   "label": "W",
    "topic": "EU sanctions on Russia"
   },
   {

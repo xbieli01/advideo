@@ -138,6 +138,10 @@ public class AdMatcherTests
     [InlineData(new[] { "automotive", "profanity" }, BrandSafetyPreset.Standard, false, true)]
     [InlineData(new[] { "automotive", "profanity" }, BrandSafetyPreset.Strict, false, false)]
     [InlineData(new[] { "automotive", "drugs" }, BrandSafetyPreset.Strict, false, false)]
+    // R8f: war politics without violence ("war" without "sensitive") — blocked only by strict
+    [InlineData(new[] { "automotive", "war" }, BrandSafetyPreset.Standard, false, true)]
+    [InlineData(new[] { "automotive", "war" }, BrandSafetyPreset.News, false, true)]
+    [InlineData(new[] { "automotive", "war" }, BrandSafetyPreset.Strict, false, false)]
     [InlineData(new[] { "automotive", "sensitive" }, BrandSafetyPreset.Strict, true, true)]
     [InlineData(new[] { "automotive", "sensitive", "profanity" }, BrandSafetyPreset.Strict, true, false)]
     [InlineData(new[] { "automotive", "sensitive" }, BrandSafetyPreset.Standard, true, true)]

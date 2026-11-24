@@ -235,3 +235,30 @@ lexicon / labelling issues, now known — fixing them requires a fresh holdout3,
 - missed: bomb threats at schools (HU), school violence report (PL) — implicit wording; HU/PL lexicons are still
   unreviewed by native speakers.
 
+## R8f: sport context + war-politics policy (2026-11-24)
+
+Policy (Braňo): war/military politics without violence is blocked only by **Strict**; new label **W** in the story
+labels (dev and holdout2 relabelled: EU sanctions, missiles over Poland without casualties, military cooperation,
+Ukraine summits). `broadcast_safety_eval.py --preset standard|strict` (W = safe under Standard, sensitive under Strict).
+Changes: sport context (see README), war/medium `sensitive: false` + `supportsSensitive`, missile/drone-strike phrases
+(war high), plural *útoky*. Fresh **holdout3** (labelled by a subagent before any run, `eval/broadcast-holdout3/`):
+STVR Správy 20.11, STVR Góly-body-sekundy 20.11, STVR Niké liga highlights, ČT Události 21.11, M1 Híradó 21.11 —
+10 S / 6 W / 63 N stories. Pre-registered languages: SK `sk,en`, CZ `cs,en`, HU `hu,en`. Run once:
+
+| holdout3 (pooled) | window recall | story recall | false-block rate | false stories |
+|---|---|---|---|---|
+| R8e lexicon (Standard) | 0.13 | 5/10 | 0.020 | 14/69 |
+| R8e lexicon + semantic (Standard) | 0.20 | 6/10 | **0.028** | 16/69 |
+| **R8f lexicon (Standard)** | 0.10 | 5/10 | 0.005 | 5/69 |
+| **R8f lexicon + semantic (Standard)** | 0.17 | 6/10 | **0.011** | **7/69** |
+| R8f lexicon + semantic (Strict, W counted as sensitive) | 0.21 | 11/16 | 0.009 | 7/63 |
+
+Per programme (lex + sem, Standard, R8e → R8f): sport GBS 0.024 → **0**, Niké liga 0.016 → 0.005, ČT 0.040 → 0.010,
+M1 0.034 → 0.011, STVR Správy 0.030 → 0.022. Seen sets after R8f (Standard): dev 0.010 / 0.012, JOJ 22.11 0, sport
+holdout2 0.012 → 0 after widening the sport window to ±3 (tuned on holdout2 — therefore validated on holdout3).
+
+Recall did not improve and is the next problem — all misses are lexicon gaps on holdout3 (not fixed, holdout3 must stay
+clean): *neprežil*, *ťažké zranenia*, poisoning (*otrava*), a WWII massacre anniversary without matched words, paramedics
+attacked (CZ). Remaining false blocks: *prestrelil* (scored past the goalkeeper) is not marked sport-ambiguous, *zabitie*
+vlkov (wolf culling), *zemřelo* in a charity story, semantic hits on a prosecutor and an FBI-hack story.
+

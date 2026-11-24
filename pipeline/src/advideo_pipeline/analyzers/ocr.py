@@ -11,7 +11,7 @@ brand entity, enabling exact brand-match ads.
 from __future__ import annotations
 
 from ..models import Detection, Frame
-from ..textmatch import brand_detections, keyword_detections, news_detections, normalize, safety_detections
+from ..textmatch import brand_detections, context_detections, keyword_detections, news_detections, normalize, safety_detections
 from .base import Analyzer
 
 
@@ -87,6 +87,7 @@ class OcrBrandAnalyzer(Analyzer):
         dets += keyword_detections(joined, kind="text", score=round(float(score), 3))
         dets += safety_detections(joined, kind="text", score=round(float(score), 3))
         dets += news_detections(joined, kind="text", score=round(float(score), 3))
+        dets += context_detections(joined, kind="text", score=round(float(score), 3))
         # keep a light raw-text signal (deduped alnum tokens) for debugging/relevance
         for tok in dict.fromkeys(normalize(joined).split()):
             if len(tok) > 2 and tok not in _STOPWORDS and not tok.isdigit():

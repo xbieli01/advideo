@@ -1,0 +1,71 @@
+{
+ "id": "stvr-gbs-20261120",
+ "source": "STVR Góly-body-sekundy 20.11.2026 (https://www.stvr.sk/televizia/archiv/23643/630714)",
+ "language": "sk",
+ "durationSec": 1005.8,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT3 - never tune on it; human review recommended)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 36,
+   "label": "N",
+   "topic": "headlines"
+  },
+  {
+   "start": 36,
+   "end": 132,
+   "label": "N",
+   "topic": "Vlhová withdraws from slalom"
+  },
+  {
+   "start": 132,
+   "end": 299,
+   "label": "N",
+   "topic": "NHL round-up"
+  },
+  {
+   "start": 299,
+   "end": 399,
+   "label": "N",
+   "topic": "football: winger breaks foot bone, club results"
+  },
+  {
+   "start": 399,
+   "end": 563,
+   "label": "N",
+   "topic": "biathlon season preview (rifles on the range)"
+  },
+  {
+   "start": 563,
+   "end": 760,
+   "label": "N",
+   "topic": "Slovak hockey league"
+  },
+  {
+   "start": 760,
+   "end": 795,
+   "label": "N",
+   "topic": "basketball EuroLeague"
+  },
+  {
+   "start": 795,
+   "end": 828,
+   "label": "N",
+   "topic": "tennis ATP finals"
+  },
+  {
+   "start": 828,
+   "end": 921,
+   "label": "N",
+   "topic": "sports academy anniversary"
+  },
+  {
+   "start": 921,
+   "end": 1006,
+   "label": "N",
+   "topic": "archive football footage"
+  }
+ ],
+ "note": "pure false-block test: no sensitive story"
+}

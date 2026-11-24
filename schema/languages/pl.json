@@ -77,7 +77,10 @@
      "inwazj*",
      "zbrodni* wojenn*",
      "linia frontu",
-     "atak rakietowy"
+     "atak rakietowy",
+     "rakiet* uderzyl*",
+     "uderzyl* rakiet*",
+     "atak* dronow*"
     ]
    },
    {
@@ -277,6 +280,58 @@
    "Drużyna strzeliła gola w ostatniej minucie.",
    "W weekend idziemy w góry.",
    "Jutro będzie słonecznie."
+  ]
+ },
+ "sportContext": {
+  "$comment": "R8f: safety terms in 'ambiguous' are dropped when >= 2 distinct sport markers occur within +-3 windows (42 s); a match in the picture (CLIP playing football, stadium...) counts as a marker.",
+  "markers": [
+   "mecz*",
+   "gol",
+   "gole",
+   "gola",
+   "bramk*",
+   "liga",
+   "ligi",
+   "lidze",
+   "ekstraklas*",
+   "sezon*",
+   "trener*",
+   "druzyn*",
+   "zawodnik*",
+   "napastnik*",
+   "pilk* nozn*",
+   "pilkarz*",
+   "koszykowk*",
+   "hokej*",
+   "tenis*",
+   "biathlon*",
+   "sedzi*",
+   "stadion*",
+   "rzut karny",
+   "turniej*",
+   "mistrzostw*",
+   "olimpi*",
+   "nba",
+   "nhl",
+   "uefa",
+   "fifa"
+  ],
+  "ambiguous": [
+   "atak",
+   "ataku",
+   "napad*",
+   "ranny",
+   "ranni",
+   "ranna",
+   "rannych",
+   "strzelal*",
+   "masakr*",
+   "bomba",
+   "bombe",
+   "bomby",
+   "karabin*",
+   "zderzeni*",
+   "kolizj*"
   ]
  }
 }

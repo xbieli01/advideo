@@ -48,8 +48,9 @@ public sealed record BrandSafetySettings
     /// <summary>Category the pipeline puts on news reports (speech/on-screen cues).</summary>
     public const string NewsCategory = "news";
 
-    /// <summary>Categories blocked only by the strict preset (not sensitive by themselves).</summary>
-    public static readonly IReadOnlyList<string> StrictOnlyCategories = ["profanity", "drugs"];
+    /// <summary>Categories blocked only by the strict preset (not sensitive by themselves). "war" = war/military
+    /// politics without violence (summits, sanctions, military cooperation); war with violence is also "sensitive".</summary>
+    public static readonly IReadOnlyList<string> StrictOnlyCategories = ["profanity", "drugs", "war"];
 }
 
 /// <summary>Brand-safety strictness of a platform.</summary>

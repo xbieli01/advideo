@@ -1,0 +1,124 @@
+{
+ "id": "m1-hirado-20261121",
+ "source": "M1 Híradó 21.11.2026 19:30 (https://mediaklikk.hu/video/2026/11/21/hirado-2026-november-21-1930/)",
+ "language": "hu",
+ "durationSec": 1930.0,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT3 - never tune on it; human review recommended)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 66,
+   "label": "A",
+   "topic": "headlines"
+  },
+  {
+   "start": 66,
+   "end": 324,
+   "label": "N",
+   "topic": "new public media director"
+  },
+  {
+   "start": 324,
+   "end": 493,
+   "label": "N",
+   "topic": "politician released from custody (corruption case)"
+  },
+  {
+   "start": 493,
+   "end": 656,
+   "label": "N",
+   "topic": "ex-minister's house seized"
+  },
+  {
+   "start": 656,
+   "end": 784,
+   "label": "N",
+   "topic": "former PM's travel costs"
+  },
+  {
+   "start": 784,
+   "end": 846,
+   "label": "N",
+   "topic": "motorway concession ended"
+  },
+  {
+   "start": 846,
+   "end": 970,
+   "label": "N",
+   "topic": "credit rating outlook"
+  },
+  {
+   "start": 970,
+   "end": 1000,
+   "label": "W",
+   "topic": "multinational military exercise in Poland, drones in airspace"
+  },
+  {
+   "start": 1000,
+   "end": 1065,
+   "label": "S",
+   "topic": "air strike on Kryvyi Rih, body-cam footage"
+  },
+  {
+   "start": 1065,
+   "end": 1096,
+   "label": "W",
+   "topic": "Putin/NATO rhetoric, peace talks"
+  },
+  {
+   "start": 1096,
+   "end": 1224,
+   "label": "N",
+   "topic": "FBI database hacked"
+  },
+  {
+   "start": 1224,
+   "end": 1362,
+   "label": "A",
+   "topic": "student and labour protests, riots in Rome and Basel"
+  },
+  {
+   "start": 1362,
+   "end": 1393,
+   "label": "S",
+   "topic": "gas pipeline explosion in Iraq, 4 dead"
+  },
+  {
+   "start": 1393,
+   "end": 1423,
+   "label": "A",
+   "topic": "earthquake felt in Lima, no casualties reported"
+  },
+  {
+   "start": 1423,
+   "end": 1456,
+   "label": "S",
+   "topic": "record river flood, villages inundated"
+  },
+  {
+   "start": 1456,
+   "end": 1611,
+   "label": "N",
+   "topic": "Debrecen water supply, Balaton level"
+  },
+  {
+   "start": 1611,
+   "end": 1774,
+   "label": "N",
+   "topic": "World Television Day"
+  },
+  {
+   "start": 1774,
+   "end": 1903,
+   "label": "N",
+   "topic": "Christmas markets"
+  },
+  {
+   "start": 1903,
+   "end": 1930,
+   "label": "N",
+   "topic": "video game launch"
+  }
+ ]
+}

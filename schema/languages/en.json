@@ -90,7 +90,12 @@
      "war crimes",
      "invasion",
      "front line",
-     "frontline"
+     "frontline",
+     "missiles hit",
+     "missile hit",
+     "drone strike",
+     "drone strikes",
+     "struck by a missile"
     ]
    },
    {
@@ -335,6 +340,60 @@
    "Oh no, I spilled coffee all over my laptop.",
    "Ugh, my team lost again, I'm so angry.",
    "Sorry for the bad language, I was really frustrated."
+  ]
+ },
+ "sportContext": {
+  "$comment": "R8f: safety terms in 'ambiguous' are dropped when >= 2 distinct sport markers occur within +-3 windows (42 s); a match in the picture (CLIP playing football, stadium...) counts as a marker.",
+  "markers": [
+   "match",
+   "matches",
+   "goal",
+   "goals",
+   "scored",
+   "league",
+   "season",
+   "coach",
+   "playoff*",
+   "nba",
+   "nhl",
+   "nfl",
+   "uefa",
+   "fifa",
+   "player",
+   "players",
+   "striker",
+   "halftime",
+   "half time",
+   "champions league",
+   "tournament",
+   "quarterback",
+   "basketball",
+   "football",
+   "soccer",
+   "hockey",
+   "tennis",
+   "biathlon",
+   "referee",
+   "stadium",
+   "penalty",
+   "penalties",
+   "olympic*",
+   "championship*"
+  ],
+  "ambiguous": [
+   "shooter",
+   "attack",
+   "attacked",
+   "injured",
+   "massacre",
+   "bomb threat",
+   "gun",
+   "guns",
+   "rifle",
+   "crash",
+   "crashed",
+   "collision",
+   "brawl"
   ]
  }
 }

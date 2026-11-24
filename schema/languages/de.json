@@ -54,7 +54,9 @@
     "terms": [
      "luftangriff",
      "bombardierung",
-     "kriegsverbrechen"
+     "kriegsverbrechen",
+     "rakete* eingeschlagen",
+     "drohnenangriff*"
     ]
    },
    {
@@ -194,5 +196,48 @@
   "stadion": "a stadium",
   "smartphone": "cell phone",
   "badestrand": "beach"
+ },
+ "sportContext": {
+  "$comment": "R8f: safety terms in 'ambiguous' are dropped when >= 2 distinct sport markers occur within +-3 windows (42 s); a match in the picture (CLIP playing football, stadium...) counts as a marker.",
+  "markers": [
+   "spiel",
+   "spiele",
+   "tore",
+   "liga",
+   "bundesliga",
+   "saison",
+   "trainer",
+   "mannschaft",
+   "spieler*",
+   "sturmer",
+   "halbzeit",
+   "fussball",
+   "eishockey",
+   "basketball",
+   "tennis",
+   "biathlon",
+   "schiedsrichter",
+   "stadion",
+   "elfmeter",
+   "turnier",
+   "meisterschaft*",
+   "olympi*",
+   "champions league",
+   "nba",
+   "nhl",
+   "uefa",
+   "fifa"
+  ],
+  "ambiguous": [
+   "schusse",
+   "angriff",
+   "verletzt",
+   "verletzte",
+   "massaker",
+   "waffe",
+   "gewehr",
+   "zusammenstoss",
+   "kollision"
+  ]
  }
 }

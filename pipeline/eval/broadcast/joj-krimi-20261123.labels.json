@@ -3,7 +3,7 @@
  "source": "TV JOJ Krimi 23.11.2026 (crime news)",
  "durationSec": 1383.4,
  "annotatedBy": "Claude (story-level, from Whisper-small transcript; human review recommended)",
- "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict; R8f policy), N = safe for ads, A = ambiguous (not scored)",
  "stories": [
   {
    "start": 0,

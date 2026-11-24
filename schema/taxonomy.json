@@ -883,7 +883,7 @@
     "plain text"
   ],
   "safetyTerms": {
-    "$comment": "Brand safety from speech (Whisper) and on-screen text (OCR). Terms live in the language packs (schema/languages/<code>.json); they are matched on normalized text (lowercase, no diacritics, alphanumeric tokens). A trailing * is a prefix match on one token (Slovak/Czech inflection). severity: high = one hit marks the window; medium = needs >= 2 different safety hits in the same window (ambiguous words like 'attack', 'war', 'crash'); low = never sensitive (profanity). sensitive=false groups only add their category (blocked by the strict preset). exclusions: phrases whose words never count (idioms such as 'zabili cas' = killed time, 'crash course'). Groups here only define subtype/severity/sensitive.",
+    "$comment": "Brand safety from speech (Whisper) and on-screen text (OCR). Terms live in the language packs (schema/languages/<code>.json); they are matched on normalized text (lowercase, no diacritics, alphanumeric tokens). A trailing * is a prefix match on one token (Slovak/Czech inflection). severity: high = one hit marks the window; medium = needs >= 2 different safety hits in the same window (ambiguous words like 'attack', 'war', 'crash'); low = never sensitive (profanity). sensitive=false groups only add their category (blocked by the strict preset). exclusions: phrases whose words never count (idioms such as 'zabili cas' = killed time, 'crash course'). Groups here only define subtype/severity/sensitive. R8f: war/medium (war politics: 'vojna', 'armáda', 'rakety') is sensitive=false + supportsSensitive: alone it only adds category 'war' (blocked by the strict preset); together with a sensitive lexicon hit ('útok', 'zabil') the window is sensitive. Packs may define sportContext {markers, ambiguous}: ambiguous terms are dropped near >= 2 sport markers.",
     "groups": [
       {
         "subtype": "violence",
@@ -913,7 +913,8 @@
       {
         "subtype": "war",
         "severity": "medium",
-        "sensitive": true
+        "sensitive": false,
+        "supportsSensitive": true
       },
       {
         "subtype": "terror",

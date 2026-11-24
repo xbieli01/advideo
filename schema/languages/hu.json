@@ -67,7 +67,9 @@
      "invazio*",
      "haborus bun*",
      "frontvonal*",
-     "raketatamadas*"
+     "raketatamadas*",
+     "raketa* becsapod*",
+     "dron* tamad*"
     ]
    },
    {
@@ -260,6 +262,48 @@
    "A csapat az utolsó percben gólt szerzett.",
    "Hétvégén kirándulni megyünk a hegyekbe.",
    "Holnap napos idő várható."
+  ]
+ },
+ "sportContext": {
+  "$comment": "R8f: safety terms in 'ambiguous' are dropped when >= 2 distinct sport markers occur within +-3 windows (42 s); a match in the picture (CLIP playing football, stadium...) counts as a marker.",
+  "markers": [
+   "meccs*",
+   "merkozes*",
+   "gol*",
+   "bajnoksag*",
+   "liga",
+   "szezon*",
+   "edzo*",
+   "csapat*",
+   "jatekos*",
+   "csatar*",
+   "focista*",
+   "labdarugo*",
+   "kosarlabda*",
+   "jegkorong*",
+   "tenisz*",
+   "biatlon*",
+   "felido*",
+   "jatekvezet*",
+   "stadion*",
+   "tizenegyes*",
+   "nba",
+   "nhl",
+   "uefa",
+   "fifa",
+   "olimpi*",
+   "vilagbajnoksag*",
+   "europa bajnoksag*"
+  ],
+  "ambiguous": [
+   "tamad*",
+   "sebesult*",
+   "megsebesult*",
+   "meszarlas*",
+   "fegyver*",
+   "puska*",
+   "bomba",
+   "utkozes*"
   ]
  }
 }

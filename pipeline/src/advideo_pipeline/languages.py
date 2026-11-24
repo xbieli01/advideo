@@ -53,6 +53,8 @@ class SafetyTerm:
     severity: str        # high | medium | low
     sensitive: bool      # adds the "sensitive" category (blocked by the standard preset)
     language: str = ""
+    supports_sensitive: bool = False   # group flag supportsSensitive (war politics)
+    sport_ambiguous: bool = False      # dropped in sport context (pack sportContext.ambiguous)
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,7 @@ class LanguagePack:
     news_markers: tuple[str, ...]
     keywords: dict[str, str] = field(default_factory=dict)
     semantic: dict = field(default_factory=dict)
+    sport_markers: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,6 +83,7 @@ class LanguageSet:
     keywords: dict[str, str]
     semantic_sensitive: dict[str, list[str]]
     semantic_neutral: list[str]
+    sport_markers: tuple[str, ...] = ()
 
 
 def languages_dir() -> Path:
@@ -110,13 +114,19 @@ def load_pack(code: str) -> LanguagePack:
         raise ValueError(f"unknown language '{code}': no pack {path} (available: {', '.join(available_languages())})")
     doc = json.loads(path.read_text(encoding="utf-8"))
     st = doc.get("safetyTerms", {})
+    sport = doc.get("sportContext", {})
+    ambiguous = set(sport.get("ambiguous", []))
     terms = []
     for g in st.get("groups", []):
         key = (g["subtype"], g["severity"])
         meta = SAFETY_GROUPS.get(key)
         if meta is None:
             raise ValueError(f"{path.name}: group {key} is not defined in taxonomy.json safetyTerms.groups")
-        terms += [SafetyTerm(t, key[0], key[1], meta, code) for t in g.get("terms", [])]
+        terms += [SafetyTerm(t, key[0], key[1], meta["sensitive"], code, meta["supportsSensitive"], t in ambiguous)
+                  for t in g.get("terms", [])]
+    unknown = ambiguous - {t.phrase for t in terms}
+    if unknown:
+        raise ValueError(f"{path.name}: sportContext.ambiguous lists terms that are not in the lexicon: {sorted(unknown)}")
     return LanguagePack(
         code=code,
         name=doc.get("name", code),
@@ -127,6 +137,7 @@ def load_pack(code: str) -> LanguagePack:
         news_markers=tuple(doc.get("newsMarkers", [])),
         keywords={k.lower(): v.lower() for k, v in doc.get("keywords", {}).items()},
         semantic=dict(doc.get("semanticSafety", {})),
+        sport_markers=tuple(sport.get("markers", [])),
     )
 
 
@@ -143,7 +154,11 @@ def _build(codes: tuple[str, ...]) -> LanguageSet:
     seen: dict[tuple[str, str, str], SafetyTerm] = {}
     for p in packs:
         for t in p.safety_terms:
-            seen.setdefault((t.phrase, t.subtype, t.severity), t)
+            prev = seen.get((t.phrase, t.subtype, t.severity))
+            if prev is None:
+                seen[(t.phrase, t.subtype, t.severity)] = t
+            elif t.sport_ambiguous and not prev.sport_ambiguous:  # sk + cs share words; ambiguity in any pack wins
+                seen[(t.phrase, t.subtype, t.severity)] = t
     keywords: dict[str, str] = {}
     for p in packs:
         keywords.update(p.keywords)
@@ -168,6 +183,7 @@ def _build(codes: tuple[str, ...]) -> LanguageSet:
         keywords=keywords,
         semantic_sensitive=sensitive,
         semantic_neutral=neutral,
+        sport_markers=_dedupe(m for p in packs for m in p.sport_markers),
     )
 
 

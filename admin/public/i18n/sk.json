@@ -1,8 +1,5 @@
 {
   "(header optional, ; or tab also work) — or JSON": "(hlavička voliteľná, funguje aj ; alebo tabulátor) — alebo JSON",
-  "{n} line(s) with errors": "{n} riadok(ov) s chybou",
-  "{n} video(s) recognised": "rozpoznaných videí: {n}",
-  "{queued} queued · {skipped} skipped · {invalid} invalid (of {received})": "zaradených {queued} · preskočených {skipped} · neplatných {invalid} (z {received})",
   "Activate": "Aktivovať",
   "active": "aktívna",
   "Active campaigns": "Aktívne kampane",
@@ -115,7 +112,7 @@
   "next try {time}": "ďalší pokus {time}",
   "No ad:": "Bez reklamy:",
   "No ads in sensitive content (violence, death, war, disasters, accidents, weapons, protests).": "Žiadne reklamy v citlivom obsahu (násilie, smrť, vojna, katastrofy, nehody, zbrane, protesty).",
-  "No ads in sensitive content, profanity or drug references.": "Žiadne reklamy v citlivom obsahu, pri vulgarizmoch ani zmienkach o drogách.",
+  "No ads in sensitive content, profanity, drug references or war/military news (also without violence).": "Žiadne reklamy v citlivom obsahu, pri vulgarizmoch, zmienkach o drogách ani pri vojnových či vojenských správach (aj bez násilia).",
   "No campaign matched this segment.": "Tomuto segmentu nezodpovedá žiadna kampaň.",
   "No campaigns match.": "Žiadna kampaň nevyhovuje.",
   "No campaigns yet.": "Zatiaľ žiadne kampane.",
@@ -148,8 +145,8 @@
   "Read only — your API key has the reporting role.": "Len na čítanie — váš API kľúč má rolu reporting.",
   "Refresh": "Obnoviť",
   "Relevance": "Relevancia",
-  "Relevance ≥": "Relevancia ≥",
   "Relevance threshold": "Prah relevancie",
+  "Relevance ≥": "Relevancia ≥",
   "Remove": "Odstrániť",
   "Result": "Výsledok",
   "Retry": "Zopakovať",
@@ -192,5 +189,8 @@
   "whisper": "whisper",
   "Width": "Šírka",
   "winner": "víťaz",
-  "Winner:": "Víťaz:"
+  "Winner:": "Víťaz:",
+  "{n} line(s) with errors": "{n} riadok(ov) s chybou",
+  "{n} video(s) recognised": "rozpoznaných videí: {n}",
+  "{queued} queued · {skipped} skipped · {invalid} invalid (of {received})": "zaradených {queued} · preskočených {skipped} · neplatných {invalid} (z {received})"
 }

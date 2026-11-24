@@ -28,8 +28,11 @@ def test_semantic_high_marks_window_alone():
 
 def test_semantic_medium_needs_corroboration():
     assert "sensitive" not in _cats([_sem("war", "medium")])
-    # one lexicon medium word ("army") + semantic medium = two distinct hits
-    assert "sensitive" in _cats(safety_detections("the army reports losses", "audio", 0.9) + [_sem("war", "medium")])
+    # one sensitive lexicon medium word ("injured") + semantic medium = two distinct hits
+    assert "sensitive" in _cats(safety_detections("two soldiers were injured", "audio", 0.9) + [_sem("war", "medium")])
+    # R8f: a war-politics word ("army") + semantic "~war" is war politics only (blocked by strict, not standard)
+    cats = _cats(safety_detections("the army reports losses", "audio", 0.9) + [_sem("war", "medium")])
+    assert "sensitive" not in cats and "war" in cats
 
 
 def test_env_switch(monkeypatch):

@@ -47,9 +47,18 @@ def test_single_medium_hit_does_not_mark_window():
 
 
 def test_two_medium_hits_mark_window():
-    seg = _segment("Soldiers moved in as the war entered its second week.")
-    assert {"sensitive", "war"} <= set(seg.categories)
+    seg = _segment("Two soldiers were injured in the attack.")
+    assert {"sensitive", "violence"} <= set(seg.categories)
     assert any(s.startswith("speech: ") for s in seg.signals["safety"])
+
+
+def test_war_politics_is_war_but_not_sensitive():
+    # R8f policy (Braňo): war/military news without violence -> category "war" only (strict preset blocks it)
+    seg = _segment("Soldiers moved in as the war entered its second week.")
+    assert "war" in seg.categories and "sensitive" not in seg.categories
+    seg = _segment("The war goes on; the army attacked the city.")  # + violence word -> sensitive
+    assert {"sensitive", "war"} <= set(seg.categories)
+    assert "sensitive" in _segment("Ruské rakety zasiahli energetickú infraštruktúru.").categories
 
 
 def test_high_hit_marks_window_alone():

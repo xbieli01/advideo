@@ -4,7 +4,7 @@
  "language": "en",
  "durationSec": 2948.8,
  "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT2 - never tune on it; human review recommended)",
- "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict; R8f policy), N = safe for ads, A = ambiguous (not scored)",
  "stories": [
   {
    "start": 0,

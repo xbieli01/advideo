@@ -45,11 +45,12 @@
   },
   {
    "lang": "en",
-   "expect": "sensitive",
+   "expect": "safe",
    "text": "Soldiers and armed troops moved towards the border as the war entered its second week.",
    "categories": [
     "war"
-   ]
+   ],
+   "note": "R8f policy: war/military politics without violence -> category war only (strict preset)"
   },
   {
    "lang": "en",
@@ -362,11 +363,12 @@
   },
   {
    "lang": "de",
-   "expect": "sensitive",
+   "expect": "safe",
    "text": "Soldaten und Raketen: der Krieg eskaliert weiter.",
    "categories": [
     "war"
-   ]
+   ],
+   "note": "R8f policy: war/military politics without violence -> category war only (strict preset)"
   },
   {
    "lang": "de",

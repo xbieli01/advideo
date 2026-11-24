@@ -166,3 +166,54 @@ def test_semantic_hits_never_corroborate_each_other():
 def test_window_without_own_hit_is_not_flagged_by_neighbours():
     dets = [(1, 2, _det("zraneny")), (2, 3, _det("smrt"))]
     assert _sensitive(aggregate_segments(dets, 18)) == [True, False, False]
+
+
+# --------------------------------------------------------------------------- R8f sport context
+
+def _speech(segments, duration=30.0):
+    from advideo_pipeline.textmatch import context_detections, safety_detections
+
+    dets = []
+    for start, end, text in segments:
+        for d in safety_detections(text, "audio", 0.8) + context_detections(text, "audio", 0.8):
+            dets.append((start, end, d))
+    return aggregate_segments(dets, duration)
+
+
+def test_sport_words_are_not_sensitive_in_a_match_report():
+    languages.set_languages(["sk"])
+    segs = _speech([(0, 5, "V zápase NBA padlo veľa gólov."), (6, 11, "Útočník sa zranený vrátil, streľba z diaľky.")])
+    assert not any("sensitive" in s.categories for s in segs)
+    # the same words without sport context stay sensitive
+    segs = _speech([(6, 11, "Útočník sa zranený vrátil, streľba z diaľky.")])
+    assert any("sensitive" in s.categories for s in segs)
+
+
+def test_sport_context_needs_two_markers_and_keeps_unambiguous_words():
+    languages.set_languages(["sk"])
+    one_marker = _speech([(0, 5, "Po zápase"), (6, 11, "útočník a zranený muž, streľba")])
+    assert any("sensitive" in s.categories for s in one_marker)
+    killed = _speech([(0, 5, "Zápas NBA, gól."), (6, 11, "Fanúšika zabili pred štadiónom.")])
+    assert any("sensitive" in s.categories for s in killed)  # "zabili" is not sport-ambiguous
+
+
+def test_visual_match_counts_as_sport_marker():
+    languages.set_languages(["sk"])
+    from advideo_pipeline.textmatch import context_detections, safety_detections
+
+    dets = [(t, t, Detection(term="playing football", score=0.9, kind="action", categories=["sport"])) for t in (1, 2)]
+    dets += [(1, 2, Detection(term="a stadium", score=0.9, kind="scene", categories=["sport"]))]
+    dets += [(6, 11, d) for d in safety_detections("útočník zranený, streľba", "audio", 0.8)]
+    assert not any("sensitive" in s.categories for s in aggregate_segments(dets, 18))
+
+
+def test_sport_ambiguous_terms_must_exist_in_lexicon():
+    for code in languages.available_languages():
+        pack = languages.load_pack(code)  # raises when sportContext.ambiguous lists unknown terms
+        assert all(normalize(m.replace("*", "")) == m.replace("*", "") for m in pack.sport_markers)
+
+
+def test_context_detections_do_not_reach_the_map():
+    languages.set_languages(["sk"])
+    seg = _speech([(0, 5, "Zápas NBA, gól.")])[0]
+    assert not seg.keywords and not seg.categories

@@ -2,8 +2,8 @@
  "id": "stvr-spravy-20261123",
  "source": "STVR Správy RTVS 23.11.2026 (main news)",
  "durationSec": 3031.1,
- "annotatedBy": "Claude (story-level, from Whisper-small transcript; human review recommended)",
- "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "annotatedBy": "Claude (story-level, from Whisper-small transcript; human review recommended; R8f relabel 2026-11-24: war politics without casualties -> W)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict; R8f policy), N = safe for ads, A = ambiguous (not scored)",
  "stories": [
   {
    "start": 0,
@@ -38,13 +38,13 @@
   {
    "start": 590,
    "end": 640,
-   "label": "A",
+   "label": "W",
    "topic": "EU sanctions on Russia"
   },
   {
    "start": 640,
    "end": 780,
-   "label": "S",
+   "label": "W",
    "topic": "Russian missiles over Poland, NATO"
   },
   {

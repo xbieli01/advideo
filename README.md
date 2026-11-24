@@ -110,6 +110,17 @@ semantic safety classifier and the Whisper / EasyOCR language codes. **Add a lan
 | `ADVIDEO_WHISPER_MODEL` (`base`) | faster-whisper model; `small` is much better for Slovak news (R8d), ~3× slower on CPU |
 | `ADVIDEO_OCR_LANGUAGES` | EasyOCR codes; default = `en` + active packs |
 
+**Sport context (R8f).** Packs define `sportContext.markers` ("zápas", "gól", "NBA"…) and `ambiguous` safety words
+("streľba", "útočník", "zranený", "masaker"). With ≥ 2 distinct sport markers within ±3 windows (42 s) — a match in the
+picture (CLIP *playing football*, *a stadium*) also counts — the ambiguous words are ignored; unambiguous ones
+("zabili") still block.
+
+**War politics (R8f, Braňo's policy).** War/military news *without violence* (summits, sanctions, military
+cooperation, airspace incidents without casualties) gets category `war` only → blocked by the **Strict** preset, not
+by Standard/News. War with violence (attacks, strikes, casualties) is `sensitive` as before: war words (`vojna`,
+`armáda`, `rakety`) corroborate a violence word, but never make a window sensitive on their own or with the semantic
+classifier alone.
+
 Only the active packs are matched: with `sk` alone, the English word *rifle* (Slovak: jeans) or the Czech *válka*
 (mis-heard Slovak *veľká*) cannot fire — on a Slovak broadcast `sk` (+ `en` for brand/English UI text) is the
 recommended setting.

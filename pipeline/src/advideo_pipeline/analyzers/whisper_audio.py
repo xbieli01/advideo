@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 
 from ..models import Detection
-from ..textmatch import brand_detections, keyword_detections, news_detections, safety_detections
+from ..textmatch import brand_detections, context_detections, keyword_detections, news_detections, safety_detections
 from .base import TrackAnalyzer
 
 
@@ -105,6 +105,8 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
             for det in safety_detections(text, kind="audio", score=score):
                 out.append((start, end, det))
             for det in news_detections(text, kind="audio", score=score):
+                out.append((start, end, det))
+            for det in context_detections(text, kind="audio", score=score):
                 out.append((start, end, det))
         return out
 

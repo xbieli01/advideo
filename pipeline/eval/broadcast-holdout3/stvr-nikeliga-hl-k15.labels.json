@@ -1,0 +1,59 @@
+{
+ "id": "stvr-nikeliga-hl-k15",
+ "source": "STVR Highlighty Niké liga 2026/27, 15. kolo (https://www.stvr.sk/televizia/archiv/24222/631609)",
+ "language": "sk",
+ "durationSec": 3344.0,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT3 - never tune on it; human review recommended)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 129,
+   "label": "N",
+   "topic": "intro, table"
+  },
+  {
+   "start": 129,
+   "end": 580,
+   "label": "N",
+   "topic": "Žilina - Banská Bystrica"
+  },
+  {
+   "start": 580,
+   "end": 1185,
+   "label": "N",
+   "topic": "Trenčín - Podbrezová"
+  },
+  {
+   "start": 1185,
+   "end": 1650,
+   "label": "N",
+   "topic": "Ružomberok - Slovan"
+  },
+  {
+   "start": 1650,
+   "end": 2130,
+   "label": "N",
+   "topic": "Michalovce - Trnava (goalkeeper injury, punch in the face reviewed by VAR)"
+  },
+  {
+   "start": 2130,
+   "end": 2728,
+   "label": "N",
+   "topic": "Skalica - Košice"
+  },
+  {
+   "start": 2728,
+   "end": 3313,
+   "label": "N",
+   "topic": "DAC - Komárno"
+  },
+  {
+   "start": 3313,
+   "end": 3344,
+   "label": "N",
+   "topic": "outro"
+  }
+ ],
+ "note": "football commentary: shots, attacks, injuries are sport vocabulary (N)"
+}

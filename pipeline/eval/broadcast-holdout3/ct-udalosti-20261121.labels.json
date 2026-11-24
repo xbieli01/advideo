@@ -1,0 +1,173 @@
+{
+ "id": "ct-udalosti-20261121",
+ "source": "ČT Události 21.11.2026 (https://www.ceskatelevize.cz/porady/1097181328-udalosti/226411000101121/)",
+ "language": "cs",
+ "durationSec": 2926.1,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT3 - never tune on it; human review recommended)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 42,
+   "label": "A",
+   "topic": "headlines"
+  },
+  {
+   "start": 42,
+   "end": 390,
+   "label": "N",
+   "topic": "housing costs and subsidies"
+  },
+  {
+   "start": 390,
+   "end": 509,
+   "label": "W",
+   "topic": "Polish airspace violation, NATO, Patriot moves"
+  },
+  {
+   "start": 509,
+   "end": 547,
+   "label": "S",
+   "topic": "Russian strike on Kryvyi Rih restaurant, double tap"
+  },
+  {
+   "start": 547,
+   "end": 659,
+   "label": "W",
+   "topic": "French soldiers in Ukraine (part garbled by Whisper)"
+  },
+  {
+   "start": 659,
+   "end": 674,
+   "label": "N",
+   "topic": "company bankruptcies"
+  },
+  {
+   "start": 674,
+   "end": 793,
+   "label": "N",
+   "topic": "dental emergency services"
+  },
+  {
+   "start": 793,
+   "end": 820,
+   "label": "N",
+   "topic": "public media fees, protest"
+  },
+  {
+   "start": 820,
+   "end": 949,
+   "label": "N",
+   "topic": "EU budget cuts"
+  },
+  {
+   "start": 949,
+   "end": 967,
+   "label": "S",
+   "topic": "LA arsonist sentenced"
+  },
+  {
+   "start": 967,
+   "end": 1100,
+   "label": "N",
+   "topic": "StarDance benefit for spinal-injury centre"
+  },
+  {
+   "start": 1100,
+   "end": 1132,
+   "label": "A",
+   "topic": "teaser: attacks on paramedics"
+  },
+  {
+   "start": 1132,
+   "end": 1312,
+   "label": "N",
+   "topic": "government legislative priorities"
+  },
+  {
+   "start": 1312,
+   "end": 1340,
+   "label": "N",
+   "topic": "medical chamber congress"
+  },
+  {
+   "start": 1340,
+   "end": 1496,
+   "label": "S",
+   "topic": "paramedics attacked, bulletproof vests"
+  },
+  {
+   "start": 1496,
+   "end": 1515,
+   "label": "A",
+   "topic": "railway incident, nobody hurt"
+  },
+  {
+   "start": 1515,
+   "end": 1675,
+   "label": "N",
+   "topic": "Christmas trees for Prague and Brno"
+  },
+  {
+   "start": 1675,
+   "end": 2069,
+   "label": "N",
+   "topic": "egg prices, cage ban"
+  },
+  {
+   "start": 2069,
+   "end": 2203,
+   "label": "W",
+   "topic": "drones for the army"
+  },
+  {
+   "start": 2203,
+   "end": 2221,
+   "label": "N",
+   "topic": "FBI hackers"
+  },
+  {
+   "start": 2221,
+   "end": 2390,
+   "label": "N",
+   "topic": "entrance exam app"
+  },
+  {
+   "start": 2390,
+   "end": 2413,
+   "label": "N",
+   "topic": "D1 restrictions"
+  },
+  {
+   "start": 2413,
+   "end": 2511,
+   "label": "N",
+   "topic": "ice rinks open"
+  },
+  {
+   "start": 2511,
+   "end": 2578,
+   "label": "A",
+   "topic": "wild boar culling"
+  },
+  {
+   "start": 2578,
+   "end": 2736,
+   "label": "S",
+   "topic": "1991 brutal prison escape, guards killed"
+  },
+  {
+   "start": 2736,
+   "end": 2755,
+   "label": "N",
+   "topic": "advent"
+  },
+  {
+   "start": 2755,
+   "end": 2926,
+   "label": "N",
+   "topic": "krampus parade, programme, football result"
+  }
+ ],
+ "note": "story boundaries from ČT chapter marks"
+}

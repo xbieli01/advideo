@@ -30,6 +30,11 @@ class Detection:
     categories: list[str] = field(default_factory=list)
     # brand-safety severity for text/speech safety hits: high | medium | low (None for everything else)
     severity: str | None = None
+    # R8f: contexts in which this safety hit is dropped (e.g. ("sport",): "streľba", "útočník", "masaker" in a match report)
+    ambiguous_in: tuple[str, ...] = ()
+    # R8f: non-sensitive hit that may corroborate a sensitive one (war politics: "vojna" + "útok" -> sensitive,
+    # "vojna" + "armáda" alone -> category "war" only, blocked by the strict preset)
+    supports_sensitive: bool = False
 
 
 @dataclass

@@ -1,0 +1,172 @@
+{
+ "id": "stvr-spravy-20261120",
+ "source": "STVR Správy 20.11.2026 19:00 (https://www.stvr.sk/televizia/archiv/21274/630713)",
+ "language": "sk",
+ "durationSec": 3020.0,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT3 - never tune on it; human review recommended)",
+ "labels": "S = sensitive (no ads under Standard), W = war/military politics without violence (no ads only under Strict), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 45,
+   "label": "A",
+   "topic": "headlines (mixed, incl. Russian missiles over Poland)"
+  },
+  {
+   "start": 45,
+   "end": 190,
+   "label": "N",
+   "topic": "unemployment, labour market"
+  },
+  {
+   "start": 190,
+   "end": 281,
+   "label": "N",
+   "topic": "fuel prices"
+  },
+  {
+   "start": 281,
+   "end": 446,
+   "label": "N",
+   "topic": "prosecutor general, rules for candidates"
+  },
+  {
+   "start": 446,
+   "end": 495,
+   "label": "A",
+   "topic": "terror threat level unchanged after Krakow shooting"
+  },
+  {
+   "start": 495,
+   "end": 610,
+   "label": "S",
+   "topic": "40 students poisoned, helicopter rescue"
+  },
+  {
+   "start": 610,
+   "end": 834,
+   "label": "N",
+   "topic": "student protests across Europe"
+  },
+  {
+   "start": 834,
+   "end": 969,
+   "label": "N",
+   "topic": "Domaša reservoir drought"
+  },
+  {
+   "start": 969,
+   "end": 1005,
+   "label": "N",
+   "topic": "teaser: wolf quotas"
+  },
+  {
+   "start": 1005,
+   "end": 1136,
+   "label": "N",
+   "topic": "V4 health ministers"
+  },
+  {
+   "start": 1136,
+   "end": 1265,
+   "label": "N",
+   "topic": "EU-UK summit"
+  },
+  {
+   "start": 1265,
+   "end": 1375,
+   "label": "S",
+   "topic": "pedestrian-crossing collisions, one dead"
+  },
+  {
+   "start": 1375,
+   "end": 1440,
+   "label": "S",
+   "topic": "anniversary of the Tokajík massacre (WWII)"
+  },
+  {
+   "start": 1440,
+   "end": 1602,
+   "label": "N",
+   "topic": "Banská Štiavnica tajch water level, trains"
+  },
+  {
+   "start": 1602,
+   "end": 1731,
+   "label": "W",
+   "topic": "Russian missiles and drone landed in Poland, no casualties"
+  },
+  {
+   "start": 1731,
+   "end": 1800,
+   "label": "A",
+   "topic": "Russia-NATO diplomacy, brief mention of attacks on Kyiv"
+  },
+  {
+   "start": 1800,
+   "end": 1960,
+   "label": "N",
+   "topic": "tobacco sales to minors"
+  },
+  {
+   "start": 1960,
+   "end": 2221,
+   "label": "N",
+   "topic": "wolf culling quotas (DE, SK)"
+  },
+  {
+   "start": 2221,
+   "end": 2346,
+   "label": "N",
+   "topic": "science awards"
+  },
+  {
+   "start": 2346,
+   "end": 2448,
+   "label": "N",
+   "topic": "TV presenter anniversary"
+  },
+  {
+   "start": 2448,
+   "end": 2560,
+   "label": "N",
+   "topic": "UNICEF blue lights"
+  },
+  {
+   "start": 2560,
+   "end": 2698,
+   "label": "A",
+   "topic": "zoo hippo died after swallowing a cap"
+  },
+  {
+   "start": 2698,
+   "end": 2728,
+   "label": "N",
+   "topic": "COP31"
+  },
+  {
+   "start": 2728,
+   "end": 2826,
+   "label": "N",
+   "topic": "tunnel closures"
+  },
+  {
+   "start": 2826,
+   "end": 2858,
+   "label": "A",
+   "topic": "child rescued from septic tank, unharmed"
+  },
+  {
+   "start": 2858,
+   "end": 2987,
+   "label": "N",
+   "topic": "gift boxes for seniors"
+  },
+  {
+   "start": 2987,
+   "end": 3020,
+   "label": "N",
+   "topic": "programme trailer"
+  }
+ ]
+}

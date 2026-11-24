@@ -13,7 +13,7 @@ export const DYNAMIC_KEYS = [
   // buttons with computed labels
   'Create', 'Save',
   // brand-safety preset hints (platform edit)
-  'No ads in sensitive content, profanity or drug references.',
+  'No ads in sensitive content, profanity, drug references or war/military news (also without violence).',
   'Sensitive segments may carry ads when they are a news report; otherwise like Standard.',
   'No ads in sensitive content (violence, death, war, disasters, accidents, weapons, protests).',
   // shared/util errorMessage fallbacks

@@ -151,7 +151,7 @@ public sealed class AdMatcher(Taxonomy taxonomy)
     /// <summary>
     /// Brand-safety gate by preset (R8b). Returns the reason when the segment must not carry an ad.
     /// <see cref="BrandSafetySettings.AllowSensitive"/> (legacy switch) allows sensitive content in every preset;
-    /// strict still blocks profanity and drugs.
+    /// strict still blocks profanity, drugs and war politics (category "war" without "sensitive").
     /// </summary>
     public static string? BrandSafetyBlock(ContentSegment segment, BrandSafetySettings bs)
     {
