@@ -7,7 +7,8 @@ public sealed record RegisterVideoRequest(
     string VideoId,
     string VideoUri,
     string? Analyzer = null,
-    string? Track = null);
+    string? Track = null,
+    string? Languages = null);
 
 public sealed record JobResponse(
     string VideoId,
@@ -20,9 +21,10 @@ public sealed record JobResponse(
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
     int Attempts = 0,
-    DateTimeOffset? NextAttemptAt = null)
+    DateTimeOffset? NextAttemptAt = null,
+    string? Languages = null)
 {
     public static JobResponse From(VideoJob j) => new(
         j.VideoId, j.VideoUri, j.Analyzer, j.Track, j.Status.ToString(),
-        j.MapKey, j.Error, j.CreatedAt, j.UpdatedAt, j.Attempts, j.NextAttemptAt);
+        j.MapKey, j.Error, j.CreatedAt, j.UpdatedAt, j.Attempts, j.NextAttemptAt, j.Languages);
 }

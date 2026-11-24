@@ -37,6 +37,7 @@ def aggregate_segments(
     logo_min_support: int = 3,
     logo_strong_score: float = 0.97,
     text_safety_min_hits: int = 2,
+    text_safety_context: int = 1,
 ) -> list[Segment]:
     """Group timed detections into windows.
 
@@ -49,6 +50,8 @@ def aggregate_segments(
     wrong advertiser, so a logo must be seen in >= 3 frames of the window (or once almost certainly).
     Brand-safety hits from speech/OCR (R8b) count only if the window has one high-severity hit or at least
     `text_safety_min_hits` different medium/high hits ("killer feature" or one "attack" alone does not block ads).
+    R8d: medium hits may be corroborated by hits in the `text_safety_context` neighbouring windows on each side
+    (default 1 -> an 18 s span): in real news a story spreads its cues over several sentences ("zranený" … "smrť").
     """
     if window_sec <= 0:
         raise ValueError("window_sec must be > 0")
@@ -67,8 +70,10 @@ def aggregate_segments(
     if min_support > 1:
         for idx, dets in list(buckets.items()):
             buckets[idx] = _filter_support(dets, min_support, strong_score, logo_min_support, logo_strong_score)
+    context = {idx: _text_hits(dets) for idx, dets in buckets.items()}
     for idx, dets in list(buckets.items()):
-        buckets[idx] = _apply_text_safety(dets, text_safety_min_hits)
+        near = [h for j in range(idx - text_safety_context, idx + text_safety_context + 1) for h in context.get(j, [])]
+        buckets[idx] = _apply_text_safety(dets, text_safety_min_hits, near)
 
     segments: list[Segment] = []
     for idx in range(n_windows):
@@ -103,25 +108,39 @@ def _filter_support(
     return [(d, r) for d, r in dets if r or d.term in keep]
 
 
-def _apply_text_safety(dets: list[tuple[Detection, bool]], min_hits: int) -> list[tuple[Detection, bool]]:
-    """Drop medium-severity speech/OCR safety hits unless corroborated in the same window.
+def _phrase(d: Detection) -> str:
+    """Corroboration key: the matched phrase without source prefix; all semantic hits ("~war") share one key,
+    so the embedding classifier never corroborates itself (it repeats on routine police/court talk)."""
+    p = d.term.split(": ", 1)[-1]
+    return "~semantic" if p.startswith("~") else p
+
+
+def _text_hits(dets: list[tuple[Detection, bool]]) -> list[Detection]:
+    return [d for d, _ in dets if d.kind in _TEXT_SAFETY_KINDS and d.severity in ("medium", "high")]
+
+
+def _apply_text_safety(dets: list[tuple[Detection, bool]], min_hits: int,
+                       context: list[Detection] | None = None) -> list[tuple[Detection, bool]]:
+    """Drop medium-severity speech/OCR safety hits unless corroborated.
 
     low (profanity) is always kept (never sensitive). Sensitive hits and non-sensitive ones (drugs) are
-    corroborated separately: a group is kept when it has a high-severity hit or >= `min_hits` distinct matched
-    phrases (source prefix ignored, so the same word in speech and on screen counts once). A drugs word therefore
-    never turns a lone "victims" into a sensitive window.
+    corroborated separately: a group is kept when the window has a high-severity hit of it, or the window has a hit
+    and the window plus its `context` (hits of the neighbouring windows) hold >= `min_hits` distinct matched phrases
+    (source prefix ignored, so the same word in speech and on screen counts once). A drugs word therefore never turns
+    a lone "victims" into a sensitive window.
     """
     def group(d: Detection) -> bool:
         return "sensitive" in d.categories
 
-    text_hits = [d for d, _ in dets if d.kind in _TEXT_SAFETY_KINDS and d.severity in ("medium", "high")]
+    text_hits = _text_hits(dets)
     if not text_hits:
         return dets
+    pool = text_hits + list(context or [])
     keep_group: dict[bool, bool] = {}
     for g in (True, False):
-        hits = [d for d in text_hits if group(d) == g]
-        distinct = {d.term.split(": ", 1)[-1] for d in hits}
-        keep_group[g] = any(d.severity == "high" for d in hits) or len(distinct) >= max(1, min_hits)
+        own = [d for d in text_hits if group(d) == g]
+        distinct = {_phrase(d) for d in pool if group(d) == g}
+        keep_group[g] = bool(own) and (any(d.severity == "high" for d in own) or len(distinct) >= max(1, min_hits))
     return [(d, r) for d, r in dets
             if not (d.kind in _TEXT_SAFETY_KINDS and d.severity in ("medium", "high")) or keep_group[group(d)]]
 

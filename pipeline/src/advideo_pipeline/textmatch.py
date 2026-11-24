@@ -11,14 +11,17 @@ import unicodedata
 from functools import lru_cache
 
 from .models import Detection
-from .taxonomy import BRAND_LEXICON, NEWS_MARKERS, SAFETY_EXCLUSIONS, SAFETY_TERMS, TERM_CATEGORIES, SafetyTerm
+from . import languages
+from .languages import SafetyTerm
+from .taxonomy import BRAND_LEXICON, TERM_CATEGORIES
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
+_NO_NFKD = str.maketrans({"ß": "ss", "ł": "l", "Ł": "L", "đ": "d", "Đ": "D", "ø": "o", "Ø": "O", "æ": "ae", "œ": "oe"})
 
 
 def _strip_accents(text: str) -> str:
-    # "Zabitých" -> "Zabitych", "Überschwemmung" -> "Uberschwemmung" (ß -> ss)
-    text = text.replace("ß", "ss")
+    # "Zabitých" -> "Zabitych", "Überschwemmung" -> "Uberschwemmung" (ß -> ss), Polish ł -> l (no NFKD form)
+    text = text.translate(_NO_NFKD)
     return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
 
 
@@ -43,12 +46,19 @@ def match_brands(text: str) -> list[tuple[str, list[str]]]:
 
 
 def match_keywords(text: str) -> list[tuple[str, list[str]]]:
-    """Return [(term, categories)] for taxonomy terms present in `text`."""
+    """Return [(term, categories)] for taxonomy terms present in `text`.
+
+    Besides the (English) taxonomy terms, local words from the active language packs map to them
+    ("auto" -> "car" with the sk pack).
+    """
     norm = normalize(text)
     hits: dict[str, list[str]] = {}
     for term, cats in TERM_CATEGORIES.items():
         if _contains_phrase(norm, normalize(term)):
             hits[term] = cats
+    for local, term in languages.active().keywords.items():
+        if term not in hits and term in TERM_CATEGORIES and _contains_phrase(norm, normalize(local)):
+            hits[term] = TERM_CATEGORIES[term]
     return list(hits.items())
 
 
@@ -127,12 +137,13 @@ def match_safety(text: str) -> list[tuple[str, SafetyTerm]]:
     is never counted as two hits. Same surface form matched by several groups keeps the highest severity.
     """
     tokens = normalize(text).split()
+    langs = languages.active()
     cands: list[tuple[int, int, SafetyTerm]] = [
-        (a, b, st) for st in SAFETY_TERMS for a, b in _spans(tokens, st.phrase)
+        (a, b, st) for st in langs.safety_terms for a, b in _spans(tokens, st.phrase)
     ]
     cands.sort(key=lambda c: (-(c[1] - c[0]), -_SEV_RANK[c[2].severity]))
     # idioms ("zabili cas", "crash course") block every match inside them
-    taken: list[tuple[int, int]] = [sp for ex in SAFETY_EXCLUSIONS for sp in _spans(tokens, ex)]
+    taken: list[tuple[int, int]] = [sp for ex in langs.exclusions for sp in _spans(tokens, ex)]
     excluded = len(taken)
     hits: dict[str, SafetyTerm] = {}
     for a, b, st in cands:
@@ -179,7 +190,7 @@ def news_detections(text: str, kind: str, score: float) -> list[Detection]:
     tokens = normalize(text).split()
     source = _SOURCE_PREFIX.get(kind, kind)
     out: list[Detection] = []
-    for phrase in NEWS_MARKERS:
+    for phrase in languages.active().news_markers:
         found = _find(tokens, phrase)
         if found:
             out.append(Detection(term=f"{source}: {found}", score=score, kind="news",

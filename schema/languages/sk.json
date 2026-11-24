@@ -1,0 +1,367 @@
+{
+ "$comment": "Language pack 'sk': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "sk",
+ "name": "Slovenčina",
+ "whisper": "sk",
+ "ocr": "sk",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "zabil*",
+     "zabit*",
+     "zavrazd*",
+     "vrazd*",
+     "ubodal*",
+     "zastrelil*",
+     "zastreleny*",
+     "zastrelen*",
+     "strelba",
+     "strelbe",
+     "strelby",
+     "strielal* do ludi",
+     "zabila*",
+     "zabili",
+     "zabil",
+     "znasiln*",
+     "masaker",
+     "masakr*",
+     "postrelil*",
+     "prestrel*",
+     "dobodal*",
+     "usmrtil*",
+     "sexualne zneuzivan*",
+     "sexualne vykoristovan*"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "utok",
+     "utoku",
+     "napadol*",
+     "napadnut*",
+     "napaden*",
+     "bitka",
+     "nasilie",
+     "zraneny*",
+     "zranen*",
+     "ranen*",
+     "rvacka",
+     "strielal*",
+     "striela*",
+     "strelil* do",
+     "zrazil*",
+     "utocnik",
+     "utocnici",
+     "bitke",
+     "popalenin*",
+     "tyranie",
+     "vyhrazal*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "mrtvi",
+     "mrtvych",
+     "mrtve telo",
+     "zahynul*",
+     "zahynuli",
+     "obete nehody",
+     "prisli o zivot",
+     "usmrten*",
+     "na mieste zomrel*",
+     "zomreli dve",
+     "zomreli tri",
+     "mrtvych civilist*",
+     "obesil*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "zomrel*",
+     "mrtv*",
+     "umrti*",
+     "obete",
+     "obeti",
+     "smrt",
+     "pohreb",
+     "zomreli",
+     "zomrela",
+     "smrtel*",
+     "obetami",
+     "obetiach"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "bombardov*",
+     "ostrel*",
+     "invazi*",
+     "raketovy utok",
+     "raketovy uder",
+     "vojnove zlociny",
+     "balisticke strely",
+     "dronovy utok"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "vojna",
+     "vojny",
+     "vojne",
+     "vojnu",
+     "vojac*",
+     "armad*",
+     "raket*",
+     "drony",
+     "dronov",
+     "dronmi"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "teroris*",
+     "rukojem*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bomba",
+     "bombu",
+     "bomby",
+     "bombova hrozba",
+     "vybusnin*"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "tsunami",
+     "zemetrasen*",
+     "hurikan",
+     "letecke nestastie",
+     "letecka nehoda",
+     "zrutil*",
+     "poziar si vyziadal"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "povoden",
+     "povodne",
+     "povodni",
+     "zaplav*",
+     "evakuov*",
+     "evakuac*",
+     "vybuch",
+     "vybuchu",
+     "katastrof*",
+     "poziar*",
+     "vichric*",
+     "vietor strhol",
+     "hurikan*",
+     "troskach",
+     "troskami"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "high",
+    "terms": [
+     "tragick* nehod*",
+     "smrtel* nehod*",
+     "zrazil* chodca",
+     "vykolajil*"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "nehod*",
+     "havari*",
+     "zrazk*"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "zbran",
+     "zbrane",
+     "zbrani",
+     "pistol*",
+     "pusk*",
+     "granat*",
+     "strelec",
+     "ozbrojen*"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "heroin",
+     "kokain",
+     "predavkov*",
+     "drogy",
+     "drogami",
+     "drogovy*",
+     "drogov*"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "kurv*",
+     "jeban*",
+     "pica",
+     "zmrd*",
+     "hovno",
+     "sracka",
+     "picus"
+    ]
+   }
+  ],
+  "exclusions": [
+   "zabil* cas",
+   "zabit* cas",
+   "umrel* od smiechu",
+   "umrel* smiechom",
+   "ma zabil",
+   "to ma zabilo",
+   "utocnik slovana",
+   "utocnik sparty",
+   "utocil* po kridlach",
+   "hasicska stanica",
+   "hasicsky zbor",
+   "zabijat cas",
+   "zabijame cas",
+   "ma uplne zabil"
+  ]
+ },
+ "newsMarkers": [
+  "spravodaj*",
+  "reporter*",
+  "redaktor*",
+  "podla policie",
+  "policia uviedla",
+  "hovorca polici*",
+  "spravy z"
+ ],
+ "keywords": {
+  "auto": "car",
+  "auta": "car",
+  "autom": "car",
+  "automobil": "car",
+  "kamion": "truck",
+  "nakladne auto": "truck",
+  "autobus": "bus",
+  "motorka": "motorcycle",
+  "bicykel": "bicycle",
+  "cesta": "road",
+  "dialnica": "road",
+  "doprava": "traffic",
+  "beh": "running",
+  "tenisky": "sneakers",
+  "futbal": "playing football",
+  "tenis": "playing tennis",
+  "basketbal": "playing basketball",
+  "posilnovna": "gym",
+  "notebook": "laptop",
+  "mobil": "cell phone",
+  "telefon": "cell phone",
+  "televizor": "tv",
+  "pizza": "pizza",
+  "vino": "wine glass",
+  "flasa": "bottle",
+  "lietadlo": "airplane",
+  "lod": "boat",
+  "plaz": "beach",
+  "hory": "mountain",
+  "kabelka": "handbag",
+  "varenie": "cooking",
+  "varime": "cooking",
+  "torta": "cake",
+  "supermarket": "a supermarket",
+  "stadion": "a stadium"
+ },
+ "semanticSafety": {
+  "sensitive": {
+   "violence": [
+    "Muža zastrelili na ulici pred jeho domom.",
+    "Útočník dobodal obeť nožom a ušiel.",
+    "Pri prestrelke boli zranení dvaja policajti.",
+    "Brutálne napadnutie seniora vyšetruje polícia."
+   ],
+   "death": [
+    "Na následky zranení zomrel v nemocnici.",
+    "Telo muža našli rybári v jazere.",
+    "Rodiny smútia za obeťami tragédie.",
+    "Počet obetí naďalej stúpa."
+   ],
+   "war": [
+    "Delostrelectvo celú noc ostreľovalo obytné štvrte.",
+    "Vojaci postupujú k mestu pod silnou paľbou.",
+    "Tisíce civilistov utekajú pred bojmi.",
+    "Rakety zasiahli elektrárne, milióny ľudí sú bez prúdu.",
+    "Ozbrojenci obsadili letisko po niekoľkodňových bojoch."
+   ],
+   "terror": [
+    "Extrémisti sa prihlásili k útoku.",
+    "Útočníci zajali desiatky ľudí."
+   ],
+   "disaster": [
+    "Zemetrasenie zničilo tisíce domov.",
+    "Voda strhla autá aj domy.",
+    "Záchranári hľadajú preživších v troskách.",
+    "Lesný požiar zničil celé dediny.",
+    "Lavína zasypala skupinu turistov."
+   ],
+   "accident": [
+    "Auto narazilo do stromu, vodič neprežil.",
+    "Vlak sa zrazil s kamiónom na priecestí.",
+    "Autobus sa prevrátil na diaľnici."
+   ]
+  },
+  "neutral": [
+   "Tento telefón má skvelý fotoaparát a dlhú výdrž batérie.",
+   "Dnes varíme rýchle cestoviny s paradajkami.",
+   "Nové bežecké topánky sú ľahké a pohodlné.",
+   "Tím strelil gól v poslednej minúte a vyhral pohár.",
+   "Rezervujte si letnú dovolenku a ušetrite dvadsať percent.",
+   "V tejto hre bojujete s príšerami a vylepšujete svojho hrdinu.",
+   "Cez víkend ideme na túru do hôr.",
+   "Nové elektrické auto má dojazd päťsto kilometrov.",
+   "Zrekonštruovali sme kuchyňu s malým rozpočtom.",
+   "Koncert bol úžasný, publikum šalelo.",
+   "Fanúšikovia čakajú na posledný diel seriálu.",
+   "Počasie bude slnečné, večer prehánky.",
+   "Deti milujú toto ihrisko v parku.",
+   "Akcie na burze po rozhodnutí centrálnej banky stúpli.",
+   "Hasiči ukázali deťom svoje auto.",
+   "Vojaci pochodovali na prehliadke k štátnemu sviatku.",
+   "Do čerta, zase mi ušiel vlak."
+  ]
+ }
+}

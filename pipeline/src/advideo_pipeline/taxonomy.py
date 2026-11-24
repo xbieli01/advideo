@@ -31,12 +31,16 @@ def _locate() -> Path:
     )
 
 
+TAXONOMY_PATH: Path = _locate()
+
+
 def _load() -> dict:
-    with _locate().open(encoding="utf-8") as fh:
+    with TAXONOMY_PATH.open(encoding="utf-8") as fh:
         return json.load(fh)
 
 
 _DOC = _load()
+TAXONOMY: dict = _DOC
 
 CATEGORIES: list[str] = list(_DOC["categories"])
 
@@ -74,22 +78,31 @@ CLIP_BRAND_NEUTRAL: list[str] = list(_DOC.get("clipBrandNeutral", ["a photo with
 
 
 # --- brand safety from speech / on-screen text --------------------------------
-@dataclass(frozen=True)
-class SafetyTerm:
-    phrase: str          # as written in taxonomy.json (may contain * prefix tokens)
-    subtype: str         # violence | death | war | terror | disaster | accident | weapons | drugs | profanity
-    severity: str        # high | medium | low
-    sensitive: bool      # adds the "sensitive" category (blocked by the standard preset)
-
-
-SAFETY_TERMS: list[SafetyTerm] = [
-    SafetyTerm(term, g["subtype"], g["severity"], bool(g.get("sensitive", True)))
+# Group definitions only; the per-language terms live in schema/languages/<code>.json (see languages.py).
+SAFETY_GROUPS: dict[tuple[str, str], bool] = {
+    (g["subtype"], g["severity"]): bool(g.get("sensitive", True))
     for g in _DOC.get("safetyTerms", {}).get("groups", [])
-    for term in g["terms"]
-]
-SEMANTIC_SAFETY: dict = dict(_DOC.get("semanticSafety", {}))
-SAFETY_EXCLUSIONS: list[str] = list(_DOC.get("safetyTerms", {}).get("exclusions", []))
-NEWS_MARKERS: list[str] = list(_DOC.get("newsMarkers", {}).get("terms", []))
+}
+# model / topK / thresholds; prototypes come from the active language packs
+SEMANTIC_SAFETY_CONFIG: dict = {k: v for k, v in _DOC.get("semanticSafety", {}).items() if not k.startswith("$")}
+
+
+def __getattr__(name: str):
+    """Backward compatibility: lexicon constants now come from the active language packs."""
+    from . import languages
+
+    if name == "SafetyTerm":
+        return languages.SafetyTerm
+    langs = languages.active()
+    if name == "SAFETY_TERMS":
+        return list(langs.safety_terms)
+    if name == "SAFETY_EXCLUSIONS":
+        return list(langs.exclusions)
+    if name == "NEWS_MARKERS":
+        return list(langs.news_markers)
+    if name == "SEMANTIC_SAFETY":
+        return {**SEMANTIC_SAFETY_CONFIG, "sensitive": langs.semantic_sensitive, "neutral": langs.semantic_neutral}
+    raise AttributeError(name)
 
 
 def categories_for(term: str) -> list[str]:

@@ -1,0 +1,201 @@
+{
+ "id": "stvr-spravy-20261123",
+ "source": "STVR Správy RTVS 23.11.2026 (main news)",
+ "durationSec": 3031.1,
+ "annotatedBy": "Claude (story-level, from Whisper-small transcript; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 45,
+   "label": "A",
+   "topic": "headlines (mixed, incl. NATO incident)"
+  },
+  {
+   "start": 45,
+   "end": 189,
+   "label": "N",
+   "topic": "nursery places"
+  },
+  {
+   "start": 189,
+   "end": 346,
+   "label": "N",
+   "topic": "ageing workforce"
+  },
+  {
+   "start": 346,
+   "end": 480,
+   "label": "N",
+   "topic": "hospital budgets"
+  },
+  {
+   "start": 480,
+   "end": 590,
+   "label": "N",
+   "topic": "V4 summit"
+  },
+  {
+   "start": 590,
+   "end": 640,
+   "label": "A",
+   "topic": "EU sanctions on Russia"
+  },
+  {
+   "start": 640,
+   "end": 780,
+   "label": "S",
+   "topic": "Russian missiles over Poland, NATO"
+  },
+  {
+   "start": 780,
+   "end": 863,
+   "label": "N",
+   "topic": "criminal complaint over expenses"
+  },
+  {
+   "start": 863,
+   "end": 959,
+   "label": "N",
+   "topic": "drought funding"
+  },
+  {
+   "start": 959,
+   "end": 992,
+   "label": "A",
+   "topic": "unknown substance at school"
+  },
+  {
+   "start": 992,
+   "end": 1123,
+   "label": "N",
+   "topic": "court case testimony"
+  },
+  {
+   "start": 1123,
+   "end": 1155,
+   "label": "S",
+   "topic": "teaser: Hormuz attacks, violence against women"
+  },
+  {
+   "start": 1155,
+   "end": 1286,
+   "label": "S",
+   "topic": "femicide, violence against women"
+  },
+  {
+   "start": 1286,
+   "end": 1320,
+   "label": "N",
+   "topic": "flu season"
+  },
+  {
+   "start": 1320,
+   "end": 1476,
+   "label": "N",
+   "topic": "farmers' aid"
+  },
+  {
+   "start": 1476,
+   "end": 1606,
+   "label": "N",
+   "topic": "COP31"
+  },
+  {
+   "start": 1606,
+   "end": 1636,
+   "label": "S",
+   "topic": "attacks on ships, US-Iran war"
+  },
+  {
+   "start": 1636,
+   "end": 1764,
+   "label": "N",
+   "topic": "tuberculosis screening"
+  },
+  {
+   "start": 1764,
+   "end": 1891,
+   "label": "N",
+   "topic": "digital skills"
+  },
+  {
+   "start": 1891,
+   "end": 1923,
+   "label": "N",
+   "topic": "new mayor"
+  },
+  {
+   "start": 1923,
+   "end": 2048,
+   "label": "N",
+   "topic": "school breakfasts"
+  },
+  {
+   "start": 2048,
+   "end": 2190,
+   "label": "N",
+   "topic": "documentary film"
+  },
+  {
+   "start": 2190,
+   "end": 2210,
+   "label": "N",
+   "topic": "teaser: thefts"
+  },
+  {
+   "start": 2210,
+   "end": 2347,
+   "label": "S",
+   "topic": "drone strike on apartment block, ship sunk"
+  },
+  {
+   "start": 2347,
+   "end": 2470,
+   "label": "N",
+   "topic": "V4 press conference"
+  },
+  {
+   "start": 2470,
+   "end": 2600,
+   "label": "N",
+   "topic": "hospital thefts"
+  },
+  {
+   "start": 2600,
+   "end": 2730,
+   "label": "N",
+   "topic": "railway cable thefts"
+  },
+  {
+   "start": 2730,
+   "end": 2760,
+   "label": "A",
+   "topic": "runaway wagon, no injuries"
+  },
+  {
+   "start": 2760,
+   "end": 2850,
+   "label": "N",
+   "topic": "TV history"
+  },
+  {
+   "start": 2850,
+   "end": 2890,
+   "label": "N",
+   "topic": "space probe"
+  },
+  {
+   "start": 2890,
+   "end": 2990,
+   "label": "N",
+   "topic": "concert tour"
+  },
+  {
+   "start": 2990,
+   "end": 3032,
+   "label": "N",
+   "topic": "outro / programme"
+  }
+ ]
+}

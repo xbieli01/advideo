@@ -1,0 +1,267 @@
+{
+ "$comment": "Language pack 'hu': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "hu",
+ "name": "Magyar",
+ "whisper": "hu",
+ "ocr": "hu",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "meggyilkol*",
+     "gyilkossag*",
+     "lelott*",
+     "leszurt*",
+     "lovoldoz*",
+     "meszarlas*",
+     "agyonvert*",
+     "megolt*",
+     "megeroszak*"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "tamad*",
+     "eroszak*",
+     "megsebesult*",
+     "sebesult*",
+     "verekedes*",
+     "bantalmaz*",
+     "megvert*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "halalos aldozat*",
+     "holttest*",
+     "eletet vesztette",
+     "eletuket vesztett*",
+     "eletet vesztett*",
+     "szornyethalt"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "meghalt*",
+     "elhunyt*",
+     "halal*",
+     "aldozat*",
+     "temetes*"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "legicsapas*",
+     "bombaz*",
+     "agyuz*",
+     "invazio*",
+     "haborus bun*",
+     "frontvonal*",
+     "raketatamadas*"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "haboru*",
+     "katona*",
+     "hadsereg*",
+     "raket*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "terror*",
+     "tusz*",
+     "robbantas*",
+     "merenylet*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bomba",
+     "bombat",
+     "bombariado*",
+     "robbanoanyag*"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "foldrenges*",
+     "cunami",
+     "hurrikan*",
+     "repulogep lezuhan*",
+     "osszeomlott*"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "arviz*",
+     "erdotuz*",
+     "robbanas*",
+     "evakual*",
+     "katasztrof*",
+     "tuzvesz*",
+     "leegett*",
+     "tuz utott ki"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "high",
+    "terms": [
+     "halalos baleset*",
+     "frontalis utkozes*",
+     "elutott*",
+     "kisiklott*"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "baleset*",
+     "karambol*",
+     "utkozes*"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "fegyver*",
+     "pisztoly*",
+     "puska*",
+     "loszer*",
+     "granat*",
+     "fegyveres*"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "kokain*",
+     "heroin*",
+     "tuladagolas*",
+     "drog*",
+     "kabitoszer*"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "kurva*",
+     "bazdmeg",
+     "geci",
+     "fasz*"
+    ]
+   }
+  ],
+  "exclusions": [
+   "tuzoltosag*",
+   "tuzolto auto",
+   "agyonnyom* a munka",
+   "halalosan unalmas",
+   "halalra rohog*"
+  ]
+ },
+ "newsMarkers": [
+  "hirado",
+  "tudosito*",
+  "a rendorseg szerint",
+  "rendorsegi szovivo",
+  "hirek",
+  "riporter*"
+ ],
+ "keywords": {
+  "auto": "car",
+  "autot": "car",
+  "kamion": "truck",
+  "teherauto": "truck",
+  "busz": "bus",
+  "motor": "motorcycle",
+  "bicikli": "bicycle",
+  "kerekpar": "bicycle",
+  "ut": "road",
+  "autopalya": "road",
+  "forgalom": "traffic",
+  "futas": "running",
+  "sportcipo": "sneakers",
+  "foci": "playing football",
+  "labdarugas": "playing football",
+  "tenisz": "playing tennis",
+  "kosarlabda": "playing basketball",
+  "edzoterem": "gym",
+  "laptop": "laptop",
+  "mobil": "cell phone",
+  "telefon": "cell phone",
+  "tevé": "tv",
+  "pizza": "pizza",
+  "bor": "wine glass",
+  "uveg": "bottle",
+  "repulo": "airplane",
+  "repulogep": "airplane",
+  "hajo": "boat",
+  "strand": "beach",
+  "hegyek": "mountain",
+  "taska": "handbag",
+  "fozes": "cooking",
+  "torta": "cake",
+  "szupermarket": "a supermarket",
+  "stadion": "a stadium"
+ },
+ "semanticSafety": {
+  "sensitive": {
+   "violence": [
+    "Egy férfit lelőttek az utcán.",
+    "A támadó késsel megszúrta az áldozatot."
+   ],
+   "death": [
+    "A balesetben hárman életüket vesztették.",
+    "Egy férfi holttestét találták meg a tóban."
+   ],
+   "war": [
+    "Rakéták csapódtak be a lakónegyedbe.",
+    "A katonák heves tűzharcban nyomulnak előre."
+   ],
+   "terror": [
+    "Bomba robbant a zsúfolt pályaudvaron."
+   ],
+   "disaster": [
+    "A földrengés több ezer otthont rombolt le.",
+    "A mentők túlélőket keresnek a romok alatt."
+   ],
+   "accident": [
+    "Az autó fának ütközött, a sofőr meghalt."
+   ]
+  },
+  "neutral": [
+   "Ez a telefon nagyszerű kamerával rendelkezik.",
+   "Ma gyors tésztát főzünk paradicsommal.",
+   "A csapat az utolsó percben gólt szerzett.",
+   "Hétvégén kirándulni megyünk a hegyekbe.",
+   "Holnap napos idő várható."
+  ]
+ }
+}

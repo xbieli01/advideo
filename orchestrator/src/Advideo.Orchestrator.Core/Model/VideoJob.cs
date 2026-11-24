@@ -29,6 +29,9 @@ public sealed record VideoJob
     /// <summary>Track backends, e.g. "whisper". Optional.</summary>
     public string? Track { get; init; }
 
+    /// <summary>Language packs for speech/OCR, e.g. "sk,cs,en" (schema/languages). Null = pipeline default.</summary>
+    public string? Languages { get; init; }
+
     public JobStatus Status { get; init; } = JobStatus.Queued;
 
     /// <summary>Key of the produced content map in the object store, once completed.</summary>

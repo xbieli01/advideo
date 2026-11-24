@@ -34,9 +34,26 @@ public static partial class VideoRules
         }
         return null;
     }
+
+    [GeneratedRegex("^[a-z]{2,3}(,[a-z]{2,3})*$")]
+    private static partial Regex LanguagesPattern();
+
+    /// <summary>Normalizes "SK, cs" to "sk,cs"; null/empty = pipeline default.</summary>
+    public static string? NormalizeLanguages(string? languages) =>
+        string.IsNullOrWhiteSpace(languages) ? null
+            : string.Join(',', languages.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(l => l.ToLowerInvariant()));
+
+    /// <summary>Comma list of language-pack codes (schema/languages/&lt;code&gt;.json), e.g. "sk,cs,en", or "all".</summary>
+    public static string? ValidateLanguages(string? languages)
+    {
+        var norm = NormalizeLanguages(languages);
+        if (norm is null || norm == "all") return null;
+        return LanguagesPattern().IsMatch(norm) ? null : "languages must be a comma list of language codes, e.g. \"sk,cs,en\"";
+    }
 }
 
-public sealed record BulkVideoItem(string? VideoId, string? VideoUri, string? Analyzer = null, string? Track = null);
+public sealed record BulkVideoItem(string? VideoId, string? VideoUri, string? Analyzer = null, string? Track = null, string? Languages = null);
 
 /// <summary>
 /// Catalogue import. Items without analyzer/track use the batch defaults. Without <c>Force</c>,
@@ -47,7 +64,8 @@ public sealed record BulkRegisterRequest(
     IReadOnlyList<BulkVideoItem>? Items,
     string? Analyzer = null,
     string? Track = null,
-    bool Force = false);
+    bool Force = false,
+    string? Languages = null);
 
 public sealed record BulkItemResult(int Index, string? VideoId, string Reason);
 

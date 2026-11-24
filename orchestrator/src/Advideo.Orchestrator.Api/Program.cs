@@ -33,7 +33,8 @@ builder.Services.AddSingleton<IJobQueue>(_ => new ChannelJobQueue(
 builder.Services.AddSingleton(new CliPipelineRunnerOptions
 {
     Command = builder.Configuration.GetValue("Pipeline:Command", "advideo-analyze")!,
-    TimeoutSeconds = builder.Configuration.GetValue("Pipeline:TimeoutSeconds", 3600)
+    TimeoutSeconds = builder.Configuration.GetValue("Pipeline:TimeoutSeconds", 3600),
+    DefaultLanguages = builder.Configuration.GetValue<string?>("Pipeline:DefaultLanguages")
 });
 builder.Services.AddSingleton<IPipelineRunner, CliPipelineRunner>();
 
@@ -213,7 +214,7 @@ var videos = app.MapGroup("/videos").RequireAuthorization(ApiKeyDefaults.AdminPo
 
 videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQueue queue) =>
 {
-    if ((VideoRules.ValidateId(req.VideoId) ?? VideoRules.ValidateUri(req.VideoUri)) is { } error)
+    if ((VideoRules.ValidateId(req.VideoId) ?? VideoRules.ValidateUri(req.VideoUri) ?? VideoRules.ValidateLanguages(req.Languages)) is { } error)
         return Results.BadRequest(new { error });
 
     var job = new VideoJob
@@ -222,6 +223,7 @@ videos.MapPost("", async (RegisterVideoRequest req, IJobRepository repo, IJobQue
         VideoUri = req.VideoUri,
         Analyzer = string.IsNullOrWhiteSpace(req.Analyzer) ? "yolo+clip" : req.Analyzer!,
         Track = req.Track,
+        Languages = VideoRules.NormalizeLanguages(req.Languages),
         Status = JobStatus.Queued
     };
     await repo.UpsertAsync(job);
@@ -234,6 +236,7 @@ videos.MapPost("/bulk", async (BulkRegisterRequest req, IJobRepository repo, IJo
 {
     var items = req.Items ?? [];
     if (items.Count == 0) return Results.BadRequest(new { error = "items must contain at least one video" });
+    if (VideoRules.ValidateLanguages(req.Languages) is { } langError) return Results.BadRequest(new { error = langError });
     if (items.Count > VideoRules.MaxBulkItems)
         return Results.BadRequest(new { error = $"at most {VideoRules.MaxBulkItems} items per request (got {items.Count}); split the catalogue" });
 
@@ -247,7 +250,7 @@ videos.MapPost("/bulk", async (BulkRegisterRequest req, IJobRepository repo, IJo
         var it = items[i];
         var id = it.VideoId?.Trim();
         var uri = it.VideoUri?.Trim();
-        if ((VideoRules.ValidateId(id) ?? VideoRules.ValidateUri(uri)) is { } error)
+        if ((VideoRules.ValidateId(id) ?? VideoRules.ValidateUri(uri) ?? VideoRules.ValidateLanguages(it.Languages)) is { } error)
         {
             invalid.Add(new BulkItemResult(i, id, error));
             continue;
@@ -277,6 +280,7 @@ videos.MapPost("/bulk", async (BulkRegisterRequest req, IJobRepository repo, IJo
             VideoUri = uri!,
             Analyzer = analyzer,
             Track = FirstNonEmpty(it.Track, req.Track),
+            Languages = VideoRules.NormalizeLanguages(FirstNonEmpty(it.Languages, req.Languages)),
             Status = JobStatus.Queued,
             CreatedAt = existing?.CreatedAt ?? DateTimeOffset.UtcNow
         };

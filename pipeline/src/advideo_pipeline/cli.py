@@ -33,10 +33,20 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--window-sec", type=float, default=6.0, help="segment window length")
     p.add_argument("--duration-sec", type=float, default=None,
                    help="override duration (skip ffprobe)")
+    p.add_argument("--languages", default=None,
+                   help="language packs, comma-separated (e.g. sk,cs,en; 'all'); default: ADVIDEO_LANGUAGES or taxonomy")
     args = p.parse_args(argv)
 
     def _split(v):
         return [x.strip() for x in v.split(",") if x.strip()] if v else None
+
+    if args.languages:
+        from . import languages
+
+        try:
+            languages.set_languages(languages.available_languages() if args.languages == "all" else args.languages)
+        except ValueError as exc:
+            p.error(str(exc))
 
     try:
         with materialize(args.video) as local_path:

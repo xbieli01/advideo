@@ -1,0 +1,105 @@
+{
+ "id": "joj-krimi-20261123",
+ "source": "TV JOJ Krimi 23.11.2026 (crime news)",
+ "durationSec": 1383.4,
+ "annotatedBy": "Claude (story-level, from Whisper-small transcript; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 74,
+   "label": "S",
+   "topic": "headlines: fatal accident, burns, planned murder"
+  },
+  {
+   "start": 74,
+   "end": 190,
+   "label": "S",
+   "topic": "lumberjack killed by tree"
+  },
+  {
+   "start": 190,
+   "end": 293,
+   "label": "S",
+   "topic": "woman with burns, sexual exploitation"
+  },
+  {
+   "start": 293,
+   "end": 319,
+   "label": "S",
+   "topic": "intoxication of students"
+  },
+  {
+   "start": 319,
+   "end": 460,
+   "label": "N",
+   "topic": "rockfall road restrictions"
+  },
+  {
+   "start": 460,
+   "end": 663,
+   "label": "S",
+   "topic": "prison massacre anniversary"
+  },
+  {
+   "start": 663,
+   "end": 689,
+   "label": "N",
+   "topic": "teasers"
+  },
+  {
+   "start": 689,
+   "end": 820,
+   "label": "S",
+   "topic": "planned double murder"
+  },
+  {
+   "start": 820,
+   "end": 854,
+   "label": "N",
+   "topic": "customs seizure"
+  },
+  {
+   "start": 854,
+   "end": 986,
+   "label": "N",
+   "topic": "truck & bus police checks"
+  },
+  {
+   "start": 986,
+   "end": 1018,
+   "label": "S",
+   "topic": "concert evacuation, irritant"
+  },
+  {
+   "start": 1018,
+   "end": 1042,
+   "label": "A",
+   "topic": "army detonation plan"
+  },
+  {
+   "start": 1042,
+   "end": 1069,
+   "label": "S",
+   "topic": "factory fire, 24 dead"
+  },
+  {
+   "start": 1069,
+   "end": 1186,
+   "label": "N",
+   "topic": "intruder sleeping in empty house"
+  },
+  {
+   "start": 1186,
+   "end": 1346,
+   "label": "N",
+   "topic": "drunk man rolls stone ball"
+  },
+  {
+   "start": 1346,
+   "end": 1384,
+   "label": "A",
+   "topic": "outro, next show teaser (drones)"
+  }
+ ]
+}

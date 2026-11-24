@@ -1,0 +1,283 @@
+{
+ "$comment": "Language pack 'pl': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "pl",
+ "name": "Polski",
+ "whisper": "pl",
+ "ocr": "pl",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "zabil*",
+     "zabity*",
+     "zabojstw*",
+     "zamordowa*",
+     "zastrzel*",
+     "zadzgal*",
+     "strzelanin*",
+     "masakr*",
+     "zgwalc*",
+     "pobity na smierc"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "atak",
+     "ataku",
+     "napad*",
+     "napadniet*",
+     "przemoc*",
+     "ranny",
+     "ranni",
+     "ranna",
+     "rannych",
+     "pobit*",
+     "bojka",
+     "bojki",
+     "strzelal*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "ofiary smiertelne",
+     "zwloki",
+     "cialo",
+     "nie zyje",
+     "nie zyja",
+     "zginal*",
+     "zginel*",
+     "zginely",
+     "stracil* zycie",
+     "stracili zycie"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "zmarl*",
+     "smierc*",
+     "ofiar*",
+     "pogrzeb*"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "nalot*",
+     "bombardowa*",
+     "ostrzal*",
+     "inwazj*",
+     "zbrodni* wojenn*",
+     "linia frontu",
+     "atak rakietowy"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "wojn*",
+     "wojsk*",
+     "zolnierz*",
+     "armi*",
+     "rakiet*",
+     "drony",
+     "dronow"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "terroryst*",
+     "zamach*",
+     "zakladnik*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bomba",
+     "bombe",
+     "bomby",
+     "alarm bombowy",
+     "materialy wybuchowe"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "trzesienie ziemi",
+     "tsunami",
+     "huragan*",
+     "katastrofa lotnicza",
+     "zawalil* sie",
+     "zawalenie"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "powodz*",
+     "zalan*",
+     "pozar*",
+     "eksplozj*",
+     "wybuch*",
+     "ewakuacj*",
+     "ewakuowa*",
+     "katastrof*"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "high",
+    "terms": [
+     "smiertelny wypadek",
+     "smiertelnym wypadku",
+     "czolowe zderzenie",
+     "potracil*",
+     "wykoleil*"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "wypadek",
+     "wypadku",
+     "wypadki",
+     "wypadkow",
+     "kolizj*",
+     "zderzeni*"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "bron",
+     "broni",
+     "pistolet*",
+     "karabin*",
+     "amunicj*",
+     "granat*",
+     "uzbrojon*"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "kokain*",
+     "heroin*",
+     "przedawkowa*",
+     "narkotyk*"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "kurw*",
+     "jeban*",
+     "pierdol*",
+     "chuj*",
+     "gowno"
+    ]
+   }
+  ],
+  "exclusions": [
+   "straz pozarna",
+   "strazy pozarnej",
+   "zabic czas",
+   "zabijac czas",
+   "zabija czas",
+   "bomba cenowa"
+  ]
+ },
+ "newsMarkers": [
+  "wiadomosci",
+  "reporter*",
+  "korespondent*",
+  "wedlug policji",
+  "rzecznik policji",
+  "fakty"
+ ],
+ "keywords": {
+  "samochod": "car",
+  "auto": "car",
+  "ciezarowka": "truck",
+  "autobus": "bus",
+  "motocykl": "motorcycle",
+  "rower": "bicycle",
+  "droga": "road",
+  "autostrada": "road",
+  "ruch drogowy": "traffic",
+  "bieganie": "running",
+  "sneakersy": "sneakers",
+  "pilka nozna": "playing football",
+  "tenis": "playing tennis",
+  "koszykowka": "playing basketball",
+  "silownia": "gym",
+  "laptop": "laptop",
+  "komorka": "cell phone",
+  "telefon": "cell phone",
+  "telewizor": "tv",
+  "pizza": "pizza",
+  "wino": "wine glass",
+  "butelka": "bottle",
+  "samolot": "airplane",
+  "lodz": "boat",
+  "plaza": "beach",
+  "gory": "mountain",
+  "torebka": "handbag",
+  "gotowanie": "cooking",
+  "ciasto": "cake",
+  "supermarket": "a supermarket",
+  "stadion": "a stadium"
+ },
+ "semanticSafety": {
+  "sensitive": {
+   "violence": [
+    "Mężczyzna został zastrzelony na ulicy.",
+    "Napastnik dźgnął ofiarę nożem."
+   ],
+   "death": [
+    "W tragedii zginęły trzy osoby.",
+    "Ciało mężczyzny znaleziono w jeziorze."
+   ],
+   "war": [
+    "Rakiety uderzyły w dzielnice mieszkalne.",
+    "Żołnierze nacierają pod silnym ostrzałem."
+   ],
+   "terror": [
+    "Na zatłoczonym dworcu wybuchła bomba."
+   ],
+   "disaster": [
+    "Trzęsienie ziemi zniszczyło tysiące domów.",
+    "Ratownicy szukają ocalałych w gruzach."
+   ],
+   "accident": [
+    "Samochód uderzył w drzewo, kierowca zginął."
+   ]
+  },
+  "neutral": [
+   "Ten telefon ma świetny aparat.",
+   "Dziś gotujemy szybki makaron z pomidorami.",
+   "Drużyna strzeliła gola w ostatniej minucie.",
+   "W weekend idziemy w góry.",
+   "Jutro będzie słonecznie."
+  ]
+ }
+}

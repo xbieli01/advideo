@@ -1,0 +1,199 @@
+{
+ "$comment": "Language pack 'de': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "de",
+ "name": "Deutsch",
+ "whisper": "de",
+ "ocr": "de",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "getotet",
+     "ermordet",
+     "erstochen",
+     "erschossen",
+     "massaker",
+     "schusse"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "angriff",
+     "gewalt",
+     "verletzt",
+     "verletzte",
+     "schlagerei"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "todesopfer",
+     "leiche",
+     "ums leben gekommen"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "gestorben",
+     "tote",
+     "tod",
+     "opfer"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "luftangriff",
+     "bombardierung",
+     "kriegsverbrechen"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "krieg",
+     "soldaten",
+     "armee",
+     "rakete*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "anschlag",
+     "geisel*",
+     "selbstmordattentater"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bombendrohung",
+     "sprengstoff"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "erdbeben",
+     "flugzeugabsturz",
+     "eingesturzt"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "hochwasser",
+     "uberschwemmung*",
+     "waldbrand",
+     "evakuiert",
+     "katastrophe"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "high",
+    "terms": [
+     "todlicher unfall",
+     "frontalzusammenstoss",
+     "entgleist"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "unfall",
+     "zusammenstoss",
+     "kollision"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "waffe",
+     "waffen",
+     "pistole",
+     "gewehr",
+     "bewaffnet*",
+     "schutze"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "uberdosis",
+     "drogen"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "scheisse",
+     "arschloch",
+     "fick*"
+    ]
+   }
+  ],
+  "exclusions": [
+   "totgelacht"
+  ]
+ },
+ "newsMarkers": [
+  "nachrichten",
+  "tagesschau",
+  "korrespondent*",
+  "laut polizei",
+  "polizeisprecher"
+ ],
+ "keywords": {
+  "auto": "car",
+  "wagen": "car",
+  "lkw": "truck",
+  "lastwagen": "truck",
+  "bus": "bus",
+  "motorrad": "motorcycle",
+  "fahrrad": "bicycle",
+  "strasse": "road",
+  "autobahn": "road",
+  "verkehr": "traffic",
+  "laufen": "running",
+  "turnschuhe": "sneakers",
+  "fussball": "playing football",
+  "tennis": "playing tennis",
+  "basketball": "playing basketball",
+  "fitnessstudio": "gym",
+  "laptop": "laptop",
+  "handy": "cell phone",
+  "fernseher": "tv",
+  "pizza": "pizza",
+  "wein": "wine glass",
+  "flasche": "bottle",
+  "flugzeug": "airplane",
+  "boot": "boat",
+  "strand": "beach",
+  "berge": "mountain",
+  "handtasche": "handbag",
+  "kochen": "cooking",
+  "kuchen": "cake",
+  "supermarkt": "a supermarket",
+  "stadion": "a stadium"
+ }
+}

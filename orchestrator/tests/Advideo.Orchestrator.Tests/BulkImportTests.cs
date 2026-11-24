@@ -42,7 +42,7 @@ public class BulkImportTests : IClassFixture<WebApplicationFactory<Program>>
 
     private sealed record ItemResult(int index, string? videoId, string reason);
     private sealed record BulkResult(int received, int queued, List<string> queuedIds, List<ItemResult> skipped, List<ItemResult> invalid);
-    private sealed record JobDto(string videoId, string status, string analyzer, string? track);
+    private sealed record JobDto(string videoId, string status, string analyzer, string? track, string? languages = null);
 
     private static async Task WaitAllCompleted(HttpClient c, params string[] ids)
     {
@@ -134,5 +134,32 @@ public class BulkImportTests : IClassFixture<WebApplicationFactory<Program>>
         var anon = _factory.CreateClient();
         var resp = await anon.PostAsJsonAsync("/videos/bulk", new { items = new[] { new { videoId = "a", videoUri = "/a.mp4" } } });
         Assert.Equal(HttpStatusCode.Unauthorized, resp.StatusCode);
+    }
+
+    [Fact]
+    public async Task Languages_are_normalized_inherited_and_validated()
+    {
+        var c = _factory.AdminClient();
+        var resp = await c.PostAsJsonAsync("/videos/bulk", new
+        {
+            analyzer = "mock",
+            languages = "SK, cs",
+            items = new object[]
+            {
+                new { videoId = "lang-1", videoUri = "/v/1.mp4" },
+                new { videoId = "lang-2", videoUri = "/v/2.mp4", languages = "hu" },
+                new { videoId = "lang-3", videoUri = "/v/3.mp4", languages = "hungarian!" },
+            }
+        });
+        var r = (await resp.Content.ReadFromJsonAsync<BulkResult>())!;
+        Assert.Equal(new[] { "lang-1", "lang-2" }, r.queuedIds);
+        Assert.Contains("languages", r.invalid.Single().reason);
+        Assert.Equal("sk,cs", (await c.GetFromJsonAsync<JobDto>("/videos/lang-1"))!.languages);
+        Assert.Equal("hu", (await c.GetFromJsonAsync<JobDto>("/videos/lang-2"))!.languages);
+
+        var single = await c.PostAsJsonAsync("/videos", new { videoId = "lang-4", videoUri = "/v/4.mp4", analyzer = "mock", languages = "pl,en" });
+        Assert.Equal(HttpStatusCode.Accepted, single.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest,
+            (await c.PostAsJsonAsync("/videos", new { videoId = "lang-5", videoUri = "/v/5.mp4", languages = "p l" })).StatusCode);
     }
 }

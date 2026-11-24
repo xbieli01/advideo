@@ -1,0 +1,269 @@
+{
+ "$comment": "Language pack 'cs': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "cs",
+ "name": "Čeština",
+ "whisper": "cs",
+ "ocr": "cs",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "zabil*",
+     "zabit*",
+     "zavrazd*",
+     "vrazd*",
+     "zastrelil*",
+     "zastreleny*",
+     "zastrelen*",
+     "strelba",
+     "strelbe",
+     "strelby",
+     "strilel* do lidi",
+     "zabila*",
+     "zabili",
+     "zabil",
+     "znasiln*",
+     "masaker",
+     "masakr*",
+     "postrelil*",
+     "prestrel*",
+     "dobodal*",
+     "usmrtil*",
+     "sexualne zneuzivan*",
+     "sexualni vykoristovan*"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "utok",
+     "utoku",
+     "napaden*",
+     "bitka",
+     "nasili",
+     "zraneny*",
+     "zranen*",
+     "ranen*",
+     "strilel*",
+     "srazil*",
+     "utocnik",
+     "utocnici",
+     "popalenin*",
+     "tyrani",
+     "vyhrozoval*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "mrtvi",
+     "mrtvych",
+     "mrtve telo",
+     "zahynul*",
+     "zahynuli",
+     "prisli o zivot",
+     "pripadl o zivot",
+     "usmrten*",
+     "na miste zemrel*",
+     "obesil*"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "zemrel*",
+     "mrtv*",
+     "umrti*",
+     "obeti",
+     "smrt",
+     "pohreb",
+     "smrtel*",
+     "obetmi",
+     "obetech"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "bombardov*",
+     "ostrel*",
+     "invazi*",
+     "raketovy utok",
+     "valecne zlociny",
+     "balisticke strely",
+     "dronovy utok"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "vojac*",
+     "armad*",
+     "valka",
+     "valky",
+     "valce",
+     "raket*",
+     "drony",
+     "dronu"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "teroris*",
+     "rukojm*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bomba",
+     "bombu",
+     "bomby",
+     "bombova hrozba",
+     "vybusnin*"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "tsunami",
+     "zemetresen*",
+     "hurikan",
+     "letecka nehoda",
+     "zrutil*",
+     "pozar si vyzadal"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "evakuov*",
+     "evakuac*",
+     "vybuch",
+     "vybuchu",
+     "katastrof*",
+     "pozar*",
+     "hurikan*",
+     "troskach",
+     "troskami"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "nehod*",
+     "havari*",
+     "zrazk*"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "zbran",
+     "zbrane",
+     "zbrani",
+     "pistol*",
+     "pusk*",
+     "granat*",
+     "strelec",
+     "ozbrojen*"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "heroin",
+     "kokain",
+     "predavkov*",
+     "drogy",
+     "drogami",
+     "drogovy*",
+     "drogov*"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "kurv*",
+     "jeban*",
+     "pica",
+     "zmrd*",
+     "hovno",
+     "sracka"
+    ]
+   }
+  ],
+  "exclusions": [
+   "zabil* cas",
+   "zabit* cas",
+   "umrel* od smiechu",
+   "umrel* smiechom",
+   "ma zabil",
+   "to ma zabilo",
+   "utocnik slovana",
+   "utocnik sparty",
+   "utocil* po kridlach",
+   "zabijet cas",
+   "hasicska stanice",
+   "hasicsky sbor"
+  ]
+ },
+ "newsMarkers": [
+  "reporter*",
+  "redaktor*",
+  "zpravodaj*",
+  "podle policie",
+  "mluvci polici*",
+  "zpravy"
+ ],
+ "keywords": {
+  "auto": "car",
+  "auta": "car",
+  "autem": "car",
+  "kamion": "truck",
+  "autobus": "bus",
+  "motorka": "motorcycle",
+  "kolo": "bicycle",
+  "silnice": "road",
+  "dalnice": "road",
+  "doprava": "traffic",
+  "beh": "running",
+  "tenisky": "sneakers",
+  "fotbal": "playing football",
+  "tenis": "playing tennis",
+  "basketbal": "playing basketball",
+  "posilovna": "gym",
+  "notebook": "laptop",
+  "mobil": "cell phone",
+  "telefon": "cell phone",
+  "televize": "tv",
+  "pizza": "pizza",
+  "vino": "wine glass",
+  "lahev": "bottle",
+  "letadlo": "airplane",
+  "lod": "boat",
+  "plaz": "beach",
+  "hory": "mountain",
+  "kabelka": "handbag",
+  "vareni": "cooking",
+  "dort": "cake",
+  "supermarket": "a supermarket",
+  "stadion": "a stadium"
+ }
+}

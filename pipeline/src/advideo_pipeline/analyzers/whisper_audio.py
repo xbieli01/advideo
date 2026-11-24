@@ -25,14 +25,17 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
 
     def __init__(
         self,
-        model_size: str = "base",
+        model_size: str | None = None,
         device: str | None = None,
         compute_type: str = "auto",
-        language: str | None = None,
+        language: str | None = "",
         semantic_safety: "bool | object | None" = None,
     ) -> None:
         """`semantic_safety`: None = on when enabled by env (ADVIDEO_SEMANTIC_SAFETY, default on) and the
-        model can be loaded; False = off; or a ready SemanticSafety instance (shared across videos)."""
+        model can be loaded; False = off; or a ready SemanticSafety instance (shared across videos).
+        `model_size`: faster-whisper model; None = ADVIDEO_WHISPER_MODEL or "base" (R8d: "small" transcribes
+        Slovak news far better, ~3x slower on CPU). `language`: "" = from the language packs
+        (ADVIDEO_WHISPER_LANGUAGE, or the only active pack), None = auto-detect, or an explicit code."""
         from faster_whisper import WhisperModel  # lazy
 
         dev = device
@@ -43,7 +46,14 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
                 dev = "cuda" if torch.cuda.is_available() else "cpu"
             except ImportError:
                 dev = "cpu"
-        self._model = WhisperModel(model_size, device=dev, compute_type=compute_type)
+        import os
+
+        self.model_size = model_size or os.environ.get("ADVIDEO_WHISPER_MODEL", "").strip() or "base"
+        self._model = WhisperModel(self.model_size, device=dev, compute_type=compute_type)
+        if language == "":
+            from ..languages import whisper_language
+
+            language = whisper_language()
         self.language = language
         self._semantic_spec = semantic_safety
         self._semantic = semantic_safety if semantic_safety not in (None, True, False) else None

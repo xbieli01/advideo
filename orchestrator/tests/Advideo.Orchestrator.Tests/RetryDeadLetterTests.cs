@@ -246,4 +246,25 @@ public class CliPipelineRunnerExitCodeTests
         var ex = await Assert.ThrowsAsync<PipelineFailureException>(() => Runner("/nonexistent/advideo-analyze").RunAsync(Job));
         Assert.False(ex.Transient);
     }
+
+    [Theory]
+    [InlineData(null, null, "")]
+    [InlineData(null, "sk,cs,en", "--languages sk,cs,en")]
+    [InlineData("hu", "sk,cs,en", "--languages hu")]
+    public async Task Languages_are_passed_to_the_pipeline(string? jobLanguages, string? defaults, string expected)
+    {
+        if (OperatingSystem.IsWindows()) return;
+        // fake pipeline: writes its own argv as the "map" so the test can inspect it
+        var script = Script("""
+            out=""; prev=""; for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done
+            printf '{"args":"%s"}' "$*" > "$out"
+            """);
+        var runner = new Advideo.Orchestrator.Infrastructure.Pipeline.CliPipelineRunner(
+            new Advideo.Orchestrator.Infrastructure.Pipeline.CliPipelineRunnerOptions { Command = script, DefaultLanguages = defaults },
+            NullLogger<Advideo.Orchestrator.Infrastructure.Pipeline.CliPipelineRunner>.Instance);
+        await using var map = await runner.RunAsync(Job with { Languages = jobLanguages });
+        var args = await new StreamReader(map).ReadToEndAsync();
+        if (expected == "") Assert.DoesNotContain("--languages", args);
+        else Assert.Contains(expected, args);
+    }
 }

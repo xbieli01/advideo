@@ -2,13 +2,15 @@
 
 The lexicon (textmatch.safety_detections) is precise but misses paraphrases ("rescuers are digging through
 the rubble", "zraneniam podľahol"). This classifier embeds each Whisper segment with a multilingual
-sentence-embedding model and compares it with short example sentences from ``schema/taxonomy.json``
-(``semanticSafety``): sensitive prototypes per subtype vs. everyday neutral prototypes.
+sentence-embedding model and compares it with short example sentences of the active language packs
+(``schema/languages/<code>.json`` ``semanticSafety``): sensitive prototypes per subtype vs. everyday neutral ones.
+Model, top-k and thresholds are in ``schema/taxonomy.json`` ``semanticSafety``.
 
     score = mean(top-k cosine to sensitive) - mean(top-k cosine to neutral)
 
 score >= ``thresholds.high`` -> a high-severity hit (marks the 6 s window alone), >= ``thresholds.medium`` ->
-medium (the window needs one more hit, e.g. a lexicon word). Hits are ``safety_speech`` detections with the
+medium (needs a lexicon hit in the window or a neighbouring one; semantic hits never corroborate each other —
+R8d real-broadcast finding: the classifier repeats on routine police/court talk). Hits are ``safety_speech`` detections with the
 term ``speech: ~<subtype>`` so aggregate's window rule combines them with lexicon hits.
 
 Heavy deps (torch, transformers) load lazily; set ``ADVIDEO_SEMANTIC_SAFETY=0`` to disable.
@@ -21,7 +23,8 @@ import os
 from dataclasses import dataclass
 
 from .models import Detection
-from .taxonomy import SEMANTIC_SAFETY
+from . import languages
+from .taxonomy import SEMANTIC_SAFETY_CONFIG
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +43,9 @@ def enabled_by_env() -> bool:
 class SemanticSafety:
     def __init__(self, model_name: str | None = None, device: str | None = None,
                  high: float | None = None, medium: float | None = None, top_k: int | None = None):
-        cfg = SEMANTIC_SAFETY
+        cfg = SEMANTIC_SAFETY_CONFIG
+        langs = languages.active()  # prototypes of the active language packs
+        self.languages = langs.codes
         self.model_name = model_name or cfg.get("model", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
         th = cfg.get("thresholds", {})
         self.high = float(high if high is not None else th.get("high", 0.2))
@@ -57,12 +62,12 @@ class SemanticSafety:
 
         self._pos_labels: list[str] = []
         pos_texts: list[str] = []
-        for subtype, examples in cfg.get("sensitive", {}).items():
+        for subtype, examples in langs.semantic_sensitive.items():
             pos_texts += examples
             self._pos_labels += [subtype] * len(examples)
-        neg_texts = list(cfg.get("neutral", []))
+        neg_texts = list(langs.semantic_neutral)
         if not pos_texts or not neg_texts:
-            raise ValueError("taxonomy semanticSafety needs 'sensitive' and 'neutral' examples")
+            raise ValueError("active language packs have no semanticSafety 'sensitive'/'neutral' examples")
         self._pos = self.embed(pos_texts)
         self._neg = self.embed(neg_texts)
 

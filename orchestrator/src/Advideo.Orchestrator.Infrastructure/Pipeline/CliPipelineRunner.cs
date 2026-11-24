@@ -11,6 +11,8 @@ public sealed class CliPipelineRunnerOptions
     public string Command { get; set; } = "advideo-analyze";
     /// <summary>Seconds before a single analysis is abandoned.</summary>
     public int TimeoutSeconds { get; set; } = 3600;
+    /// <summary>Language packs for jobs without their own (e.g. "sk,cs,en"); empty = pipeline default (taxonomy / ADVIDEO_LANGUAGES).</summary>
+    public string? DefaultLanguages { get; set; }
 }
 
 /// <summary>
@@ -47,6 +49,11 @@ public sealed class CliPipelineRunner : IPipelineRunner
         if (!string.IsNullOrWhiteSpace(job.Track))
         {
             psi.ArgumentList.Add("--track"); psi.ArgumentList.Add(job.Track);
+        }
+        var languages = string.IsNullOrWhiteSpace(job.Languages) ? _opt.DefaultLanguages : job.Languages;
+        if (!string.IsNullOrWhiteSpace(languages))
+        {
+            psi.ArgumentList.Add("--languages"); psi.ArgumentList.Add(languages);
         }
         psi.ArgumentList.Add("--out"); psi.ArgumentList.Add(outPath);
 

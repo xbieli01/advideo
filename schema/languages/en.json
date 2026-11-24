@@ -1,0 +1,340 @@
+{
+ "$comment": "Language pack 'en': lexicons matched on normalized text (lowercase, no diacritics; trailing * = prefix). Enabled via taxonomy.json languages.enabled or ADVIDEO_LANGUAGES.",
+ "code": "en",
+ "name": "English",
+ "whisper": "en",
+ "ocr": "en",
+ "safetyTerms": {
+  "groups": [
+   {
+    "subtype": "violence",
+    "severity": "high",
+    "terms": [
+     "killed",
+     "murdered",
+     "murder",
+     "stabbed",
+     "stabbing",
+     "shot dead",
+     "beaten to death",
+     "massacre",
+     "homicide",
+     "mass shooting",
+     "knife attack",
+     "shots fired",
+     "shooter",
+     "opened fire",
+     "tear gas",
+     "riot police"
+    ]
+   },
+   {
+    "subtype": "violence",
+    "severity": "medium",
+    "terms": [
+     "attack",
+     "attacked",
+     "assault",
+     "violence",
+     "violent",
+     "bloody",
+     "injured",
+     "wounded",
+     "beaten",
+     "brawl",
+     "clashed",
+     "clashes",
+     "standoff"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "high",
+    "terms": [
+     "death toll",
+     "dead bodies",
+     "fatalities",
+     "corpse",
+     "bodies were found",
+     "died in",
+     "lost their lives",
+     "bodies of",
+     "dozens dead",
+     "are dead",
+     "civilians are dead"
+    ]
+   },
+   {
+    "subtype": "death",
+    "severity": "medium",
+    "terms": [
+     "died",
+     "dead",
+     "death",
+     "deaths",
+     "funeral",
+     "victims",
+     "bodies"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "high",
+    "terms": [
+     "airstrike",
+     "air strike",
+     "airstrikes",
+     "bombing",
+     "shelling",
+     "missile strike",
+     "war crimes",
+     "invasion",
+     "front line",
+     "frontline"
+    ]
+   },
+   {
+    "subtype": "war",
+    "severity": "medium",
+    "terms": [
+     "war",
+     "troops",
+     "soldiers",
+     "military",
+     "army",
+     "missile",
+     "missiles"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "high",
+    "terms": [
+     "terrorist",
+     "terrorists",
+     "terror attack",
+     "terrorist attack",
+     "suicide bomber",
+     "hostage",
+     "hostages",
+     "car bomb",
+     "terrorist*"
+    ]
+   },
+   {
+    "subtype": "terror",
+    "severity": "medium",
+    "terms": [
+     "bomb threat",
+     "bomb scare",
+     "explosives"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "high",
+    "terms": [
+     "earthquake",
+     "hurricane",
+     "flood victims",
+     "plane crash",
+     "building collapsed",
+     "trail of destruction",
+     "collapsed building",
+     "collapsed apartment"
+    ]
+   },
+   {
+    "subtype": "disaster",
+    "severity": "medium",
+    "terms": [
+     "flood",
+     "flooding",
+     "floods",
+     "wildfire",
+     "explosion",
+     "evacuated",
+     "evacuation",
+     "disaster",
+     "fire broke out",
+     "blaze",
+     "tornado",
+     "storm damage",
+     "house fire",
+     "building on fire"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "high",
+    "terms": [
+     "fatal crash",
+     "fatal accident",
+     "car crash",
+     "head on collision",
+     "train derailed",
+     "hit by a car"
+    ]
+   },
+   {
+    "subtype": "accident",
+    "severity": "medium",
+    "terms": [
+     "accident",
+     "crash",
+     "crashed",
+     "collision"
+    ]
+   },
+   {
+    "subtype": "weapons",
+    "severity": "medium",
+    "terms": [
+     "gun",
+     "guns",
+     "rifle",
+     "pistol",
+     "firearm",
+     "firearms",
+     "ammunition",
+     "grenade",
+     "gunman"
+    ]
+   },
+   {
+    "subtype": "drugs",
+    "severity": "medium",
+    "terms": [
+     "cocaine",
+     "overdose",
+     "drug dealer",
+     "meth"
+    ]
+   },
+   {
+    "subtype": "profanity",
+    "severity": "low",
+    "terms": [
+     "motherfucker",
+     "shit",
+     "bullshit",
+     "asshole",
+     "bitch",
+     "fuck*"
+    ]
+   }
+  ],
+  "exclusions": [
+   "killer feature",
+   "killer app",
+   "crash course",
+   "fire sale",
+   "battery died",
+   "phone died",
+   "dead simple",
+   "dead tired",
+   "murdered that",
+   "murdered the",
+   "killed it",
+   "kill two birds",
+   "fire station",
+   "fire department",
+   "fire brigade",
+   "fire truck",
+   "fire engine",
+   "fire fighters",
+   "firefighter training",
+   "salvation army",
+   "army surplus"
+  ]
+ },
+ "newsMarkers": [
+  "breaking news",
+  "reporter",
+  "correspondent",
+  "according to police",
+  "police said",
+  "officials said",
+  "live from",
+  "news report",
+  "newsroom"
+ ],
+ "keywords": {},
+ "semanticSafety": {
+  "sensitive": {
+   "violence": [
+    "A man was shot dead in the street last night.",
+    "The victim was stabbed several times and died at the scene.",
+    "Gunmen opened fire on a crowd, wounding many people.",
+    "He was beaten so badly that he ended up in intensive care.",
+    "Police are investigating the brutal murder of a young woman.",
+    "Witnesses described hearing several shots before the man collapsed."
+   ],
+   "death": [
+    "Three people lost their lives in the tragedy.",
+    "The body was found in a lake by local fishermen.",
+    "He died of his injuries in hospital.",
+    "Families are mourning the victims of the disaster.",
+    "The number of dead continues to rise.",
+    "She did not survive the attack."
+   ],
+   "war": [
+    "Artillery shelled residential areas throughout the night.",
+    "Troops advanced towards the city under heavy fire.",
+    "Missiles hit power plants, leaving millions without electricity.",
+    "Fighting between the armies has displaced thousands of civilians.",
+    "Rebels seized control of the airport after days of battles."
+   ],
+   "terror": [
+    "A bomb exploded in a crowded train station.",
+    "Extremists claimed responsibility for the bombing.",
+    "The attackers took dozens of people hostage.",
+    "Security forces stormed the building where the gunmen were hiding.",
+    "Na preplnenej stanici vybuchla bomba."
+   ],
+   "disaster": [
+    "The earthquake destroyed thousands of homes.",
+    "Floodwaters swept away cars and houses.",
+    "Rescuers are digging through the rubble looking for survivors.",
+    "The wildfire has burned through entire villages.",
+    "An avalanche buried a group of hikers."
+   ],
+   "accident": [
+    "The car crashed into a tree and the driver was killed.",
+    "A train collided with a truck at a level crossing.",
+    "The plane went down shortly after take off.",
+    "A bus overturned on the motorway, injuring dozens."
+   ]
+  },
+  "neutral": [
+   "This smartphone has an amazing camera and a long battery life.",
+   "Today we are cooking a quick pasta with tomatoes and basil.",
+   "Our new running shoes are light and comfortable.",
+   "The team scored in the last minute and won the cup.",
+   "Book your summer holiday now and save twenty percent.",
+   "In this game you battle monsters and level up your hero.",
+   "Let's go for a hike in the mountains this weekend.",
+   "The new electric car has a range of five hundred kilometres.",
+   "Here are my favourite skincare products this month.",
+   "We renovated our kitchen on a small budget.",
+   "The concert was amazing, the crowd went crazy.",
+   "This trailer for the new action movie looks epic.",
+   "Fans are waiting for the final episode of the series.",
+   "The striker shot the ball into the top corner.",
+   "Our killer deal ends tonight, don't miss it.",
+   "He nailed the guitar solo, the audience exploded.",
+   "The weather will be sunny with some showers in the evening.",
+   "I unboxed the new laptop and it is incredibly fast.",
+   "Kids love this playground at the park.",
+   "Stock markets rose after the central bank decision.",
+   "The documentary shows the history of the old castle.",
+   "Learn how to fix a flat bike tyre in five minutes.",
+   "The firefighters showed the children their fire truck.",
+   "Soldiers marched in the parade on national day.",
+   "Damn, I missed the bus again, this day is terrible.",
+   "Oh no, I spilled coffee all over my laptop.",
+   "Ugh, my team lost again, I'm so angry.",
+   "Sorry for the bad language, I was really frustrated."
+  ]
+ }
+}

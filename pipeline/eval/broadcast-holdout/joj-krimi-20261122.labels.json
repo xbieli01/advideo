@@ -1,0 +1,93 @@
+{
+ "id": "joj-krimi-20261122",
+ "source": "TV JOJ Krimi 22.11.2026 (crime news)",
+ "durationSec": 1378.2,
+ "annotatedBy": "Claude (story-level, labelled before any evaluation run; HOLDOUT - never tune on it; human review recommended)",
+ "labels": "S = sensitive story (no ads under Standard), N = safe for ads, A = ambiguous (not scored)",
+ "stories": [
+  {
+   "start": 0,
+   "end": 56,
+   "label": "A",
+   "topic": "headlines (mixed)"
+  },
+  {
+   "start": 56,
+   "end": 164,
+   "label": "S",
+   "topic": "head-on crash, injured driver"
+  },
+  {
+   "start": 164,
+   "end": 276,
+   "label": "A",
+   "topic": "attacks on hospital staff, gendarmes"
+  },
+  {
+   "start": 276,
+   "end": 395,
+   "label": "A",
+   "topic": "restaurant scuffle"
+  },
+  {
+   "start": 395,
+   "end": 510,
+   "label": "N",
+   "topic": "phishing e-mails, tax office"
+  },
+  {
+   "start": 510,
+   "end": 687,
+   "label": "S",
+   "topic": "woman killed by drunk driver, memorial"
+  },
+  {
+   "start": 687,
+   "end": 709,
+   "label": "A",
+   "topic": "teasers (bomb threat)"
+  },
+  {
+   "start": 709,
+   "end": 840,
+   "label": "S",
+   "topic": "bomb threats at hospital and school"
+  },
+  {
+   "start": 840,
+   "end": 869,
+   "label": "N",
+   "topic": "missing teenager appeal"
+  },
+  {
+   "start": 869,
+   "end": 990,
+   "label": "N",
+   "topic": "burglar disturbed at parish"
+  },
+  {
+   "start": 990,
+   "end": 1020,
+   "label": "N",
+   "topic": "mountain rescue of exhausted hiker"
+  },
+  {
+   "start": 1020,
+   "end": 1140,
+   "label": "N",
+   "topic": "one-lane bridge traffic"
+  },
+  {
+   "start": 1140,
+   "end": 1330,
+   "label": "N",
+   "topic": "electric-vehicle fires, firefighting tips"
+  },
+  {
+   "start": 1330,
+   "end": 1384,
+   "label": "N",
+   "topic": "outro / next show"
+  }
+ ]
+}

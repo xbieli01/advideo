@@ -29,14 +29,15 @@ class OcrBrandAnalyzer(Analyzer):
 
     def __init__(
         self,
-        languages: tuple[str, ...] = ("en",),
+        languages: tuple[str, ...] | None = None,
         gpu: bool | None = None,
         min_confidence: float = 0.4,
         interval_sec: float = 2.0,
         max_side: int = 960,
     ) -> None:
         """`interval_sec`: run OCR at most this often (text/logos stay on screen for seconds; OCR is the
-        slowest backend). `max_side`: downscale frames whose longer side exceeds this (0 = off)."""
+        slowest backend). `max_side`: downscale frames whose longer side exceeds this (0 = off).
+        `languages`: EasyOCR codes; None = from the active language packs (ADVIDEO_OCR_LANGUAGES / ADVIDEO_LANGUAGES)."""
         import easyocr  # lazy
 
         from ..device import pick_device
@@ -45,7 +46,12 @@ class OcrBrandAnalyzer(Analyzer):
         dev = pick_device()
         use_gpu = (dev if dev != "cpu" else False) if gpu is None else gpu
         self.device = dev if use_gpu else "cpu"
-        self._reader = easyocr.Reader(list(languages), gpu=use_gpu)
+        if languages is None:
+            from ..languages import ocr_languages
+
+            languages = tuple(ocr_languages())
+        self.languages = tuple(languages)
+        self._reader = easyocr.Reader(list(self.languages), gpu=use_gpu)
         self.min_confidence = min_confidence
         self.interval_sec = interval_sec
         self.max_side = max_side
