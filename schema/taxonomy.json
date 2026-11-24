@@ -963,13 +963,19 @@
     ]
   },
   "semanticSafety": {
-    "$comment": "R8c: multilingual sentence-embedding classifier over Whisper transcript segments, on top of the lexicon. Runtime examples are ONLY the prototypes of the enabled language packs (languages/<code>.json semanticSafety; packs without prototypes fall back to 'en'). score = mean top-k cosine to 'sensitive' prototypes - mean top-k cosine to 'neutral' prototypes; score >= thresholds.high -> severity high (marks the window alone), >= thresholds.medium -> severity medium (needs one more hit, e.g. a lexicon word). Thresholds are chosen on the tuning set (pipeline/eval/text_safety_cases.json) by pipeline/eval/semantic_safety_eval.py — never on the held-out sets. R8d: thresholds.high raised to 0.32 after the real-broadcast eval (pipeline/eval/broadcast_safety_eval.py): below it a semantic hit is medium and needs a lexicon word within +-1 window.",
+    "$comment": "R8c: multilingual sentence-embedding classifier over Whisper transcript segments, on top of the lexicon. Runtime examples are ONLY the prototypes of the enabled language packs (languages/<code>.json semanticSafety; packs without prototypes fall back to 'en'). score = mean top-k cosine to 'sensitive' prototypes - mean top-k cosine to 'neutral' prototypes; score >= thresholds.high -> severity high (marks the window alone), >= thresholds.medium -> severity medium (needs one more hit, e.g. a lexicon word). Thresholds are chosen on the tuning set (pipeline/eval/text_safety_cases.json) by pipeline/eval/semantic_safety_eval.py — never on the held-out sets. R8d: thresholds.high raised to 0.32 after the real-broadcast eval (pipeline/eval/broadcast_safety_eval.py): below it a semantic hit is medium and needs a lexicon word within +-1 window. R8e: unit 'chunk' classifies sliding ~24 s story chunks (chunk.spanSec / strideSec, maxTokens) instead of single Whisper segments — on the R8d dev broadcasts the crime-news false-block rate fell 0.069 -> 0.010 at the same story recall; thresholds.medium 0.18 (high unchanged 0.32). 'segment' restores the R8c behaviour.",
     "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
     "topK": 3,
     "thresholds": {
       "high": 0.32,
-      "medium": 0.14
-    }
+      "medium": 0.18
+    },
+    "unit": "chunk",
+    "chunk": {
+      "spanSec": 24,
+      "strideSec": 8
+    },
+    "maxTokens": 256
   },
   "languages": {
     "$comment": "Language packs in schema/languages/<code>.json (safety lexicon, news markers, local keyword synonyms, semantic prototypes, Whisper/OCR codes). 'enabled' is the default set; override with ADVIDEO_LANGUAGES=sk,hu,pl (or 'all'). Add a language = add a pack file.",

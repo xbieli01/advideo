@@ -35,9 +35,10 @@ from advideo_pipeline.textmatch import safety_detections  # noqa: E402
 
 def detections(segments: list[dict], semantic) -> list[tuple[float, float, object]]:
     out = []
-    sem = semantic.detections([s["text"] for s in segments]) if semantic else [[] for _ in segments]
-    for seg, sd in zip(segments, sem):
-        for d in list(sd) + safety_detections(seg["text"], kind="audio", score=0.8):
+    if semantic:  # same path as WhisperAudioAnalyzer: story chunks or segments per taxonomy semanticSafety.unit
+        out += semantic.track_detections([(float(s["start"]), float(s["end"]), s["text"]) for s in segments])
+    for seg in segments:
+        for d in safety_detections(seg["text"], kind="audio", score=0.8):
             out.append((float(seg["start"]), float(seg["end"]), d))
     return out
 
@@ -87,6 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--context", type=int, default=1, help="neighbouring windows used for corroboration (0 = R8b rule)")
     ap.add_argument("--sem-high", type=float, help="override semantic high threshold")
     ap.add_argument("--sem-medium", type=float, help="override semantic medium threshold")
+    ap.add_argument("--unit", choices=["chunk", "segment"], help="override semanticSafety.unit")
     args = ap.parse_args(argv)
 
     semantic = None
@@ -95,6 +97,8 @@ def main(argv: list[str] | None = None) -> int:
         if mode == "semantic" and semantic is None:
             from advideo_pipeline.semantic_safety import SemanticSafety
             semantic = SemanticSafety(high=args.sem_high, medium=args.sem_medium)
+            if args.unit:
+                semantic.unit = args.unit
         for lf in sorted(Path(args.labels).glob("*.labels.json")):
             labels = json.loads(lf.read_text())
             tf = Path(args.transcripts).expanduser() / f"{labels['id']}.json"

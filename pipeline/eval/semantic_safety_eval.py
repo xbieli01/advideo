@@ -56,12 +56,15 @@ def metrics(cases, hits, high, medium) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--search", action="store_true")
+    ap.add_argument("--high", type=float, help="override thresholds.high")
+    ap.add_argument("--medium", type=float, help="override thresholds.medium")
     args = ap.parse_args()
     sem = SemanticSafety()
     tuning = load(TUNING)
     t_hits = sem.classify([c["text"] for c in tuning])
 
-    high, medium = sem.high, sem.medium
+    high = args.high if args.high is not None else sem.high
+    medium = args.medium if args.medium is not None else sem.medium
     if args.search:
         # semantic-only, on the tuning set: thresholds sit a fixed margin above the highest score of a SAFE case
         # (high must never fire on everyday speech; medium only counts together with another hit)

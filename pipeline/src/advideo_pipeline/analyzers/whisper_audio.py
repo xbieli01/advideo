@@ -84,16 +84,19 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
             log.warning("whisper: audio of %s could not be decoded (%s), skipped", video_path, exc)
             return []
         semantic = self._semantic_classifier()
-        semantic_hits = (semantic.detections([seg.text or "" for seg in segments],
-                                             [_avg_logprob_to_score(getattr(seg, "avg_logprob", None)) for seg in segments])
-                         if semantic and segments else [[] for _ in segments])
-        for seg, sem_dets in zip(segments, semantic_hits):
+        if semantic and segments:
+            confs = [_avg_logprob_to_score(getattr(seg, "avg_logprob", None)) for seg in segments]
+            timed = [(float(seg.start), float(seg.end), seg.text or "") for seg in segments]
+            if hasattr(semantic, "track_detections"):
+                out.extend(semantic.track_detections(timed, confs))  # R8e: story chunks (or segments)
+            else:  # duck-typed classifiers with only detections(): per segment
+                for (a, b, _), ds in zip(timed, semantic.detections([t for _, _, t in timed], confs)):
+                    out.extend((a, b, d) for d in ds)
+        for seg in segments:
             text = seg.text or ""
             start = float(seg.start)
             end = float(seg.end)
             score = _avg_logprob_to_score(getattr(seg, "avg_logprob", None))
-            for det in sem_dets:  # R8c: paraphrases the lexicon misses ("speech: ~war")
-                out.append((start, end, det))
             for det in brand_detections(text, kind="audio", score=score):
                 out.append((start, end, det))
             for det in keyword_detections(text, kind="audio", score=score):

@@ -30,6 +30,38 @@ log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
+class Chunk:
+    start: float
+    end: float
+    text: str
+
+
+def build_chunks(segments: list[tuple[float, float, str]], span_sec: float, stride_sec: float) -> list[Chunk]:
+    """R8e: sliding story chunks over transcript segments.
+
+    A chunk starts every `stride_sec` and holds the segments that *start* within the next `span_sec`
+    (so overlapping chunks share segments); identical chunks are dropped. Short Whisper segments alone are too
+    little context — routine police talk ("the police are investigating") looked like violence — while a
+    ~24 s chunk carries the story.
+    """
+    segs = sorted((float(a), float(b), (t or "").strip()) for a, b, t in segments if (t or "").strip())
+    if not segs or span_sec <= 0 or stride_sec <= 0:
+        return []
+    out: list[Chunk] = []
+    seen: set[tuple[float, float, int]] = set()
+    t, last = 0.0, max(b for _, b, _ in segs)
+    while t < last:
+        cur = [s for s in segs if t <= s[0] < t + span_sec]
+        if cur:
+            key = (cur[0][0], cur[-1][0], len(cur))
+            if key not in seen:
+                seen.add(key)
+                out.append(Chunk(cur[0][0], max(b for _, b, _ in cur), " ".join(x for _, _, x in cur)))
+        t += stride_sec
+    return out
+
+
+@dataclass(frozen=True)
 class SemanticHit:
     score: float
     subtype: str
@@ -51,6 +83,12 @@ class SemanticSafety:
         self.high = float(high if high is not None else th.get("high", 0.2))
         self.medium = float(medium if medium is not None else th.get("medium", 0.12))
         self.top_k = int(top_k or cfg.get("topK", 3))
+        # R8e: "chunk" = classify ~24 s story chunks (default), "segment" = each Whisper segment (R8c behaviour)
+        ch = cfg.get("chunk", {})
+        self.unit = str(cfg.get("unit", "segment")).lower()
+        self.chunk_span = float(ch.get("spanSec", 24))
+        self.chunk_stride = float(ch.get("strideSec", 8))
+        self.max_length = int(cfg.get("maxTokens", 256 if self.unit == "chunk" else 128))
 
         import torch
         from transformers import AutoModel, AutoTokenizer
@@ -75,7 +113,7 @@ class SemanticSafety:
         torch = self._torch
         out = []
         for i in range(0, len(texts), batch_size):
-            b = self._tok(texts[i:i + batch_size], padding=True, truncation=True, max_length=128, return_tensors="pt")
+            b = self._tok(texts[i:i + batch_size], padding=True, truncation=True, max_length=getattr(self, "max_length", 128), return_tensors="pt")
             b = {k: v.to(self.device) for k, v in b.items()}
             with torch.no_grad():
                 h = self._model(**b).last_hidden_state
@@ -121,6 +159,22 @@ class SemanticSafety:
                 severity=h.severity,
             )])
         return out
+
+    def chunk_detections(self, segments: list[tuple[float, float, str]],
+                         confidence: float = 0.8) -> list[tuple[float, float, Detection]]:
+        """R8e: classify sliding story chunks; each hit spans its chunk (aggregate adds it to every 6 s window
+        it overlaps, where the usual severity rules apply: high alone, medium needs a lexicon word)."""
+        chunks = build_chunks(segments, self.chunk_span, self.chunk_stride)
+        dets = self.detections([c.text for c in chunks], [confidence] * len(chunks))
+        return [(c.start, c.end, d) for c, ds in zip(chunks, dets) for d in ds]
+
+    def track_detections(self, segments: list[tuple[float, float, str]],
+                         confidences: list[float] | None = None) -> list[tuple[float, float, Detection]]:
+        """Timed semantic detections for a whole transcript, per the configured unit (chunk | segment)."""
+        if self.unit == "chunk":
+            return self.chunk_detections(segments)
+        per = self.detections([t for _, _, t in segments], confidences)
+        return [(a, b, d) for (a, b, _), ds in zip(segments, per) for d in ds]
 
     def close(self) -> None:
         self._model = None
