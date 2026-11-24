@@ -68,8 +68,8 @@ def test_ocr_interval_resets_for_a_new_video():
     a.min_confidence, a.interval_sec, a.max_side, a._next_t, a._last_t = 0.4, 2.0, 0, 0.0, -1.0
 
     class Reader:
-        def readtext(self, img):
-            calls.append(1)
+        def readtext(self, img, **kw):
+            calls.append(kw)
             return []
 
     a._reader = Reader()
@@ -77,6 +77,51 @@ def test_ocr_interval_resets_for_a_new_video():
     for t in (0, 1, 2, 3, 4, 0, 1, 2):  # second video starts at t=0
         a.analyze(Frame(time_sec=float(t), image=img))
     assert len(calls) == 3 + 2
+
+
+def _ocr_with_fake_reader(static_diff=4.0):
+    from advideo_pipeline.analyzers.ocr import OcrBrandAnalyzer
+
+    a = OcrBrandAnalyzer.__new__(OcrBrandAnalyzer)
+    a.min_confidence, a.interval_sec, a.max_side, a._next_t, a._last_t = 0.4, 2.0, 0, 0.0, -1.0
+    a.detect_scale, a.static_diff, a._last_thumb, a._last_result = 0.6, static_diff, None, []
+    a.stats = {"ocr": 0, "reused": 0}
+    calls = []
+
+    class Reader:
+        def readtext(self, img, **kw):
+            calls.append(kw)
+            return [(None, "Tesla Model 3", 0.9)]
+
+    a._reader = Reader()
+    return a, calls
+
+
+def test_ocr_reuses_result_when_frame_is_static():
+    import numpy as np
+
+    from advideo_pipeline.models import Frame
+
+    a, calls = _ocr_with_fake_reader()
+    still = np.full((90, 160, 3), 120, dtype=np.uint8)
+    moved = still.copy()
+    moved[:, :80] = 10  # half the picture changed
+    outs = [a.analyze(Frame(time_sec=float(t), image=im)) for t, im in ((0, still), (2, still), (4, moved), (6, moved))]
+    assert len(calls) == 2 and a.stats == {"ocr": 2, "reused": 2}
+    assert calls[0] == {"mag_ratio": 0.6}
+    assert all(any(d.entity_label == "Tesla" for d in o) for o in outs)  # reused result still yields the brand
+
+
+def test_ocr_reuse_can_be_disabled():
+    import numpy as np
+
+    from advideo_pipeline.models import Frame
+
+    a, calls = _ocr_with_fake_reader(static_diff=0)
+    img = np.zeros((90, 160, 3), dtype=np.uint8)
+    for t in (0, 2, 4):
+        a.analyze(Frame(time_sec=float(t), image=img))
+    assert len(calls) == 3
 
 
 def test_logo_needs_three_frames_unless_near_certain():

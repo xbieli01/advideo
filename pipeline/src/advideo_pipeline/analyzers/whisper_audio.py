@@ -22,12 +22,14 @@ log = logging.getLogger(__name__)
 
 class WhisperAudioAnalyzer(TrackAnalyzer):
     name = "whisper"
+    beam_size = 1
+    vad_filter = True
 
     def __init__(
         self,
         model_size: str | None = None,
         device: str | None = None,
-        compute_type: str = "auto",
+        compute_type: str | None = None,
         language: str | None = "",
         semantic_safety: "bool | object | None" = None,
     ) -> None:
@@ -35,7 +37,10 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
         model can be loaded; False = off; or a ready SemanticSafety instance (shared across videos).
         `model_size`: faster-whisper model; None = ADVIDEO_WHISPER_MODEL or "base" (R8d: "small" transcribes
         Slovak news far better, ~3x slower on CPU). `language`: "" = from the language packs
-        (ADVIDEO_WHISPER_LANGUAGE, or the only active pack), None = auto-detect, or an explicit code."""
+        (ADVIDEO_WHISPER_LANGUAGE, or the only active pack), None = auto-detect, or an explicit code.
+        R4 speed defaults (speech-street 30 s on 4 CPU cores: 15.8 s -> 9.0 s): `compute_type` None = int8 on CPU,
+        float16 on CUDA (ADVIDEO_WHISPER_COMPUTE); greedy decoding `beam_size` 1 (ADVIDEO_WHISPER_BEAM) and a VAD
+        filter that skips silence/music (ADVIDEO_WHISPER_VAD=0 disables)."""
         from faster_whisper import WhisperModel  # lazy
 
         dev = device
@@ -49,6 +54,11 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
         import os
 
         self.model_size = model_size or os.environ.get("ADVIDEO_WHISPER_MODEL", "").strip() or "base"
+        if compute_type is None:
+            compute_type = os.environ.get("ADVIDEO_WHISPER_COMPUTE", "").strip() or ("float16" if dev == "cuda" else "int8")
+        self.compute_type = compute_type
+        self.beam_size = max(1, int(os.environ.get("ADVIDEO_WHISPER_BEAM", "1") or 1))
+        self.vad_filter = os.environ.get("ADVIDEO_WHISPER_VAD", "1").lower() not in ("0", "false", "no", "off")
         self._model = WhisperModel(self.model_size, device=dev, compute_type=compute_type)
         if language == "":
             from ..languages import whisper_language
@@ -77,7 +87,8 @@ class WhisperAudioAnalyzer(TrackAnalyzer):
             return []
         out: list[tuple[float, float, Detection]] = []
         try:
-            segments, _info = self._model.transcribe(video_path, language=self.language)
+            segments, _info = self._model.transcribe(video_path, language=self.language, beam_size=self.beam_size,
+                                                     vad_filter=self.vad_filter)
             segments = list(segments)  # decoding is lazy; surface errors here
         except (IndexError, ValueError, RuntimeError, OSError) as exc:
             # unreadable/odd audio must not fail the whole video analysis; visual backends still count

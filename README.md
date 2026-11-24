@@ -125,6 +125,36 @@ Only the active packs are matched: with `sk` alone, the English word *rifle* (Sl
 (mis-heard Slovak *veľká*) cannot fire — on a Slovak broadcast `sk` (+ `en` for brand/English UI text) is the
 recommended setting.
 
+## Throughput (R4)
+
+**Warm worker.** `advideo-analyze` starts a fresh process per video: imports + model loading take 15–35 s on CPU
+before the first frame (more than a 30 s clip then needs). `advideo-worker` keeps the models loaded and serves jobs
+over JSON lines on stdin/stdout (`pipeline/src/advideo_pipeline/worker.py`); the orchestrator keeps a pool of them:
+
+```json
+"Pipeline": { "Mode": "worker", "WorkerCommand": "advideo-worker",
+              "WorkerArguments": "--preload yolo+clip,ocr,clip-brand,whisper", "PoolSize": 1, "MaxJobsPerWorker": 200 }
+```
+
+Same error semantics as the CLI (exit code 3 permanent → dead letter, otherwise retried). A worker that crashes, hangs
+past `TimeoutSeconds` or prints garbage is killed and replaced; workers are recycled after `MaxJobsPerWorker` jobs.
+**Memory:** a worker with all backends holds ~2.1 GB RSS → size `PoolSize` to RAM (≈ 1 per 3 GB; on the 4 GB sandbox
+a pool of 2 was OOM-killed, the retry policy recovered). OCR readers and semantic prototypes are cached per language set.
+
+**Cheaper OCR and Whisper.** Text detection (CRAFT) is ~95 % of OCR time: it now runs on a 0.6× image
+(`detect_scale`) while recognition reads the 960 px crops, and a frame that barely changed since the last OCR run
+reuses its result (`static_diff`). Whisper: int8 on CPU, greedy decoding, VAD filter (`ADVIDEO_WHISPER_COMPUTE`,
+`ADVIDEO_WHISPER_BEAM`, `ADVIDEO_WHISPER_VAD`).
+
+| 3 clips (20 + 19 + 30 s), `yolo+clip,ocr,clip-brand` + whisper, 4-core CPU | wall time | per video |
+|---|---|---|
+| before (CLI per video) | 87 s | ~29 s |
+| R4 CLI per video | 66 s | ~22 s |
+| **R4 warm worker** (14 s start-up once) | 55 s | **~13 s** |
+
+Same categories on all three clips; brand clips (9, OCR + clip-brand): brand recall 0.52 unchanged, false brands 2,
+time 266 s → 136 s. Not done: frame batching for YOLO/CLIP (small on CPU, worth it on GPU).
+
 ## Robust processing (R5)
 
 **Video sources.** `videoUri` may be a local path, `file://`, an `http(s)://` video file or an HLS

@@ -24,7 +24,7 @@ ARG PIPELINE_EXTRAS=""
 RUN apt-get update \
  && apt-get install -y --no-install-recommends python3 python3-pip python3-venv ffmpeg \
  && rm -rf /var/lib/apt/lists/*
-# pipeline in its own venv, CLI on PATH as advideo-analyze
+# pipeline in its own venv, CLIs on PATH: advideo-analyze (Pipeline:Mode=cli) and advideo-worker (Pipeline:Mode=worker)
 COPY pipeline/ /opt/advideo/pipeline/
 COPY schema/ /opt/advideo/schema/
 RUN python3 -m venv /opt/advideo/venv \

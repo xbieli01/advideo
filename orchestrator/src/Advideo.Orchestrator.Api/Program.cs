@@ -30,13 +30,31 @@ builder.Services.AddSingleton<IJobQueue>(_ => new ChannelJobQueue(
     builder.Configuration.GetValue("Queue:Capacity", 1000)));
 
 // --- pipeline runner (.NET -> Python) ---------------------------------------
-builder.Services.AddSingleton(new CliPipelineRunnerOptions
+// Pipeline:Mode = "cli" (one advideo-analyze process per video) or "worker" (R4: pool of warm advideo-worker
+// processes, models loaded once per process — much faster for short videos and catalogue imports)
+if (string.Equals(builder.Configuration.GetValue("Pipeline:Mode", "cli"), "worker", StringComparison.OrdinalIgnoreCase))
 {
-    Command = builder.Configuration.GetValue("Pipeline:Command", "advideo-analyze")!,
-    TimeoutSeconds = builder.Configuration.GetValue("Pipeline:TimeoutSeconds", 3600),
-    DefaultLanguages = builder.Configuration.GetValue<string?>("Pipeline:DefaultLanguages")
-});
-builder.Services.AddSingleton<IPipelineRunner, CliPipelineRunner>();
+    builder.Services.AddSingleton(new WorkerPipelineRunnerOptions
+    {
+        Command = builder.Configuration.GetValue("Pipeline:WorkerCommand", "advideo-worker")!,
+        Arguments = builder.Configuration.GetValue("Pipeline:WorkerArguments", "")!,
+        PoolSize = builder.Configuration.GetValue("Pipeline:PoolSize", builder.Configuration.GetValue("Worker:MaxConcurrency", 2)),
+        TimeoutSeconds = builder.Configuration.GetValue("Pipeline:TimeoutSeconds", 3600),
+        MaxJobsPerWorker = builder.Configuration.GetValue("Pipeline:MaxJobsPerWorker", 200),
+        DefaultLanguages = builder.Configuration.GetValue<string?>("Pipeline:DefaultLanguages")
+    });
+    builder.Services.AddSingleton<IPipelineRunner, WorkerPipelineRunner>();
+}
+else
+{
+    builder.Services.AddSingleton(new CliPipelineRunnerOptions
+    {
+        Command = builder.Configuration.GetValue("Pipeline:Command", "advideo-analyze")!,
+        TimeoutSeconds = builder.Configuration.GetValue("Pipeline:TimeoutSeconds", 3600),
+        DefaultLanguages = builder.Configuration.GetValue<string?>("Pipeline:DefaultLanguages")
+    });
+    builder.Services.AddSingleton<IPipelineRunner, CliPipelineRunner>();
+}
 
 // --- content-map store: filesystem (default) or S3/MinIO --------------------
 var storageProvider = builder.Configuration.GetValue("Storage:Provider", "filesystem")!;
